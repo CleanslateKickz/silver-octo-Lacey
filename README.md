@@ -1,60 +1,32 @@
 # My Webpages
 
-This repository contains three different webpages.  
-You can preview them below by switching between the tabs.
+This repository contains three different webpages, each with a unique purpose.  
+Below you can preview each one by clicking between the tabs.
 
 ---
 
-<style>
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-}
-.tabs label {
-  padding: 8px 16px;
-  cursor: pointer;
-  background: #ddd;
-  margin-right: 4px;
-  border-radius: 4px 4px 0 0;
-}
-.tabs input[type="radio"] {
-  display: none;
-}
-.tab {
-  display: none;
-  width: 100%;
-  border: 1px solid #ddd;
-  border-top: none;
-  padding: 16px;
-}
-input[type="radio"]:checked + label {
-  background: #fff;
-  border-bottom: 1px solid white;
-}
-#tab1:checked ~ #content1,
-#tab2:checked ~ #content2,
-#tab3:checked ~ #content3 {
-  display: block;
-}
-</style>
+<!--
+GitHub's markdown renderer does not support custom HTML, JavaScript, or CSS for advanced components like tabs.
+Instead, we use simple headings and links below for the screenshots.
+For interactive previews, open the images or visit the corresponding HTML files in your browser.
+-->
 
-<div class="tabs">
-  <input type="radio" id="tab1" name="tab-group" checked>
-  <label for="tab1">Webpage 1</label>
-  
-  <input type="radio" id="tab2" name="tab-group">
-  <label for="tab2">Webpage 2</label>
-  
-  <input type="radio" id="tab3" name="tab-group">
-  <label for="tab3">Webpage 3</label>
-  
-  <div id="content1" class="tab">
-    <img src="screenshot1.png" alt="Screenshot of Webpage 1" width="600">
-  </div>
-  <div id="content2" class="tab">
-    <img src="screenshot2.png" alt="Screenshot of Webpage 2" width="600">
-  </div>
-  <div id="content3" class="tab">
-    <img src="screenshot3.png" alt="Screenshot of Webpage 3" width="600">
-  </div>
-</div>
+### Webpage 1
+[![Screenshot of Webpage 1](screenshot1.png)](HTML/webpage1.html)
+
+### Webpage 2
+[![Screenshot of Webpage 2](screenshot2.png)](HTML/webpage2.html)
+
+### Webpage 3
+[![Screenshot of Webpage 3](screenshot3.png)](HTML/webpage3.html)
+
+---
+
+#### Quick Access
+
+- [Webpage 1](HTML/webpage1.html)
+- [Webpage 2](HTML/webpage2.html)
+- [Webpage 3](HTML/webpage3.html)
+
+*Replace the image filenames and HTML links above with your actual file names/paths as needed.*  
+*If your screenshots are in a different folder, update the image paths accordingly.*
