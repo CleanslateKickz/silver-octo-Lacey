@@ -1,138 +1,60 @@
-<!--
-README.md
-A simple README for a GitHub repo with a tabbed component to display three webpage screenshots.
+# My Webpages
 
-Notes:
-- GitHub's Markdown supports basic HTML, so we use a pure HTML/CSS solution without JS.
-- Uses radio inputs + labels to simulate tabs and CSS to show/hide relevant screenshots.
-- Replace the image sources (src) with your actual screenshot paths.
--->
+This repository contains three different webpages.  
+You can preview them below by switching between the tabs.
 
-# Project Title
+---
 
-A short description of the project and what these three webpages represent.
-
-## Preview
-
-<!-- Tabbed interface -->
-<div class="tabs">
-
-  <!-- Tab controls (radio buttons) -->
-  <input type="radio" id="tab-1" name="tabs" checked />
-  <input type="radio" id="tab-2" name="tabs" />
-  <input type="radio" id="tab-3" name="tabs" />
-
-  <!-- Tab labels -->
-  <div class="tab-labels">
-    <label for="tab-1">Home</label>
-    <label for="tab-2">Dashboard</label>
-    <label for="tab-3">Settings</label>
-  </div>
-
-  <!-- Tab content -->
-  <div class="tab-content">
-    <section class="panel panel-1">
-      <img src="screenshots/home.png" alt="Homepage screenshot" />
-    </section>
-    <section class="panel panel-2">
-      <img src="screenshots/dashboard.png" alt="Dashboard screenshot" />
-    </section>
-    <section class="panel panel-3">
-      <img src="screenshots/settings.png" alt="Settings screenshot" />
-    </section>
-  </div>
-</div>
-
-<!-- Styles: kept inline for GitHub compatibility -->
 <style>
-  /* Container */
-  .tabs {
-    border: 1px solid #e1e4e8;
-    border-radius: 6px;
-    overflow: hidden;
-    display: block;
-  }
-
-  /* Hide radios but keep accessible */
-  .tabs > input[type="radio"] {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  /* Tab labels row */
-  .tab-labels {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid #e1e4e8;
-    background: #f6f8fa;
-  }
-
-  .tab-labels label {
-    cursor: pointer;
-    padding: 10px 14px;
-    font-weight: 600;
-    color: #24292f;
-    border-right: 1px solid #e1e4e8;
-    user-select: none;
-  }
-
-  .tab-labels label:last-child {
-    border-right: 0;
-  }
-
-  /* Panels wrapper */
-  .tab-content {
-    background: #fff;
-  }
-
-  .panel {
-    display: none;
-    padding: 12px;
-  }
-
-  /* Active tab highlighting and panel visibility */
-  #tab-1:checked ~ .tab-labels label[for="tab-1"],
-  #tab-2:checked ~ .tab-labels label[for="tab-2"],
-  #tab-3:checked ~ .tab-labels label[for="tab-3"] {
-    background: #fff;
-    border-bottom: 2px solid #0969da;
-    color: #0969da;
-  }
-
-  #tab-1:checked ~ .tab-content .panel-1,
-  #tab-2:checked ~ .tab-content .panel-2,
-  #tab-3:checked ~ .tab-content .panel-3 {
-    display: block;
-  }
-
-  /* Image sizing */
-  .panel img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-    border: 1px solid #e1e4e8;
-  }
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+}
+.tabs label {
+  padding: 8px 16px;
+  cursor: pointer;
+  background: #ddd;
+  margin-right: 4px;
+  border-radius: 4px 4px 0 0;
+}
+.tabs input[type="radio"] {
+  display: none;
+}
+.tab {
+  display: none;
+  width: 100%;
+  border: 1px solid #ddd;
+  border-top: none;
+  padding: 16px;
+}
+input[type="radio"]:checked + label {
+  background: #fff;
+  border-bottom: 1px solid white;
+}
+#tab1:checked ~ #content1,
+#tab2:checked ~ #content2,
+#tab3:checked ~ #content3 {
+  display: block;
+}
 </style>
 
-## Getting Started
-
-- Replace the placeholder images in the screenshots/ directory:
-  - screenshots/home.png
-  - screenshots/dashboard.png
-  - screenshots/settings.png
-- Optionally rename the tab labels in the HTML above to match your pages.
-
-## Repository Structure
-
-- src/ or pages/: Your source code for each webpage.
-- screenshots/: PNG/JPG screenshots used in the tabs.
-- README.md: This file.
-
-## Contributing
-
-- Fork the repo, create a feature branch, and open a PR.
-
-## License
-
-MIT
+<div class="tabs">
+  <input type="radio" id="tab1" name="tab-group" checked>
+  <label for="tab1">Webpage 1</label>
+  
+  <input type="radio" id="tab2" name="tab-group">
+  <label for="tab2">Webpage 2</label>
+  
+  <input type="radio" id="tab3" name="tab-group">
+  <label for="tab3">Webpage 3</label>
+  
+  <div id="content1" class="tab">
+    <img src="screenshot1.png" alt="Screenshot of Webpage 1" width="600">
+  </div>
+  <div id="content2" class="tab">
+    <img src="screenshot2.png" alt="Screenshot of Webpage 2" width="600">
+  </div>
+  <div id="content3" class="tab">
+    <img src="screenshot3.png" alt="Screenshot of Webpage 3" width="600">
+  </div>
+</div>
