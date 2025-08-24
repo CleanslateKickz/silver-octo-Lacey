@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Initialize Gallery
         const galleryImages = [
-        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Lacey%20Retail%20Center.png',
+        'https://cleanslatekickz.github.io/geojson/Images/Lacey%20Retail%20Center.png',
         'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Corner3HD.jpeg',
         'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/SideHD.jpeg',
         'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/FrontHD.jpeg',
