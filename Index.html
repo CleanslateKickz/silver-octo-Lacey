@@ -56,6 +56,112 @@
             border: none; 
             border-radius: 0 0 8px 8px; 
         }
+
+        .hero-cta {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button.secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .cta-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* New Footer Styles */
+        .footer {
+            padding: 3rem 0;
+        }
+        .footer-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        .footer-contact-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+        .footer-contact-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            transition: background var(--transition-base);
+        }
+        .footer-contact-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .footer-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .footer-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--white);
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .footer-card-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin: 0;
+        }
+        .footer-card-role {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
+        }
+        .footer-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            padding-top: 1rem;
+        }
+        .footer-card-info a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color var(--transition-base);
+        }
+        .footer-card-info a:hover {
+            color: var(--white);
+        }
+        .footer-card-info i {
+            margin-right: 0.75rem;
+            width: 16px;
+        }
+        .footer-bottom a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+        .footer-bottom a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +216,10 @@
                     <i class="fas fa-file-pdf"></i>
                     View Offering Memorandum
                 </button>
+                <a href="about.html#debt-financing" class="cta-button secondary">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    View Debt Quotes
+                </a>
             </div>
         </div>
         <div class="scroll-indicator">
@@ -249,27 +359,36 @@
 
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <h3>Lacey Retail Center</h3>
-                    <p>Premium Investment Opportunity</p>
+            <div class="footer-contact-cards">
+                <div class="footer-contact-card">
+                    <div class="footer-card-header">
+                        <div class="footer-avatar">JD</div>
+                        <div>
+                            <h4 class="footer-card-name">Joseph Dabush</h4>
+                            <p class="footer-card-role">National Retail Broker</p>
+                        </div>
+                    </div>
+                    <div class="footer-card-info">
+                        <a href="tel:+14808867770"><i class="fas fa-phone-alt"></i> (480) 886-7770</a>
+                        <a href="mailto:Joseph.Dabush@marcusmillichap.com"><i class="fas fa-envelope"></i> Joseph.Dabush@marcusmillichap.com</a>
+                    </div>
                 </div>
-                <div class="footer-nav">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.html">Property Overview</a></li>
-                        <li><a href="about.html">Investment Details</a></li>
-                        <li><a href="contact.html">Contact Team</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Get In Touch</h4>
-                    <p><i class="fas fa-phone"></i> (503) 200-2061</p>
-                    <p><i class="fas fa-envelope"></i> info@marcusmillichap.com</p>
+                <div class="footer-contact-card">
+                    <div class="footer-card-header">
+                        <div class="footer-avatar">SG</div>
+                        <div>
+                            <h4 class="footer-card-name">Sam Gfroerer</h4>
+                            <p class="footer-card-role">National Retail Broker</p>
+                        </div>
+                    </div>
+                    <div class="footer-card-info">
+                        <a href="tel:+19713441260"><i class="fas fa-phone-alt"></i> (971) 344-1260</a>
+                        <a href="mailto:Sam.G@marcusmillichap.com"><i class="fas fa-envelope"></i> Sam.G@marcusmillichap.com</a>
+                    </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Marcus & Millichap. All rights reserved.</p>
+                <p>&copy; 2024 Marcus & Millichap. All rights reserved. | <a href="contact.html">Full Contact Details</a></p>
             </div>
         </div>
     </footer>
