@@ -1,4 +1,4 @@
-# 💸 Lacey Retail Center
+# 💸 [Lacey Retail Center](https://cleanslatekickz.github.io/silver-octo-Lacey/Index.html)
 
 _This repository contains three distinct webpages. Click through the tabs below to preview each page:_
 
