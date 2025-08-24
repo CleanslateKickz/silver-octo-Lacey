@@ -152,13 +152,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Initialize Rent Roll Table
         const rentRollData = [
-        { tenant: 'Lacey Liquor & Beverage', sf: '2,980', start: '5/1/22', end: '4/30/27', type: 'NNN', rent: '$60,873', options: null },
-        { tenant: 'Kasita Krec\'s LLC', sf: '2,972', start: '1/1/25', end: '12/31/29', type: 'NNN', rent: '$53,496', options: '(1) 5-Year Extension' },
-        { tenant: 'Sharp Design Hair Studio', sf: '1,311', start: '9/1/24', end: '8/31/27', type: 'NNN', rent: '$19,764', options: '(2) 3-Year Extensions' },
-        { tenant: 'Canna Cabana Subs', sf: '1,164', start: '7/1/23', end: '6/30/28', type: 'NNN', rent: '$18,516', options: '(1) 5-Year Extension' },
-        { tenant: 'Pizza Hut', sf: '1,311', start: '1/1/23', end: '12/31/28', type: 'NNN', rent: '$23,892', options: '(1) 5-Year Extension' },
-        { tenant: 'Star Nails & Spa', sf: '1,586', start: '7/1/25', end: '6/30/30', type: 'NNN', rent: '$29,676', options: '(1) 5-Year Extension' },
-        { tenant: 'T-Mobile Tower', sf: '--', start: '12/6/99', end: '12/6/29', type: 'NNN', rent: '$16,104', options: null }
+            { suite: 'A', tenant: 'Lacey Liquor & Beverage', sf: '2,980', baseRent: '$5,072', annualRent: '$60,864', rentPerSf: '$20.43', leaseFrom: '05/22', leaseTo: '04/27', leaseType: 'NNN', options: 'None' },
+            { suite: 'C', tenant: 'Kasita Krees', sf: '2,972', baseRent: '$4,458', annualRent: '$53,496', rentPerSf: '$18.00', leaseFrom: '01/25', leaseTo: '12/29', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'D', tenant: 'Sharp Design Hair Studio', sf: '1,311', baseRent: '$1,647', annualRent: '$19,764', rentPerSf: '$15.08', leaseFrom: '09/24', leaseTo: '08/27', leaseType: 'NNN', options: 'Two (2) Three (3) Year' },
+            { suite: 'E', tenant: 'Canna Cabana S&S', sf: '1,164', baseRent: '$1,543', annualRent: '$18,523', rentPerSf: '$15.91', leaseFrom: '07/23', leaseTo: '06/28', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'F', tenant: 'Pizza Hut', sf: '1,311', baseRent: '$1,991', annualRent: '$23,892', rentPerSf: '$18.23', leaseFrom: '01/23', leaseTo: '12/28', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'G', tenant: 'Star Nails & Spa', sf: '1,586', baseRent: '$2,473', annualRent: '$29,676', rentPerSf: '$18.71', leaseFrom: '07/25', leaseTo: '06/30', leaseType: 'NNN', options: 'One (1) Five (5) Year' }
         ];
     
         const tableContainer = document.querySelector('.table-container');
