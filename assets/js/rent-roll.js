@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             leaseTo: '12/29',
             leaseType: 'NNN',
             options: 'One (1) Five (5) Year',
-            logo: "https://cleanslatekickz.github.io/geojson/Images/Kasita Krec's.jpg",
+            logo: "https://cleanslatekickz.github.io/geojson/Images/Kasita%20Krec's.jpg",
             website: "https://sites.google.com/view/kasitakrecs/inicio",
             description: "Authentic Mexican food in Lacey WA, house specialty, Mexican restaurant near Olympia, traditional flavors. At Kasita krec's, we bring the heart of Mexico to your table. Every dish is crafted with fresh ingredients, authentic flavors, and a touch of home. Whether you're here for our sizzling fajitas, crispy tacos, or traditional caldos, you'll taste the passion in every bite."
         },
@@ -117,8 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         rentRollData.forEach((tenant, index) => {
             let logoHtml = tenant.logo ? `<img src="${tenant.logo}" alt="${tenant.tenant} Logo" class="tenant-logo-in-table">` : (tenant.image ? `<img src="${tenant.image}" alt="${tenant.tenant}" class="tenant-logo-in-table">` : '');
+            const hasOptions = tenant.options && tenant.options.toLowerCase() !== 'none';
             tableHTML += `
-                <tr>
+                <tr class="tenant-row ${hasOptions ? 'has-options' : ''}" ${hasOptions ? `data-toggle-id="options-${index}"` : ''}>
                     <td>${logoHtml}</td>
                     <td><a href="#" class="tenant-name-link" data-index="${index}">${tenant.tenant}</a></td>
                     <td>${tenant.suite}</td>
@@ -127,6 +128,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${tenant.leaseTo}</td>
                 </tr>
             `;
+            if (hasOptions) {
+                tableHTML += `
+                <tr class="options-row" id="options-${index}">
+                    <td colspan="6">
+                        <div class="options-content">
+                            <strong>Options:</strong> ${tenant.options}
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }
         });
 
         tableHTML += '</tbody></table>';
@@ -141,16 +153,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 modalTenantName.textContent = tenant.tenant;
 
-                let modalBodyContent = `
-                    <p>${tenant.description}</p>
-                    ${tenant.website ? `<p><a href="${tenant.website}" target="_blank">Visit Website <i class="fas fa-external-link-alt"></i></a></p>` : ''}
-                `;
-
+                let mediaHtml = '';
                 if (tenant.video) {
-                    modalBodyContent += `<video src="${tenant.video}" controls muted loop playsinline style="width: 100%; margin-top: 1rem;"></video>`;
+                    mediaHtml = `<div class="tenant-media"><video src="${tenant.video}" controls muted loop playsinline></video></div>`;
                 } else if (tenant.image && !tenant.logo) {
-                    modalBodyContent += `<img src="${tenant.image}" alt="${tenant.tenant}" style="width: 100%; margin-top: 1rem; border-radius: 8px;">`;
+                    mediaHtml = `<div class="tenant-media"><img src="${tenant.image}" alt="${tenant.tenant}"></div>`;
+                } else if (tenant.logo) {
+                    mediaHtml = `<div class="tenant-media"><img src="${tenant.logo}" alt="${tenant.tenant} Logo"></div>`;
                 }
+
+                let websiteHtml = tenant.website ? `<a href="${tenant.website}" target="_blank" class="tenant-website-link">Visit Website <i class="fas fa-external-link-alt"></i></a>` : '';
+
+                let modalBodyContent = `
+                    ${mediaHtml}
+                    <p class="tenant-description">${tenant.description}</p>
+                    ${websiteHtml}
+                `;
 
                 modalTenantBody.innerHTML = modalBodyContent;
                 modal.classList.add('visible');
@@ -170,5 +188,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
+
+        // Add click handlers for expandable rows
+        const toggleRows = tableContainer.querySelectorAll('.tenant-row.has-options');
+        toggleRows.forEach(row => {
+            row.addEventListener('click', function(e) {
+                // Prevent modal from opening if the click is not on the tenant name link
+                if (e.target.classList.contains('tenant-name-link')) {
+                    return;
+                }
+                const optionsRow = tableContainer.querySelector(`#${this.dataset.toggleId}`);
+                if (optionsRow) {
+                    this.classList.toggle('active');
+                    optionsRow.classList.toggle('active');
+                }
+            });
+        });
     }
 });

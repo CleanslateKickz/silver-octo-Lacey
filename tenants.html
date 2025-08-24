@@ -26,16 +26,35 @@
                 color: var(--accent-navy);
                 text-decoration: underline;
             }
-            .modal-body p {
-                margin-bottom: 1rem;
+            .modal-body .tenant-media {
+                margin-bottom: 1.5rem;
             }
-            .modal-body a {
-                color: var(--accent-navy);
+            .modal-body .tenant-media video,
+            .modal-body .tenant-media img {
+                width: 100%;
+                max-height: 400px;
+                object-fit: contain;
+                border-radius: 8px;
+            }
+            .modal-body .tenant-description {
+                margin-bottom: 1.5rem;
+                line-height: 1.7;
+            }
+            .modal-body .tenant-website-link {
+                display: inline-block;
+                color: var(--white);
+                background: var(--accent-navy);
+                padding: 0.75rem 1.5rem;
+                border-radius: 50px;
                 text-decoration: none;
                 font-weight: 600;
+                transition: background 0.3s ease;
             }
-            .modal-body a:hover {
-                text-decoration: underline;
+            .modal-body .tenant-website-link:hover {
+                background: var(--primary-navy);
+            }
+            .modal-body .tenant-website-link i {
+                margin-left: 0.5rem;
             }
         </style>
     </head>
