@@ -222,12 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
         // Initialize Gallery
         const galleryImages = [
-        'https://cleanslatekickz.github.io/geojson/Images/Lacey%20Retail%20Center.png',
-        '../Images/Corner3HD.jpeg',
-        '../Images/SideHD.jpeg',
-        '../Images/FrontHD.jpeg',
+        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Lacey%20Retail%20Center.png',
+        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Corner3HD.jpeg',
+        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/SideHD.jpeg',
+        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/FrontHD.jpeg',
         'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrutU0gHpwVS-k6M-WTPA363msH-fqwuBvSNLfpeA0cQpthky93kDGTNHMsnoteaRHT6yQOdrPPWKKDKMH_WeIM6i1OcMujuR-faErC7uPF15SY54hIpI5HgLR7wp_5rkAUrDV2=s457-k-no',
-        '../Images/street.jpeg'
+        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/street.jpeg'
         ];
     
         const galleryGrid = document.querySelector('.gallery-grid');
