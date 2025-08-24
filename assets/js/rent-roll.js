@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             leaseTo: '12/29',
             leaseType: 'NNN',
             options: 'One (1) Five (5) Year',
-            logo: "https://lh4.googleusercontent.com/j__Pqn1ZIobq2vmHMJ0YgYRsAMrSTFoPiZzvSbkpjunx8ARZqu_T1m3Ul03OZNLpCOoivgMMPOB6ZAVloVybhpHi7oA47j1dDMUXmvrydbA2pCBKwuBs82SDVgHqqhhwoZPIyRHtnw=w16383",
+            logo: "https://cleanslatekickz.github.io/geojson/Images/Kasita Krec's.jpg",
             website: "https://sites.google.com/view/kasitakrecs/inicio",
             description: "Authentic Mexican food in Lacey WA, house specialty, Mexican restaurant near Olympia, traditional flavors. At Kasita krec's, we bring the heart of Mexico to your table. Every dish is crafted with fresh ingredients, authentic flavors, and a touch of home. Whether you're here for our sizzling fajitas, crispy tacos, or traditional caldos, you'll taste the passion in every bite."
         },
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
             leaseTo: '08/27',
             leaseType: 'NNN',
             options: 'Two (2) Three (3) Year',
-            image: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqqJlngxuRpNdFUPWTcc_CjFjLuarFmiLdF9KBtCeFvonjJyIbVyCVPjPVivOIF5uxyy0eCCIaHJqjIaJMjVfurZl0abiTdnWAxZyWeYIruWhIlF1aGosp5G534kQmLIfD958nqig=s406-k",
+            image: "https://cleanslatekickz.github.io/geojson/Images/Sharp%20Design%20Hair%20Studio%20(1).jpg",
             website: "https://www.vagaro.com/sharpdesignhairstudio12",
             description: "We offer hair styling services including, haircuts for women and men, hair coloring from simple retouch, highlighting, balayage and more. Brazilian blowouts, daily and formal hair styling are also offered. We also have facial waxing."
         },
