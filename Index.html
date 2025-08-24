@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Lacey Retail Center - Premium investment opportunity in Washington's fastest-growing market. 100% occupied retail center with stable tenants.">
+    <meta name="keywords" content="commercial real estate, retail center, investment property, Lacey WA">
+    <title>Lacey Retail Center - Premium Investment Opportunity</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <!-- Added CSS for Modal Functionality -->
+    <style>
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0, 0, 0, 0.7); 
+            z-index: 9999; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            opacity: 0; 
+            visibility: hidden; 
+            transition: opacity 0.3s ease, visibility 0.3s ease; 
+            backdrop-filter: blur(5px); 
+        }
+        .modal-overlay.visible { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        .modal-container { 
+            background: white; 
+            border-radius: 12px; 
+            width: 95%; 
+            height: 95vh; 
+            max-width: 1600px; /* Widescreen for book view */
+            padding: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            transform: scale(0.95); 
+            transition: transform 0.3s ease; 
+        }
+        .modal-overlay.visible .modal-container { 
+            transform: scale(1); 
+        }
+        .modal-body { 
+            flex-grow: 1; 
+            padding-top: 1rem; 
+        }
+        .modal-body iframe { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            border-radius: 0 0 8px 8px; 
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-wrapper">
+        <div class="site-nav">
+            <a href="index.html" class="nav-brand">
+                <i class="fas fa-building"></i>
+                Lacey Retail Center
+            </a>
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">Property</a></li>
+                <li><a href="about.html">Investment Details</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content fade-in-up">
+            <h1>Lacey Retail Center</h1>
+            <p class="hero-subtitle">
+                <i class="fas fa-map-marker-alt"></i>
+                4660 Whitman Ln SE, Lacey, WA 98513
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat fade-in-up" style="animation-delay: 0.1s">
+                    <span class="hero-stat-value" data-count="3.2">0</span>
+                    <span class="hero-stat-label">Million Asking</span>
+                </div>
+                <div class="hero-stat fade-in-up" style="animation-delay: 0.2s">
+                    <span class="hero-stat-value" data-count="6.50">0</span>
+                    <span class="hero-stat-label">% Cap Rate</span>
+                </div>
+                <div class="hero-stat fade-in-up" style="animation-delay: 0.3s">
+                    <span class="hero-stat-value" data-count="11502">0</span>
+                    <span class="hero-stat-label">Square Feet</span>
+                </div>
+                <div class="hero-stat fade-in-up" style="animation-delay: 0.4s">
+                    <span class="hero-stat-value" data-count="100">0</span>
+                    <span class="hero-stat-label">% Occupied</span>
+                </div>
+            </div>
+            <div class="hero-cta fade-in-up" style="animation-delay: 0.5s">
+                <button id="open-om-modal" class="cta-button primary">
+                    <i class="fas fa-file-pdf"></i>
+                    View Offering Memorandum
+                </button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="property" class="section reveal">
+            <div class="container">
+                <h2 class="section-title">Premium Investment Opportunity</h2>
+                <p class="section-subtitle">A fully occupied retail center with a stable, diverse mix of long-term tenants in one of Washington's fastest-growing markets.</p>
+
+                <div class="highlight-card reveal-fade">
+                    <h3 class="highlight-title">
+                        <i class="fas fa-chart-line"></i>
+                        Investment Summary
+                    </h3>
+                    <p class="highlight-text">This 100% occupied retail center features a strong tenant roster including Pizza Hut, T-Mobile, and Lacey Liquor & Beverage. The property benefits from additional income via a T-Mobile cell tower lease with 10% rent increases every 5 years. Significant recent capital improvements include a new roof (2020), updated HVAC systems (2017), and a modernized fire panel (2025), ensuring minimal near-term capital expenditure for a new owner.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card reveal-scale">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-label">Asking Price</div>
+                        <div class="stat-value">$3,195,683</div>
+                    </div>
+                    <div class="stat-card reveal-scale" style="animation-delay: 0.1s">
+                        <div class="stat-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="stat-label">Price / SF</div>
+                        <div class="stat-value">$277.85</div>
+                    </div>
+                    <div class="stat-card reveal-scale" style="animation-delay: 0.2s">
+                        <div class="stat-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-label">Cap Rate</div>
+                        <div class="stat-value">6.50%</div>
+                    </div>
+                    <div class="stat-card reveal-scale" style="animation-delay: 0.3s">
+                        <div class="stat-icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                        <div class="stat-label">Building Size</div>
+                        <div class="stat-value">11,502 SF</div>
+                    </div>
+                    <div class="stat-card reveal-scale" style="animation-delay: 0.4s">
+                        <div class="stat-icon">
+                            <i class="fas fa-map"></i>
+                        </div>
+                        <div class="stat-label">Lot Size</div>
+                        <div class="stat-value">1.05 Acres</div>
+                    </div>
+                    <div class="stat-card reveal-scale" style="animation-delay: 0.5s">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-label">Year Built</div>
+                        <div class="stat-value">1998</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="interactive-section" class="section bg-light reveal">
+            <div class="container">
+                <h2 class="section-title">Location & Market Analysis</h2>
+                <p class="section-subtitle">Explore the property's strategic location, visitor traffic, and surrounding demographics.</p>
+
+                <div class="tabs-nav">
+                    <button class="tab-link active" data-tab="tab-map">
+                        <i class="fas fa-map-marked-alt"></i>
+                        Location Map
+                    </button>
+                    <button class="tab-link" data-tab="tab-placer">
+                        <i class="fas fa-chart-bar"></i>
+                        Market Insights
+                    </button>
+                    <button class="tab-link" data-tab="tab-demographics">
+                        <i class="fas fa-users"></i>
+                        Demographics
+                    </button>
+                </div>
+
+                <div id="tab-map" class="tab-content active">
+                    <div class="embed-wrapper">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d-122.82574120858345!3d46.99600057184283!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2s4660%20Whitman%20Ln%20SE%2C%20Lacey%2C%20WA%2098513!5e1!3m2!1sen!2sus!4v1755752268440!5m1!1e4"
+                                allowfullscreen=""
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                                title="Property Location">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div id="tab-placer" class="tab-content">
+                    <div class="embed-wrapper placer-wrapper">
+                        <iframe src="https://embedded-widget.placer.ai/widgets/v1/zip-code-map/?zipCode=98513&address=4660%20Whitman%20Ln%20SE%2C%20Lacey%2C%20WA%2098513&utm_source=https%3A%2F%2Fwww.placer.ai%2Fexplore%2Fpoints-of-interest"
+                                loading="lazy"
+                                title="Property Area Insights"
+                                allowfullscreen="true"
+                                allow="clipboard-write"
+                                referrerpolicy="origin"
+                                scrolling="no">
+                        </iframe>
+                    </div>
+                </div>
+
+                <div id="tab-demographics" class="tab-content">
+                    <div class="demographics-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="rent-roll-section" class="section reveal">
+            <div class="container">
+                <h2 class="section-title">Current Rent Roll</h2>
+                <p class="section-subtitle">A stable and diverse tenant mix with long-term lease commitments and built-in rental growth.</p>
+                <div class="table-container"></div>
+            </div>
+        </section>
+
+        <section id="gallery" class="section bg-light reveal">
+            <div class="container">
+                <h2 class="section-title">Property Gallery</h2>
+                <p class="section-subtitle">Explore high-resolution images of the property and its tenants.</p>
+                <div class="gallery-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Lacey Retail Center</h3>
+                    <p>Premium Investment Opportunity</p>
+                </div>
+                <div class="footer-nav">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Property Overview</a></li>
+                        <li><a href="about.html">Investment Details</a></li>
+                        <li><a href="contact.html">Contact Team</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>Get In Touch</h4>
+                    <p><i class="fas fa-phone"></i> (503) 200-2061</p>
+                    <p><i class="fas fa-envelope"></i> info@marcusmillichap.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Marcus & Millichap. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="om-modal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Lacey Retail Center - Offering Memorandum</h3>
+                <button id="close-om-modal" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Iframe will be populated by the script below -->
+                <iframe id="om-iframe" title="Lacey Retail Center Offering Memorandum"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/main.js"></script>
+
+    <!-- NEW Script for PDF Modal Functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = document.getElementById('om-modal');
+            const openBtn = document.getElementById('open-om-modal');
+            const closeBtn = document.getElementById('close-om-modal');
+            const omIframe = document.getElementById('om-iframe');
+
+            // Build the PDF URL with parameters to force "Window Width" view
+            // and hide unnecessary toolbars for a cleaner look.
+            const pdfUrl = 'https://shoppingcenter-report.neocities.org/On-Markets/Lacey%20Retail%20Center.pdf#view=FitW&toolbar=0&navpanes=0';
+            
+            if (openBtn) {
+                openBtn.addEventListener('click', () => {
+                    // Set the src only when the button is clicked to load the PDF on demand
+                    if (omIframe.src !== pdfUrl) {
+                        omIframe.src = pdfUrl;
+                    }
+                    modal.classList.add('visible');
+                });
+            }
+            
+            const closeModal = () => {
+                modal.classList.remove('visible');
+                // Optional: clear the iframe src to stop the PDF from running in the background
+                omIframe.src = 'about:blank';
+            };
+
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+            
+            if (modal) {
+                modal.addEventListener('click', e => { 
+                    // Close modal if the overlay (the dark background) is clicked
+                    if (e.target === modal) { 
+                        closeModal();
+                    } 
+                });
+            }
+
+            // Note: The logic for tabs, number counters, and reveal animations
+            // is expected to be in your 'assets/js/main.js' file.
+            // This script is specifically for the PDF modal functionality.
+        });
+    </script>
+</body>
+</html>
