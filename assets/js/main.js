@@ -2,13 +2,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile Navigation Toggle
     const navToggle = document.querySelector('.nav-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
+
     if (navToggle) {
     navToggle.addEventListener('click', function() {
     navLinks.classList.toggle('active');
     navToggle.classList.toggle('active');
     });
-    
+
     // Close mobile menu when clicking a link
     document.querySelectorAll('.nav-links a').forEach(link => {
     link.addEventListener('click', () => {
@@ -17,49 +17,49 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     });
     }
-    
+
     // Sticky Navigation on Scroll
     const nav = document.querySelector('.nav-wrapper');
     let lastScroll = 0;
-    
+
     window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset;
-    
+
     if (currentScroll > 100) {
     nav.classList.add('scrolled');
     } else {
     nav.classList.remove('scrolled');
     }
-    
+
     lastScroll = currentScroll;
     });
-    
+
     // Smooth Scroll Animation for Hero Stats
     function animateValue(element, start, end, duration, isDecimal = false) {
     const range = end - start;
     const startTime = performance.now();
-    
+
     function updateValue(currentTime) {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    
+
     const easeOutQuart = 1 - Math.pow(1 - progress, 4);
     const current = start + (range * easeOutQuart);
-    
+
     if (isDecimal) {
     element.textContent = current.toFixed(2);
     } else {
     element.textContent = Math.floor(current).toLocaleString();
     }
-    
+
     if (progress < 1) {
                      requestAnimationFrame(updateValue);
                      }
                      }
-    
+
                      requestAnimationFrame(updateValue);
                      }
-    
+
                      // Trigger counter animation when hero is in view
                      const heroObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -74,20 +74,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         });
         }, { threshold: 0.5 });
-    
+
         const heroSection = document.querySelector('.hero');
         if (heroSection) {
         heroObserver.observe(heroSection);
         }
-    
+
         // Scroll Reveal Animations
         const revealElements = document.querySelectorAll('.reveal, .reveal-fade, .reveal-scale');
-    
+
         const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
         if (entry.isIntersecting) {
         entry.target.classList.add('active');
-    
+
         // Trigger child animations with delay
         const children = entry.target.querySelectorAll('.reveal-fade, .reveal-scale');
         children.forEach((child, index) => {
@@ -101,23 +101,23 @@ document.addEventListener('DOMContentLoaded', function() {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
         });
-    
+
         revealElements.forEach(element => {
         revealObserver.observe(element);
         });
-    
+
         // Tabs Functionality
         const tabLinks = document.querySelectorAll('.tab-link');
         const tabContents = document.querySelectorAll('.tab-content');
-    
+
         tabLinks.forEach(link => {
         link.addEventListener('click', () => {
         const targetTab = link.dataset.tab;
-    
+
         // Update active states
         tabLinks.forEach(l => l.classList.remove('active'));
         tabContents.forEach(c => c.classList.remove('active'));
-    
+
         link.classList.add('active');
         const targetContent = document.getElementById(targetTab);
         if (targetContent) {
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         });
         });
-    
+
         // Initialize Demographics Grid
         const demographicsData = [
         { icon: 'https://www.randymajors.org/wp-content/uploads/icons/people.svg', topic: 'Total Population', value: '296,640' },
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { icon: 'https://www.randymajors.org/wp-content/uploads/icons/housing.svg', topic: 'Total Housing Units', value: '123,333' },
         { icon: 'https://www.randymajors.org/wp-content/uploads/icons/family.svg', topic: 'Total Households', value: '117,172' }
         ];
-    
+
         const demographicsGrid = document.querySelector('.demographics-grid');
         if (demographicsGrid) {
         demographicsGrid.innerHTML = demographicsData.map((item, index) => `
@@ -149,18 +149,17 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
         `).join('');
         }
-    
+
         // Initialize Rent Roll Table
         const rentRollData = [
-        { tenant: 'Lacey Liquor & Beverage', sf: '2,980', start: '5/1/22', end: '4/30/27', type: 'NNN', rent: '$60,873', options: null },
-        { tenant: 'Kasita Krec\'s LLC', sf: '2,972', start: '1/1/25', end: '12/31/29', type: 'NNN', rent: '$53,496', options: '(1) 5-Year Extension' },
-        { tenant: 'Sharp Design Hair Studio', sf: '1,311', start: '9/1/24', end: '8/31/27', type: 'NNN', rent: '$19,764', options: '(2) 3-Year Extensions' },
-        { tenant: 'Canna Cabana Subs', sf: '1,164', start: '7/1/23', end: '6/30/28', type: 'NNN', rent: '$18,516', options: '(1) 5-Year Extension' },
-        { tenant: 'Pizza Hut', sf: '1,311', start: '1/1/23', end: '12/31/28', type: 'NNN', rent: '$23,892', options: '(1) 5-Year Extension' },
-        { tenant: 'Star Nails & Spa', sf: '1,586', start: '7/1/25', end: '6/30/30', type: 'NNN', rent: '$29,676', options: '(1) 5-Year Extension' },
-        { tenant: 'T-Mobile Tower', sf: '--', start: '12/6/99', end: '12/6/29', type: 'NNN', rent: '$16,104', options: null }
+            { suite: 'A', tenant: 'Lacey Liquor & Beverage', sf: '2,980', baseRent: '$5,072', annualRent: '$60,864', rentPerSf: '$20.43', leaseFrom: '05/22', leaseTo: '04/27', leaseType: 'NNN', options: 'None' },
+            { suite: 'C', tenant: 'Kasita Krees', sf: '2,972', baseRent: '$4,458', annualRent: '$53,496', rentPerSf: '$18.00', leaseFrom: '01/25', leaseTo: '12/29', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'D', tenant: 'Sharp Design Hair Studio', sf: '1,311', baseRent: '$1,647', annualRent: '$19,764', rentPerSf: '$15.08', leaseFrom: '09/24', leaseTo: '08/27', leaseType: 'NNN', options: 'Two (2) Three (3) Year' },
+            { suite: 'E', tenant: 'Canna Cabana S&S', sf: '1,164', baseRent: '$1,543', annualRent: '$18,523', rentPerSf: '$15.91', leaseFrom: '07/23', leaseTo: '06/28', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'F', tenant: 'Pizza Hut', sf: '1,311', baseRent: '$1,991', annualRent: '$23,892', rentPerSf: '$18.23', leaseFrom: '01/23', leaseTo: '12/28', leaseType: 'NNN', options: 'One (1) Five (5) Year' },
+            { suite: 'G', tenant: 'Star Nails & Spa', sf: '1,586', baseRent: '$2,473', annualRent: '$29,676', rentPerSf: '$18.71', leaseFrom: '07/25', leaseTo: '06/30', leaseType: 'NNN', options: 'One (1) Five (5) Year' }
         ];
-    
+
         const tableContainer = document.querySelector('.table-container');
         if (tableContainer) {
         let tableHTML = `
@@ -177,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </thead>
             <tbody>
                 `;
-    
+
                 rentRollData.forEach((row, index) => {
                 const hasOptions = row.options !== null;
                 tableHTML += `
@@ -190,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${row.rent}</td>
                 </tr>
                 `;
-    
+
                 if (hasOptions) {
                 tableHTML += `
                 <tr class="options-row" id="options-${index}">
@@ -203,10 +202,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 }
                 });
-    
+
                 tableHTML += '</tbody></table>';
         tableContainer.innerHTML = tableHTML;
-    
+
         // Add click handlers for expandable rows
         const toggleRows = tableContainer.querySelectorAll('.tenant-row.has-options');
         toggleRows.forEach(row => {
@@ -219,83 +218,126 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         });
         }
-    
+
         // Initialize Gallery
         const galleryImages = [
-        'https://cleanslatekickz.github.io/geojson/Images/Lacey%20Retail%20Center.png',
-        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Corner3HD.jpeg',
-        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/SideHD.jpeg',
-        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/FrontHD.jpeg',
-        'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrutU0gHpwVS-k6M-WTPA363msH-fqwuBvSNLfpeA0cQpthky93kDGTNHMsnoteaRHT6yQOdrPPWKKDKMH_WeIM6i1OcMujuR-faErC7uPF15SY54hIpI5HgLR7wp_5rkAUrDV2=s457-k-no',
-        'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/street.jpeg'
+            'https://cleanslatekickz.github.io/geojson/Images/Lacey%20Retail%20Center.png',
+            'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/Corner3HD.jpeg',
+            'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/SideHD.jpeg',
+            'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/FrontHD.jpeg',
+            'https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrutU0gHpwVS-k6M-WTPA363msH-fqwuBvSNLfpeA0cQpthky93kDGTNHMsnoteaRHT6yQOdrPPWKKDKMH_WeIM6i1OcMujuR-faErC7uPF15SY54hIpI5HgLR7wp_5rkAUrDV2=s457-k-no',
+            'https://cleanslatekickz.github.io/silver-octo-Lacey/Images/street.jpeg'
         ];
-    
+
         const galleryGrid = document.querySelector('.gallery-grid');
         if (galleryGrid) {
-        galleryGrid.innerHTML = galleryImages.map((img, index) => `
-        <div class="gallery-item reveal-scale" style="background-image: url('${img}'); animation-delay: ${index * 0.1}s"></div>
-        `).join('');
+            galleryGrid.innerHTML = galleryImages.map((imgSrc, index) => `
+                <a href="${imgSrc}" class="gallery-item-link" data-index="${index}">
+                    <div class="gallery-item reveal-scale" style="background-image: url('${imgSrc}'); animation-delay: ${index * 0.1}s">
+                        <div class="gallery-item-overlay">
+                            <i class="fas fa-search-plus"></i>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
         }
-    
-        // Modal Functionality
-        const modal = document.getElementById('om-modal');
-        const openBtn = document.getElementById('open-om-modal');
-        const closeBtn = document.getElementById('close-om-modal');
-        const modalBody = modal ? modal.querySelector('.modal-body iframe') : null;
-    
-        if (openBtn && modal) {
-        openBtn.addEventListener('click', () => {
-        modal.classList.add('visible');
-    
-        // Set PDF viewer URL with improved settings
-        if (modalBody && !modalBody.src) {
-        const pdfUrl = 'https://mmreis-my.sharepoint.com/:b:/g/personal/sam_gfroerer_marcusmillichap_com/ESTuek_XCbFItXSiJaY8nkkBc1nIR0OvrGeNX83ZiucZJA?e=4xesFX&download=1';
-        const viewerUrl = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#zoom=page-width`;
-        modalBody.src = viewerUrl;
+
+        // --- MODAL LOGIC ---
+
+        // Gallery Modal
+        const galleryModal = document.getElementById('gallery-modal');
+        const galleryModalImage = galleryModal ? galleryModal.querySelector('.gallery-modal-image') : null;
+        const closeGalleryModalBtn = document.getElementById('gallery-modal-close');
+
+        if (galleryGrid && galleryModal && galleryModalImage) {
+            galleryGrid.addEventListener('click', function(e) {
+                e.preventDefault();
+                const link = e.target.closest('.gallery-item-link');
+                if (link) {
+                    galleryModalImage.src = link.href;
+                    galleryModal.classList.add('visible');
+                }
+            });
         }
-        });
+
+        function closeGalleryModal() {
+            if (galleryModal) {
+                galleryModal.classList.remove('visible');
+            }
         }
-    
-        if (closeBtn && modal) {
-        closeBtn.addEventListener('click', () => {
-        modal.classList.remove('visible');
-        });
+
+        if (closeGalleryModalBtn) {
+            closeGalleryModalBtn.addEventListener('click', closeGalleryModal);
         }
-    
-        if (modal) {
-        modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-        modal.classList.remove('visible');
+        if (galleryModal) {
+            galleryModal.addEventListener('click', e => {
+                if (e.target === galleryModal) closeGalleryModal();
+            });
         }
-        });
-    
-        // Close modal with Escape key
+
+        // PDF (OM) Modal
+        const omModal = document.getElementById('om-modal');
+        const openOmBtn = document.getElementById('open-om-modal');
+        const closeOmBtn = document.getElementById('close-om-modal');
+        const omIframe = omModal ? omModal.querySelector('.modal-body iframe') : null;
+
+        if (openOmBtn && omModal) {
+            openOmBtn.addEventListener('click', () => {
+                omModal.classList.add('visible');
+                if (omIframe && !omIframe.src.includes('sharepoint')) {
+                    const pdfUrl = 'https://mmreis-my.sharepoint.com/:b:/g/personal/sam_gfroerer_marcusmillichap_com/ESTuek_XCbFItXSiJaY8nkkBc1nIR0OvrGeNX83ZiucZJA?e=4xesFX&download=1';
+                    const viewerUrl = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#zoom=page-width`;
+                    omIframe.src = viewerUrl;
+                }
+            });
+        }
+
+        function closeOmModal() {
+            if (omModal) {
+                omModal.classList.remove('visible');
+            }
+        }
+
+        if (closeOmBtn) {
+            closeOmBtn.addEventListener('click', closeOmModal);
+        }
+        if (omModal) {
+            omModal.addEventListener('click', e => {
+                if (e.target === omModal) closeOmModal();
+            });
+        }
+
+        // Generic Escape key handler for all modals
         document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('visible')) {
-        modal.classList.remove('visible');
-        }
+            if (e.key === 'Escape') {
+                if (galleryModal && galleryModal.classList.contains('visible')) {
+                    closeGalleryModal();
+                }
+                if (omModal && omModal.classList.contains('visible')) {
+                    closeOmModal();
+                }
+            }
         });
-        }
-    
+
         // Contact Form Handler
         const contactForm = document.getElementById('contactForm');
         if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
-    
+
         // Get form data
         const formData = new FormData(contactForm);
         const data = Object.fromEntries(formData);
-    
+
         // Here you would normally send the data to a server
         console.log('Form submitted:', data);
-    
+
         // Show success message
         alert('Thank you for your interest! Our team will contact you shortly.');
         contactForm.reset();
         });
         }
-    
+
         // Parallax Effect for Hero
         const heroElement = document.querySelector('.hero-bg');
         if (heroElement) {
@@ -305,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
         heroElement.style.transform = `translateY(${scrolled * parallaxSpeed}px) scale(1.1)`;
         });
         }
-    
+
         // Smooth scroll to sections
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -324,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         });
         });
-    
+
         // Add loading animation for iframes
         const iframes = document.querySelectorAll('iframe');
         iframes.forEach(iframe => {

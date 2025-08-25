@@ -169,6 +169,67 @@
                 align-items: center;
             }
         }
+
+        /* Gallery Modal Styles */
+        .gallery-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+        .gallery-modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .gallery-modal-content {
+            position: relative;
+            width: 90%;
+            height: 90%;
+            max-width: 1200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-modal-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .gallery-modal-overlay.visible .gallery-modal-image {
+            transform: scale(1);
+        }
+        .gallery-modal-close {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .gallery-modal-close:hover {
+            transform: scale(1.1);
+            background: #f0f0f0;
+        }
     </style>
 </head>
 <body>
@@ -186,6 +247,7 @@
             <ul class="nav-links">
                 <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/Index.html" class="active">Property</a></li>
                 <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/about.html">Investment Details</a></li>
+                <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/tenants.html">Tenants</a></li>
                 <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/contact.html">Contact</a></li>
             </ul>
         </div>
@@ -347,13 +409,6 @@
             </div>
         </section>
 
-        <section id="rent-roll-section" class="section reveal">
-            <div class="container">
-                <h2 class="section-title">Current Rent Roll</h2>
-                <p class="section-subtitle">A stable and diverse tenant mix with long-term lease commitments and built-in rental growth.</p>
-                <div class="table-container"></div>
-            </div>
-        </section>
 
         <section id="gallery" class="section bg-light reveal">
             <div class="container">
@@ -399,6 +454,14 @@
             </div>
         </div>
     </footer>
+
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="gallery-modal-overlay">
+        <div class="gallery-modal-content">
+            <img src="" alt="Enlarged gallery image" class="gallery-modal-image">
+            <button id="gallery-modal-close" class="gallery-modal-close">&times;</button>
+        </div>
+    </div>
 
     <!-- Modal -->
     <div id="om-modal" class="modal-overlay">

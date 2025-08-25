@@ -74,6 +74,13 @@
                 font-weight: 600;
             }
 
+            /* New Layout Grid */
+            .layout-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3rem;
+            }
+
             /* New Footer Styles */
             .footer {
                 padding: 3rem 0;
@@ -162,11 +169,17 @@
                 text-decoration: underline;
             }
 
-        @media (max-width: 768px) {
-            .debt-quotes-grid {
-                grid-template-columns: 1fr;
+            @media (max-width: 900px) {
+                .layout-grid {
+                    grid-template-columns: 1fr;
+                }
             }
-        }
+
+            @media (max-width: 768px) {
+                .debt-quotes-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
         </style>
     </head>
     <body>
@@ -184,6 +197,7 @@
                 <ul class="nav-links">
                     <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/Index.html">Property</a></li>
                     <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/about.html" class="active">Investment Details</a></li>
+                    <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/tenants.html">Tenants</a></li>
                     <li><a href="https://cleanslatekickz.github.io/silver-octo-Lacey/contact.html">Contact</a></li>
                 </ul>
             </div>
@@ -197,76 +211,6 @@
         </header>
 
         <main>
-            <section class="section reveal">
-                <div class="container">
-                    <h2 class="section-title">Financial Performance</h2>
-                    <div class="financial-grid">
-                        <div class="financial-card reveal-fade">
-                            <div class="financial-header">
-                                <i class="fas fa-chart-pie"></i>
-                                <h3>Income Breakdown</h3>
-                            </div>
-                            <div class="financial-content">
-                                <div class="metric-row">
-                                    <span>Base Rental Income</span>
-                                    <strong>$206,220</strong>
-                                </div>
-                                <div class="metric-row">
-                                    <span>Cell Tower Income</span>
-                                    <strong>$16,104</strong>
-                                </div>
-                                <div class="metric-row highlight">
-                                    <span>Total Annual Income</span>
-                                    <strong>$222,324</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="financial-card reveal-fade" style="animation-delay: 0.1s">
-                            <div class="financial-header">
-                                <i class="fas fa-percentage"></i>
-                                <h3>Returns Analysis</h3>
-                            </div>
-                            <div class="financial-content">
-                                <div class="metric-row">
-                                    <span>Cap Rate</span>
-                                    <strong>6.50%</strong>
-                                </div>
-                                <div class="metric-row">
-                                    <span>Cash-on-Cash Return</span>
-                                    <strong>7.2%</strong>
-                                </div>
-                                <div class="metric-row highlight">
-                                    <span>5-Year IRR Projection</span>
-                                    <strong>8.5%</strong>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="financial-card reveal-fade" style="animation-delay: 0.2s">
-                            <div class="financial-header">
-                                <i class="fas fa-coins"></i>
-                                <h3>Operating Expenses</h3>
-                            </div>
-                            <div class="financial-content">
-                                <div class="metric-row">
-                                    <span>Total Reimbursements</span>
-                                    <strong>$84,080</strong>
-                                </div>
-                                <div class="metric-row">
-                                    <span>Total Expense</span>
-                                    <strong>$102,417</strong>
-                                </div>
-                                <div class="metric-row highlight">
-                                    <span>NOI</span>
-                                    <strong>$207,719</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <section id="debt-financing" class="section bg-light reveal">
                 <div class="container">
                     <h2 class="section-title">Debt Financing Options</h2>
@@ -304,43 +248,77 @@
                 </div>
             </section>
 
-            <section class="section reveal">
+            <section class="section reveal" style="padding-top: 5rem; padding-bottom: 3rem;">
                 <div class="container">
-                    <h2 class="section-title">Investment Highlights</h2>
-                    <div class="highlights-grid">
-                        <div class="highlight-feature reveal-scale">
-                            <div class="feature-icon">
-                                <i class="fas fa-shield-alt"></i>
+                    <div class="layout-grid">
+                        <div class="grid-item">
+                            <h2 class="section-title" style="margin-bottom: 2.5rem; text-align: left;">Financial Performance</h2>
+                            <div class="financial-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+                                <div class="financial-card reveal-fade">
+                                    <div class="financial-header">
+                                        <i class="fas fa-chart-pie"></i>
+                                        <h3>Income Breakdown</h3>
+                                    </div>
+                                    <div class="financial-content">
+                                        <div class="metric-row"><span>Base Rental Income</span><strong>$206,220</strong></div>
+                                        <div class="metric-row"><span>Cell Tower Income</span><strong>$16,104</strong></div>
+                                        <div class="metric-row highlight"><span>Total Annual Income</span><strong>$222,324</strong></div>
+                                    </div>
+                                </div>
+                                <div class="financial-card reveal-fade" style="animation-delay: 0.1s">
+                                    <div class="financial-header">
+                                        <i class="fas fa-percentage"></i>
+                                        <h3>Returns Analysis</h3>
+                                    </div>
+                                    <div class="financial-content">
+                                        <div class="metric-row"><span>Cap Rate</span><strong>6.50%</strong></div>
+                                        <div class="metric-row"><span>Cash-on-Cash Return</span><strong>7.2%</strong></div>
+                                        <div class="metric-row highlight"><span>5-Year IRR Projection</span><strong>8.5%</strong></div>
+                                    </div>
+                                </div>
+                                <div class="financial-card reveal-fade" style="animation-delay: 0.2s">
+                                    <div class="financial-header">
+                                        <i class="fas fa-coins"></i>
+                                        <h3>Operating Expenses</h3>
+                                    </div>
+                                    <div class="financial-content">
+                                        <div class="metric-row"><span>Total Reimbursements</span><strong>$84,080</strong></div>
+                                        <div class="metric-row"><span>Total Expense</span><strong>$102,417</strong></div>
+                                        <div class="metric-row highlight"><span>NOI</span><strong>$207,719</strong></div>
+                                    </div>
+                                </div>
                             </div>
-                            <h3>Stable Income Stream</h3>
-                            <p>100% occupied with established national and regional tenants providing consistent cash flow.</p>
                         </div>
-                        <div class="highlight-feature reveal-scale" style="animation-delay: 0.1s">
-                            <div class="feature-icon">
-                                <i class="fas fa-chart-line"></i>
+                        <div class="grid-item">
+                            <h2 class="section-title" style="margin-bottom: 2.5rem; text-align: left;">Investment Highlights</h2>
+                            <div class="highlights-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+                                <div class="highlight-feature reveal-scale">
+                                    <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+                                    <h3>Stable Income Stream</h3>
+                                    <p>100% occupied with established national and regional tenants providing consistent cash flow.</p>
+                                </div>
+                                <div class="highlight-feature reveal-scale" style="animation-delay: 0.1s">
+                                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                                    <h3>Built-in Rent Growth</h3>
+                                    <p>Annual rent escalations and percentage rent clauses ensure income growth over time.</p>
+                                </div>
+                                <div class="highlight-feature reveal-scale" style="animation-delay: 0.2s">
+                                    <div class="feature-icon"><i class="fas fa-tools"></i></div>
+                                    <h3>Recent Improvements</h3>
+                                    <p>$250,000+ in capital improvements completed, including new roof and HVAC systems.</p>
+                                </div>
+                                <div class="highlight-feature reveal-scale" style="animation-delay: 0.3s">
+                                    <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                    <h3>Prime Location</h3>
+                                    <p>High-traffic retail corridor with excellent visibility and accessibility.</p>
+                                </div>
                             </div>
-                            <h3>Built-in Rent Growth</h3>
-                            <p>Annual rent escalations and percentage rent clauses ensure income growth over time.</p>
-                        </div>
-                        <div class="highlight-feature reveal-scale" style="animation-delay: 0.2s">
-                            <div class="feature-icon">
-                                <i class="fas fa-tools"></i>
-                            </div>
-                            <h3>Recent Improvements</h3>
-                            <p>$250,000+ in capital improvements completed, including new roof and HVAC systems.</p>
-                        </div>
-                        <div class="highlight-feature reveal-scale" style="animation-delay: 0.3s">
-                            <div class="feature-icon">
-                                <i class="fas fa-map-marker-alt"></i>
-                            </div>
-                            <h3>Prime Location</h3>
-                            <p>High-traffic retail corridor with excellent visibility and accessibility.</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="section reveal">
+            <section class="section reveal" style="padding-top: 3rem;">
                 <div class="container">
                     <h2 class="section-title">Market Opportunity</h2>
                     <div class="opportunity-content">
