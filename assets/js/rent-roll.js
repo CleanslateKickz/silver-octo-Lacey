@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <table class="rent-table">
             <thead>
                 <tr>
+                    <th>Logo</th>
                     <th>Tenant</th>
                     <th>Start</th>
                     <th>Expiration</th>
@@ -110,9 +111,11 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         rentRollData.forEach((tenant, index) => {
+            let logoHtml = tenant.logo ? `<img src="${tenant.logo}" alt="${tenant.tenant} Logo" class="tenant-logo-in-table">` : (tenant.image ? `<img src="${tenant.image}" alt="${tenant.tenant}" class="tenant-logo-in-table">` : '');
             const hasOptions = tenant.options && tenant.options.toLowerCase() !== 'none';
             tableHTML += `
                 <tr class="tenant-row ${hasOptions ? 'has-options' : ''}" ${hasOptions ? `data-toggle-id="options-${index}"` : ''}>
+                    <td>${logoHtml}</td>
                     <td><a href="#" class="tenant-name-link" data-index="${index}">${tenant.tenant}</a></td>
                     <td>${tenant.leaseFrom}</td>
                     <td>${tenant.leaseTo}</td>
@@ -123,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (hasOptions) {
                 tableHTML += `
                 <tr class="options-row" id="options-${index}">
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="options-content">
                             <strong>Options:</strong> ${tenant.options}
                         </div>
