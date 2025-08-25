@@ -188,14 +188,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const toggleRows = tableContainer.querySelectorAll('.tenant-row.has-options');
         toggleRows.forEach(row => {
             row.addEventListener('click', function(e) {
-                // Prevent modal from opening if the click is not on the tenant name link
+                // Prevent sidebar from opening if the click is not on the tenant name link
                 if (e.target.classList.contains('tenant-name-link')) {
                     return;
                 }
-                const optionsRow = tableContainer.querySelector(`#${this.dataset.toggleId}`);
-                if (optionsRow) {
-                    this.classList.toggle('active');
-                    optionsRow.classList.toggle('active');
+                const optionsRowId = this.dataset.toggleId;
+                if (optionsRowId) {
+                    const optionsRow = document.getElementById(optionsRowId);
+                    if (optionsRow) {
+                        this.classList.toggle('active');
+                        optionsRow.classList.toggle('active');
+                    }
                 }
             });
         });
