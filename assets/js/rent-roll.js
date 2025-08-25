@@ -94,10 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     const tableContainer = document.querySelector('.table-container');
-    const modal = document.getElementById('tenant-modal');
-    const modalTenantName = document.getElementById('modal-tenant-name');
-    const modalTenantBody = document.getElementById('modal-tenant-body');
-    const modalClose = document.getElementById('modal-close');
+    const sidebar = document.getElementById('tenant-sidebar');
+    const sidebarTenantName = document.getElementById('sidebar-tenant-name');
+    const sidebarTenantBody = document.getElementById('sidebar-tenant-body');
+    const sidebarClose = document.getElementById('sidebar-close');
 
     if (tableContainer) {
         let tableHTML = `
@@ -151,11 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tenantIndex = this.dataset.index;
                 const tenant = rentRollData[tenantIndex];
 
-                modalTenantName.textContent = tenant.tenant;
+                sidebarTenantName.textContent = tenant.tenant;
 
                 let mediaHtml = '';
                 if (tenant.video) {
-                    mediaHtml = `<div class="tenant-media"><video src="${tenant.video}" controls muted loop playsinline></video></div>`;
+                    mediaHtml = `<div class="tenant-media"><video src="${tenant.video}" controls muted loop playsinline autoplay></video></div>`;
                 } else if (tenant.image && !tenant.logo) {
                     mediaHtml = `<div class="tenant-media"><img src="${tenant.image}" alt="${tenant.tenant}"></div>`;
                 } else if (tenant.logo) {
@@ -164,27 +164,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 let websiteHtml = tenant.website ? `<a href="${tenant.website}" target="_blank" class="tenant-website-link">Visit Website <i class="fas fa-external-link-alt"></i></a>` : '';
 
-                let modalBodyContent = `
+                let sidebarBodyContent = `
                     ${mediaHtml}
                     <p class="tenant-description">${tenant.description}</p>
                     ${websiteHtml}
                 `;
 
-                modalTenantBody.innerHTML = modalBodyContent;
-                modal.classList.add('visible');
+                sidebarTenantBody.innerHTML = sidebarBodyContent;
+                sidebar.classList.add('visible');
             });
         });
 
-        if (modalClose) {
-            modalClose.addEventListener('click', () => {
-                modal.classList.remove('visible');
+        if (sidebarClose) {
+            sidebarClose.addEventListener('click', () => {
+                sidebar.classList.remove('visible');
             });
         }
 
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('visible');
+        if (sidebar) {
+            sidebar.addEventListener('click', (e) => {
+                if (e.target === sidebar) {
+                    sidebar.classList.remove('visible');
                 }
             });
         }
