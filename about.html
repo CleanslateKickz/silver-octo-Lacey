@@ -17,7 +17,6 @@
                 grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
                 gap: 2rem;
                 margin-top: 3rem;
-                align-items: start;
             }
 
             .debt-card {
@@ -184,11 +183,15 @@
 
             /* Lender Contact Card Styles */
             .lender-contact-card {
-                background: var(--white);
+                grid-column: 1 / -1;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 1rem 2rem;
             }
             .lender-contact-card .footer-card-header {
                 border-bottom: none;
-                margin-bottom: 1rem;
+                margin-bottom: 0;
             }
             .lender-contact-card .footer-card-name {
                 color: var(--primary-navy);
@@ -198,12 +201,13 @@
                 color: var(--medium-gray);
             }
             .lender-contact-card .footer-card-info {
-                border-top: 1px solid var(--border-color);
-                padding-top: 1rem;
+                border-top: none;
+                padding-top: 0;
             }
             .lender-contact-card .footer-card-info a {
                 color: var(--dark-text);
                 font-weight: 500;
+                font-size: 1.1rem;
             }
             .lender-contact-card .footer-card-info a:hover {
                 color: var(--accent-navy);
