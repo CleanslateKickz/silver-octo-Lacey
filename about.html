@@ -180,6 +180,37 @@
                     grid-template-columns: 1fr;
                 }
             }
+
+            /* Lender Contact Card Styles */
+            .lender-contact-card {
+                background: var(--white);
+            }
+            .lender-contact-card .footer-card-header {
+                border-bottom: none;
+                margin-bottom: 1rem;
+            }
+            .lender-contact-card .footer-card-name {
+                color: var(--primary-navy);
+                font-size: 1.25rem;
+            }
+            .lender-contact-card .footer-card-role {
+                color: var(--medium-gray);
+            }
+            .lender-contact-card .footer-card-info {
+                border-top: 1px solid var(--border-color);
+                padding-top: 1rem;
+            }
+            .lender-contact-card .footer-card-info a {
+                color: var(--dark-text);
+                font-weight: 500;
+            }
+            .lender-contact-card .footer-card-info a:hover {
+                color: var(--accent-navy);
+            }
+            .lender-contact-card .footer-avatar {
+                background: var(--accent-navy);
+                color: var(--white);
+            }
         </style>
     </head>
     <body>
@@ -242,6 +273,18 @@
                                 <div class="debt-metric"><span>Amortization</span><strong>30 Years</strong></div>
                                 <div class="debt-metric"><span>Recourse</span><strong>Partial to None</strong></div>
                                 <div class="debt-metric"><span>Prepayment</span><strong>3-2-2-1-1</strong></div>
+                            </div>
+                        </div>
+                        <div class="debt-card lender-contact-card">
+                            <div class="footer-card-header">
+                                <div class="footer-avatar">ED</div>
+                                <div>
+                                    <h4 class="footer-card-name">Erik Dickerson</h4>
+                                    <p class="footer-card-role">Associate Director of Capital Markets</p>
+                                </div>
+                            </div>
+                            <div class="footer-card-info">
+                                <a href="tel:+14804365630"><i class="fas fa-phone-alt"></i> (480) 436-5630</a>
                             </div>
                         </div>
                     </div>
