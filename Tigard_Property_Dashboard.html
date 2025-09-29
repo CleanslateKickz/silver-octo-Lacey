@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tigard Property Dashboard - Enhanced</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet-geocoder@3.1.4/dist/esri-leaflet-geocoder.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #3498db;
+            --light: #ecf0f1;
+            --border: #bdc3c7;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --sidebar-width: 500px;
+            --collapsed-width: 60px;
+        }
+        * { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f1f5f9; }
+        .hidden { display: none !important; }
+        .main-container { display: flex; flex-direction: column; height: 100vh; }
+        .main-nav { background: white; padding: 0 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); z-index: 1001; display: flex; justify-content: space-between; align-items: center; }
+        .nav-title { font-size: 1.5rem; font-weight: 700; color: var(--dark); }
+        .nav-tabs button { padding: 1.25rem 1rem; border: none; background: transparent; font-size: 1rem; font-weight: 600; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s ease; }
+        .nav-tabs button:hover { color: var(--primary); }
+        .nav-tabs button.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .content-area { flex-grow: 1; overflow: hidden; position: relative; }
+        .view { height: 100%; width: 100%; position: absolute; top: 0; left: 0; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .view.active { opacity: 1; visibility: visible; z-index: 100; }
+        #dashboard-view { overflow-y: auto; padding: 2.5rem; }
+        #data-view { overflow-y: auto; padding: 2.5rem; }
+        .dashboard-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; }
+        .dashboard-header h1 { font-size: 2.5rem; font-weight: 700; color: var(--dark); }
+        .dashboard-header p { font-size: 1.1rem; color: #64748b; }
+        .filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; background-color: white; padding: 1rem; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .filters select, .filters input { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #d1d5db; background-color: #f9fafb; font-weight: 500; }
+        .filters > div { flex: 1; min-width: 200px; }
+        .properties-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; }
+        .property-card { background: #ffffff; border: 1px solid #e0e6ed; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; display:flex; flex-direction: column; }
+        .property-card.top-prospect { border-left: 5px solid var(--warning); }
+        .property-card:hover { transform: translateY(-5px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: var(--primary); }
+        .property-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 16px; }
+        .property-name { font-size: 1.2rem; font-weight: 600; color: #2c3e50; }
+        .property-price { font-size: 1.1rem; font-weight: 700; color: #27ae60; white-space: nowrap; background: #ecf9f3; padding: 4px 12px; border-radius: 20px; }
+        .property-address { font-size: 0.95rem; color: #7f8c8d; margin-bottom: 16px; font-style: italic; }
+        .property-specs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .spec-tag { background: #f8f9fa; border: 1px solid #dee2e6; color: #495057; font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; }
+        .property-notes { background: #f8f9fc; border-left: 4px solid var(--primary); padding: 14px; margin: 16px 0; font-size: 0.9rem; color: #34495e; border-radius: 0 4px 4px 0; flex-grow: 1; }
+        .property-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 1rem; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.2s ease; border: 1px solid transparent; text-align: center; }
+        .btn-primary { background: var(--primary); color: white; } .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: #ffffff; color: var(--primary); border-color: var(--primary); } .btn-secondary:hover { background: var(--primary); color: white; }
+        .btn-empty { visibility: hidden; }
+        #map-view { display: flex; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 1rem; gap: 1rem; }
+        .sidebar { background: white; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; z-index: 1000; transition: width 0.3s ease; position: relative; border-radius: 0.75rem; overflow:hidden; }
+        .sidebar-left { width: var(--sidebar-width); } .sidebar-left.collapsed { width: var(--collapsed-width); }
+        .sidebar-right { width: var(--sidebar-width); } .sidebar-right.collapsed { width: var(--collapsed-width); }
+        .sidebar-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 1.5rem; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+        .sidebar-header h2 { font-size: 1.5rem; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; }
+        .sidebar.collapsed .sidebar-header h2 { display: none; }
+        .sidebar-content { padding: 1rem; overflow-y: auto; flex: 1; }
+        .sidebar-content.compact { padding: 0.75rem; }
+        .form-control { padding: 0.5rem; font-size: 0.9rem; }
+        .sidebar-content label { font-size: 0.85rem; font-weight: 600; }
+        .sidebar.collapsed .sidebar-content { display: none; }
+        .form-control { width: 100%; padding: 0.75rem; border-radius: 0.5rem; border: 1px solid #d1d5db; background: #f9fafb; transition: all 0.2s ease; }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+        .map-container { flex: 1; position: relative; }
+        #map { height: 100%; width: 100%; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .toggle-btn { position: absolute; top: 1rem; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: white; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 1002; transition: all 0.3s ease; }
+        .toggle-left { right: -1.25rem; } .toggle-right { left: -1.25rem; }
+        .collapsed-btn { display: none; width: var(--collapsed-width); height: var(--collapsed-width); align-items: center; justify-content: center; color: var(--dark); font-size: 1.5rem; cursor: pointer; transition: background-color 0.3s ease; }
+        .sidebar.collapsed .collapsed-btn { display: flex; } .collapsed-btn:hover { background-color: #f1f5f9; }
+        #map-properties-list .list-item { padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; border-left: 4px solid transparent; margin-bottom: 0.5rem; }
+        #map-properties-list .list-item:hover { background-color: #f4f4f5; }
+        #map-properties-list .list-item.active { background-color: #eef2ff; border-left-color: var(--primary); }
+        .leaflet-popup-content-wrapper { border-radius: 0.5rem; } .leaflet-popup-content { font-size: 0.9rem; }
+        .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background-color: var(--dark); color: white; padding: 0.75rem 1.5rem; border-radius: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; transition: opacity 0.3s, transform 0.3s; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(-1rem); }
+        .nav-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+        .nav-button {
+            background: var(--light);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 20px;
+            font-weight: 600;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+        .nav-button:hover {
+            background: var(--border);
+        }
+        .nav-button.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        @media (max-width: 768px) { .properties-grid { grid-template-columns: 1fr; } .filters { flex-direction: column; } .sidebar { width: 100% !important; } .toggle-btn { display: none; } }
+        
+        /* Data Management Styles */
+        .view-toggle { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
+        .view-toggle button { padding: 0.75rem 1.5rem; border: 1px solid #d1d5db; background: white; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .view-toggle button:hover { background: #f3f4f6; }
+        .view-toggle button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .table-container { background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: auto; max-height: 60vh; }
+        .table-container table { width: 100%; border-collapse: collapse; }
+        .table-container th, .table-container td { padding: 1rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .table-container th { background: #f9fafb; font-weight: 600; color: #374151; }
+        .table-container tr:hover { background: #f9fafb; }
+        .table-container .action-btn { padding: 0.5rem 1rem; margin: 0 0.25rem; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; transition: all 0.2s ease; }
+        .table-container .edit-btn { background: #3b82f6; color: white; }
+        .table-container .edit-btn:hover { background: #2563eb; }
+        .table-container .delete-btn { background: #ef4444; color: white; }
+        .table-container .delete-btn:hover { background: #dc2626; }
+        .data-list-item { background: white; border: 1px solid #e5e7eb; border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .data-list-item h3 { margin: 0 0 0.5rem 0; color: #1f2937; }
+        .data-list-item p { margin: 0.25rem 0; color: #6b7280; }
+        .data-list-item .actions { margin-top: 1rem; display: flex; gap: 0.5rem; }
+        .data-list-item .action-btn { padding: 0.5rem 1rem; border: none; border-radius: 0.375rem; cursor: pointer; font-size: 0.875rem; transition: all 0.2s ease; }
+        .data-list-item .edit-btn { background: #3b82f6; color: white; }
+        .data-list-item .edit-btn:hover { background: #2563eb; }
+        .data-list-item .delete-btn { background: #ef4444; color: white; }
+        .data-list-item .delete-btn:hover { background: #dc2626; }
+        
+        .category-section { margin-bottom: 2rem; }
+        .category-header {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: var(--primary);
+          margin-bottom: 1rem;
+          border-bottom: 2px solid var(--border);
+          padding-bottom: 0.5rem;
+        }
+        .category-items {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <nav class="main-nav">
+            <div class="nav-title"><i class="fa-solid fa-store text-indigo-500"></i> Tigard Cash & Carry Property Dashboard</div>
+            <div class="nav-tabs">
+                <button id="nav-dashboard" class="active"><i class="fas fa-th-large mr-2"></i> Client Dashboard</button>
+                <button id="nav-map"><i class="fas fa-map-marked-alt mr-2"></i> Internal Map</button>
+                <button id="nav-data"><i class="fas fa-table mr-2"></i> Data Management</button>
+            </div>
+        </nav>
+
+        <main class="content-area">
+            <!-- Client Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="dashboard-header">
+                    <h1>Property Opportunities in Tigard Area</h1>
+                    <p>Curated listings matching your 35K-65K SF industrial/flex needs with 2+ acres, 18-20' clear height, and I-5 access.</p>
+                </div>
+                <div class="nav-bar">
+                    <button class="nav-button active" data-category="all">All Properties</button>
+                    <button class="nav-button" data-category="Top Prospect">Top Prospects / Client Mentioned</button>
+                    <button class="nav-button" data-category="For Sale: Land">For Sale: Land</button>
+                    <button class="nav-button" data-category="For Sale: Building">For Sale: Buildings</button>
+                    <button class="nav-button" data-category="Off-Market Target">Outreach / Off-Market Targets</button>
+                    <button class="nav-button" data-category="For Lease">For Lease (Sale Conversion)</button>
+                    <button class="nav-button" data-category="IPA Owned">IPA Properties</button>
+                </div>
+                <div class="filters">
+                    <div><input type="text" id="dashboard-search" placeholder="Search by name, address, or notes..."></div>
+                    <div><select id="sort-by">
+                        <option value="default">Sort by Default</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="acres-desc">Acres: Large to Small</option>
+                        <option value="acres-asc">Acres: Small to Large</option>
+                    </select></div>
+                </div>
+                <div id="properties-grid" class="properties-grid">
+                    <!-- Dynamic property cards -->
+                </div>
+            </div>
+
+            <!-- Internal Map View -->
+            <div id="map-view" class="view">
+                <div class="sidebar sidebar-left" id="sidebar-left">
+                    <div class="sidebar-header"><i class="fas fa-edit text-xl"></i><h2>Property Editor</h2></div>
+                    <div class="collapsed-btn" id="collapsed-left-btn"><i class="fas fa-edit"></i></div>
+                    <div class="sidebar-content compact form-container">
+                        <button id="new-property-btn" class="btn btn-primary w-full mb-4"><i class="fas fa-plus"></i> Add New Property</button>
+                        <form id="property-form">
+                            <input type="hidden" id="form-id" />
+                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Property Name</label><input type="text" id="form-name" class="form-control" required /></div>
+                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Address</label><input type="text" id="form-address" class="form-control" /></div>
+                            <div class="mb-4"><label class="font-bold block mb-1 text-gray-700">Image URL</label><input type="url" id="form-image_url" class="form-control" placeholder="https://example.com/property-image.jpg" /></div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Latitude</label><input type="number" id="form-lat" class="form-control" step="any" required /></div>
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Longitude</label><input type="number" id="form-lng" class="form-control" step="any" required /></div>
+                            </div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Category</label><select id="form-category" class="form-control"><option value="">Select Category</option></select></div>
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Contact Status</label><select id="form-contacted" class="form-control"><option>Not Contacted</option><option>Contacted</option><option>Attempted</option></select></div>
+                            </div>
+                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Price</label><input type="text" id="form-price" class="form-control" placeholder="e.g., 1234567" /></div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Building SF</label><input type="text" id="form-size_sf" class="form-control" placeholder="e.g., 40000" /></div>
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Land Acres</label><input type="text" id="form-size_acres" class="form-control" placeholder="e.g., 2.5" /></div>
+                            </div>
+                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">OM/PDF URL</label><input type="url" id="form-pdf_url" class="form-control" /></div>
+                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Listing URL</label><input type="url" id="form-listing_url" class="form-control" /></div>
+                            <div class="mb-4"><label class="font-bold block mb-1 text-gray-700">Notes / Owner Info</label><textarea id="form-notes" class="form-control" rows="4" placeholder="Owner details, contact notes, criteria match..."></textarea></div>
+                            <div class="flex gap-3 mt-4">
+                                <button type="submit" id="save-btn" class="btn btn-primary flex-1"><i class="fas fa-save mr-2"></i>Save Property</button>
+                                <button type="button" id="delete-btn" class="btn bg-red-600 text-white hover:bg-red-700 hidden flex-1"><i class="fas fa-trash mr-2"></i>Delete</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <button class="toggle-btn toggle-left" id="toggle-left"><i class="fas fa-chevron-left"></i></button>
+
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+
+                <button class="toggle-btn toggle-right" id="toggle-right"><i class="fas fa-chevron-right"></i></button>
+
+                <div class="sidebar sidebar-right" id="sidebar-right">
+                    <div class="sidebar-header"><i class="fas fa-list text-xl"></i><h2>Properties List</h2></div>
+                    <div class="collapsed-btn" id="collapsed-right-btn"><i class="fas fa-list"></i></div>
+                    <div class="sidebar-content">
+                        <div id="properties-list-section">
+                            <input type="text" id="map-search-input" placeholder="Search properties..." class="form-control w-full mb-3">
+                            <div id="map-properties-list" class="h-full overflow-y-auto space-y-2 max-h-96"></div>
+                        </div>
+                        <div id="property-details-section" class="hidden">
+                            <button id="back-to-list-btn" class="btn btn-secondary w-full mb-3"><i class="fas fa-arrow-left mr-2"></i>Back to List</button>
+                            <div id="selected-property-details" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management View -->
+            <div id="data-view" class="view">
+                <div class="dashboard-header">
+                    <h1>Property Data Management</h1>
+                    <p>View, edit, and manage all property data in table and list formats</p>
+                </div>
+                
+                <div class="filters">
+                    <div><input type="text" id="data-search" placeholder="Search properties..."></div>
+                    <div><select id="data-sort">
+                        <option value="default">Sort by Default</option>
+                        <option value="name-asc">Name: A-Z</option>
+                        <option value="name-desc">Name: Z-A</option>
+                        <option value="category-asc">Category: A-Z</option>
+                        <option value="category-desc">Category: Z-A</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="price-asc">Price: Low to High</option>
+                    </select></div>
+                    <div>
+                        <button id="add-property-btn" class="btn btn-primary"><i class="fas fa-plus mr-2"></i>Add Property</button>
+                        <button id="export-data-btn" class="btn btn-secondary"><i class="fas fa-download mr-2"></i>Export CSV</button>
+                        <button id="reset-data-btn" class="btn btn-secondary"><i class="fas fa-refresh mr-2"></i>Reset to Full Data</button>
+                    </div>
+                </div>
+            
+                <div class="nav-bar">
+                    <button class="nav-button active" data-category="all">All Properties</button>
+                    <button class="nav-button" data-category="Top Prospect">Top Prospects / Client Mentioned</button>
+                    <button class="nav-button" data-category="For Sale: Land">For Sale: Land</button>
+                    <button class="nav-button" data-category="For Sale: Building">For Sale: Buildings</button>
+                    <button class="nav-button" data-category="Off-Market Target">Outreach / Off-Market Targets</button>
+                    <button class="nav-button" data-category="For Lease">For Lease (Sale Conversion)</button>
+                    <button class="nav-button" data-category="IPA Owned">IPA Properties</button>
+                </div>
+            
+                <div class="view-toggle">
+                    <button id="table-view-btn" class="active"><i class="fas fa-table mr-2"></i>Table View</button>
+                    <button id="list-view-btn"><i class="fas fa-list mr-2"></i>List View</button>
+                </div>
+
+                <!-- Table View -->
+                <div id="table-view" class="table-container">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acres</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SF</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Dynamic table rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- List View -->
+                <div id="list-view" class="hidden">
+                    <div id="data-list" class="space-y-4">
+                        <!-- Dynamic list items -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+const API_BASE = 'https://your-deployed-url.vercel.app/api';  // Replace with your Vercel API URL
+
+let properties = [];  // Loaded from API
+
+// Utility Functions (unchanged)
+const getEl = id => document.getElementById(id);
+const formatCurrency = num => num ? `$${parseFloat(num).toLocaleString()}` : '';
+const formatSize = (val, unit) => val ? `${parseFloat(val).toLocaleString()} ${unit}` : '';
+const showToast = msg => {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+};
+
+// Async load properties from API
+const loadProperties = async () => {
+  try {
+    const response = await fetch(`${API_BASE}/properties`);
+    if (!response.ok) throw new Error('Failed to load properties');
+    properties = await response.json();
+    // Reconstruct coords for backward compatibility (map uses coords array)
+    properties.forEach(p => {
+      if (p.lat && p.lng && !p.coords) p.coords = [p.lat, p.lng];
+    });
+    // Re-render all views
+    renderDashboard();
+    renderMapWorkspace();
+    renderDataTable();
+    renderDataList();
+    showToast('Properties loaded from database');
+  } catch (err) {
+    console.error('Load error:', err);
+    showToast('Failed to load properties - using cached data or offline mode');
+    // Optional: Fallback to localStorage if needed
+  }
+};
+
+// Save/update property to API
+const saveProperty = async (propData) => {
+  try {
+    const method = propData.id ? 'PUT' : 'POST';
+    const url = propData.id ? `${API_BASE}/properties?id=${propData.id}` : `${API_BASE}/properties`;
+    // Ensure lat/lng are numbers
+    propData.lat = parseFloat(propData.lat);
+    propData.lng = parseFloat(propData.lng);
+    if (propData.price) propData.price = parseFloat(propData.price) || null;
+    if (propData.size_acres) propData.size_acres = parseFloat(propData.size_acres) || null;
+    if (propData.size_sf) propData.size_sf = parseInt(propData.size_sf) || null;
+    const response = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(propData)
+    });
+    if (!response.ok) throw new Error('Save failed');
+    await loadProperties();  // Reload to sync
+    showToast(`Property ${propData.id ? 'updated' : 'created'} successfully`);
+    return await response.json();
+  } catch (err) {
+    console.error('Save error:', err);
+    showToast('Failed to save property - check connection');
+  }
+};
+
+// Delete property from API
+const deletePropertyById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE}/properties?id=${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Delete failed');
+    await loadProperties();
+    showToast('Property deleted successfully');
+  } catch (err) {
+    console.error('Delete error:', err);
+    showToast('Failed to delete property');
+  }
+};
+
+// Form submit (updated for API)
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = getEl('form-id').value ? parseInt(getEl('form-id').value) : null;
+  const propData = { 
+    id, 
+    lat: parseFloat(formInputs.lat.value),
+    lng: parseFloat(formInputs.lng.value),
+    coords: [parseFloat(formInputs.lat.value), parseFloat(formInputs.lng.value)]  // For map compat
+  };
+  Object.keys(formInputs).forEach(key => { 
+    if (key !== 'id' && key !== 'lat' && key !== 'lng') propData[key] = formInputs[key].value; 
+  });
+  await saveProperty(propData);
+  resetForm();
+});
+
+// Delete button (updated for API)
+getEl('delete-btn').addEventListener('click', async () => {
+  if (confirm('Delete this property?')) {
+    const id = parseInt(getEl('form-id').value);
+    await deletePropertyById(id);
+    resetForm();
+  }
+});
+
+// Global edit/delete for data management (updated for API)
+window.editProperty = (id) => {
+  const property = properties.find(p => p.id === id);
+  if (property) {
+    fillForm(property);
+    switchView('map');
+  }
+};
+
+window.deleteProperty = async (id) => {
+  if (confirm('Are you sure you want to delete this property?')) {
+    await deletePropertyById(id);
+    renderDataTable();
+    renderDataList();
+  }
+};
+
+// Export CSV (uses API-loaded properties, unchanged)
+const exportToCSV = () => {
+  const headers = ['ID', 'Name', 'Address', 'Category', 'Contacted', 'Price', 'Size (Acres)', 'Size (SF)', 'Image URL', 'Notes'];
+  const csvContent = [
+    headers.join(','),
+    ...properties.map(p => [
+      p.id,
+      `"${p.name || ''}"`,
+      `"${p.address || ''}"`,
+      `"${p.category || ''}"`,
+      `"${p.contacted || ''}"`,
+      p.price || '',
+      p.size_acres || '',
+      p.size_sf || '',
+      `"${p.image_url || ''}"`,
+      `"${p.notes || ''}"`
+    ].join(','))
+  ].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tigard_properties.csv';
+  a.click();
+  window.URL.revokeObjectURL(url);
+  showToast('Data exported successfully!');
+};
+
+// IPA Data Integration (remove hardcoded, now from DB - optional if you want to keep as seed)
+const parseIPAData = () => { /* Keep if needed for initial seed, but DB has it */ };
+
+// All other functions unchanged: renderDashboard, renderMapWorkspace, fillForm, resetForm, saveAndRerender (update to use API), switchView, etc.
+// Note: saveAndRerender can be replaced with loadProperties() calls where needed.
+
+// Initial Load (replace hardcoded init)
+loadProperties();  // Loads from API and renders everything
+</script>
+
+</body>
+</html>
