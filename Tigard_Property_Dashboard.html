@@ -331,7 +331,8 @@
 
     <script>
         const API_BASE = 'https://tigard-api.vercel.app/api';
-        let properties = [];
+        const STORAGE_KEY = 'tigard_properties_enhanced';
+        let properties = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
 
         // Utility Functions
@@ -359,16 +360,33 @@
             properties.forEach(p => {
               if (p.lat && p.lng && !p.coords) p.coords = [p.lat, p.lng];
             });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(properties)); // Cache to localStorage
             // Re-render all views
             renderDashboard();
             renderMapWorkspace();
             renderDataTable();
             renderDataList();
+            initCategories();
             showToast('Properties loaded from database');
           } catch (err) {
             console.error('Load error:', err);
-            showToast('Failed to load properties - using cached data or offline mode');
-            // Optional: Fallback to localStorage if needed
+            // Fallback to localStorage
+            properties = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            if (properties.length === 0) {
+              // Initialize with sample data if empty
+              properties = [
+                {"id":1,"name":"Sample Property 1","address":"123 Main St, Tigard, OR","coords":[45.430,-122.770],"price":500000,"size_acres":2.5,"size_sf":40000,"contacted":"Not Contacted","notes":"Sample notes","category":"Top Prospect"},
+                {"id":2,"name":"Sample Property 2","address":"456 Oak Ave, Tigard, OR","coords":[45.435,-122.775],"price":750000,"size_acres":3.0,"size_sf":50000,"contacted":"Contacted","notes":"Another sample","category":"For Sale: Land"}
+              ];
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
+            }
+            // Re-render all views
+            renderDashboard();
+            renderMapWorkspace();
+            renderDataTable();
+            renderDataList();
+            initCategories();
+            showToast('Using local data (API unavailable)');
           }
         };
 
@@ -391,11 +409,26 @@
             });
             if (!response.ok) throw new Error('Save failed');
             await loadProperties();  // Reload to sync
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(properties)); // Update cache
             showToast(`Property ${propData.id ? 'updated' : 'created'} successfully`);
             return await response.json();
           } catch (err) {
             console.error('Save error:', err);
-            showToast('Failed to save property - check connection');
+            // Fallback: save to localStorage
+            const index = properties.findIndex(p => p.id === propData.id);
+            if (index > -1) {
+              properties[index] = propData;
+            } else {
+              propData.id = Date.now(); // Generate ID if new
+              properties.unshift(propData);
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
+            renderDashboard();
+            renderMapWorkspace();
+            renderDataTable();
+            renderDataList();
+            initCategories();
+            showToast(`Property ${propData.id ? 'updated' : 'created'} locally (API unavailable)`);
           }
         };
 
@@ -408,7 +441,15 @@
             showToast('Property deleted successfully');
           } catch (err) {
             console.error('Delete error:', err);
-            showToast('Failed to delete property');
+            // Fallback: delete from localStorage
+            properties = properties.filter(p => p.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
+            renderDashboard();
+            renderMapWorkspace();
+            renderDataTable();
+            renderDataList();
+            initCategories();
+            showToast('Property deleted locally (API unavailable)');
           }
         };
 
@@ -645,11 +686,11 @@
         mapSearchInput.addEventListener('input', renderMapWorkspace);
         map.on('click', e => { if (!getEl('form-id').value) { formInputs.lat.value = e.latlng.lat.toFixed(5); formInputs.lng.value = e.latlng.lng.toFixed(5); } });
 
-        // Initialize Categories
-        const categories = [...new Set(properties.map(p => p.category).filter(Boolean))].sort();
-        const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
-        // Note: filterCategoryEl is not defined in this version, so we skip it
-        formInputs.category.innerHTML = '<option value="">Select Category</option>' + catOptions;
+        const initCategories = () => {
+          const categories = [...new Set(properties.map(p => p.category).filter(Boolean))].sort();
+          const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+          formInputs.category.innerHTML = '<option value="">Select Category</option>' + catOptions;
+        };
 
         // Data Management View
         const dataView = getEl('data-view');
