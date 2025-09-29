@@ -242,13 +242,13 @@
                     <div class="sidebar-header"><i class="fas fa-list text-xl"></i><h2>Properties List</h2></div>
                     <div class="collapsed-btn" id="collapsed-right-btn"><i class="fas fa-list"></i></div>
                     <div class="sidebar-content">
-                        <div id="properties-list-section">
+                        <div id="properties-list-section" class="flex flex-col h-full">
                             <input type="text" id="map-search-input" placeholder="Search properties..." class="form-control w-full mb-3">
-                            <div id="map-properties-list" class="h-full overflow-y-auto space-y-2 max-h-96"></div>
+                            <div id="map-properties-list" class="flex-1 overflow-y-auto space-y-2"></div>
                         </div>
-                        <div id="property-details-section" class="hidden">
+                        <div id="property-details-section" class="hidden flex flex-col h-full">
                             <button id="back-to-list-btn" class="btn btn-secondary w-full mb-3"><i class="fas fa-arrow-left mr-2"></i>Back to List</button>
-                            <div id="selected-property-details" class="space-y-3"></div>
+                            <div id="selected-property-details" class="flex-1 overflow-y-auto space-y-3"></div>
                         </div>
                     </div>
                 </div>
