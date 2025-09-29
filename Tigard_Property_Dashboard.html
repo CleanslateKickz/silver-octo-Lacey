@@ -330,168 +330,557 @@
     </div>
 
     <script>
-const API_BASE = 'https://tigard-api.vercel.app/api';  // Replace with your Vercel API URL
+        const API_BASE = 'https://tigard-api.vercel.app/api';
+        let properties = [];
 
-let properties = [];  // Loaded from API
 
-// Utility Functions (unchanged)
-const getEl = id => document.getElementById(id);
-const formatCurrency = num => num ? `$${parseFloat(num).toLocaleString()}` : '';
-const formatSize = (val, unit) => val ? `${parseFloat(val).toLocaleString()} ${unit}` : '';
-const showToast = msg => {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => toast.remove(), 300);
-    }, 2500);
-};
+        // Utility Functions
+        const getEl = id => document.getElementById(id);
+        const formatCurrency = num => num ? `$${parseFloat(num).toLocaleString()}` : '';
+        const formatSize = (val, unit) => val ? `${parseFloat(val).toLocaleString()} ${unit}` : '';
+        const showToast = msg => {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        };
 
-// Async load properties from API
-const loadProperties = async () => {
-  try {
-    const response = await fetch(`${API_BASE}/properties`);
-    if (!response.ok) throw new Error('Failed to load properties');
-    properties = await response.json();
-    // Reconstruct coords for backward compatibility (map uses coords array)
-    properties.forEach(p => {
-      if (p.lat && p.lng && !p.coords) p.coords = [p.lat, p.lng];
-    });
-    // Re-render all views
-    renderDashboard();
-    renderMapWorkspace();
-    renderDataTable();
-    renderDataList();
-    showToast('Properties loaded from database');
-  } catch (err) {
-    console.error('Load error:', err);
-    showToast('Failed to load properties - using cached data or offline mode');
-    // Optional: Fallback to localStorage if needed
-  }
-};
+        const loadProperties = async () => {
+          try {
+            const response = await fetch(`${API_BASE}/properties`);
+            if (!response.ok) throw new Error('Failed to load properties');
+            properties = await response.json();
+            // Reconstruct coords for backward compatibility (map uses coords array)
+            properties.forEach(p => {
+              if (p.lat && p.lng && !p.coords) p.coords = [p.lat, p.lng];
+            });
+            // Re-render all views
+            renderDashboard();
+            renderMapWorkspace();
+            renderDataTable();
+            renderDataList();
+            showToast('Properties loaded from database');
+          } catch (err) {
+            console.error('Load error:', err);
+            showToast('Failed to load properties - using cached data or offline mode');
+            // Optional: Fallback to localStorage if needed
+          }
+        };
 
-// Save/update property to API
-const saveProperty = async (propData) => {
-  try {
-    const method = propData.id ? 'PUT' : 'POST';
-    const url = propData.id ? `${API_BASE}/properties?id=${propData.id}` : `${API_BASE}/properties`;
-    // Ensure lat/lng are numbers
-    propData.lat = parseFloat(propData.lat);
-    propData.lng = parseFloat(propData.lng);
-    if (propData.price) propData.price = parseFloat(propData.price) || null;
-    if (propData.size_acres) propData.size_acres = parseFloat(propData.size_acres) || null;
-    if (propData.size_sf) propData.size_sf = parseInt(propData.size_sf) || null;
-    const response = await fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(propData)
-    });
-    if (!response.ok) throw new Error('Save failed');
-    await loadProperties();  // Reload to sync
-    showToast(`Property ${propData.id ? 'updated' : 'created'} successfully`);
-    return await response.json();
-  } catch (err) {
-    console.error('Save error:', err);
-    showToast('Failed to save property - check connection');
-  }
-};
+        // Save/update property to API
+        const saveProperty = async (propData) => {
+          try {
+            const method = propData.id ? 'PUT' : 'POST';
+            const url = propData.id ? `${API_BASE}/properties?id=${propData.id}` : `${API_BASE}/properties`;
+            // Ensure lat/lng are numbers
+            propData.lat = parseFloat(propData.lat);
+            propData.lng = parseFloat(propData.lng);
+            propData.coords = [propData.lat, propData.lng];
+            if (propData.price) propData.price = parseFloat(propData.price) || null;
+            if (propData.size_acres) propData.size_acres = parseFloat(propData.size_acres) || null;
+            if (propData.size_sf) propData.size_sf = parseInt(propData.size_sf) || null;
+            const response = await fetch(url, {
+              method,
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(propData)
+            });
+            if (!response.ok) throw new Error('Save failed');
+            await loadProperties();  // Reload to sync
+            showToast(`Property ${propData.id ? 'updated' : 'created'} successfully`);
+            return await response.json();
+          } catch (err) {
+            console.error('Save error:', err);
+            showToast('Failed to save property - check connection');
+          }
+        };
 
-// Delete property from API
-const deletePropertyById = async (id) => {
-  try {
-    const response = await fetch(`${API_BASE}/properties?id=${id}`, { method: 'DELETE' });
-    if (!response.ok) throw new Error('Delete failed');
-    await loadProperties();
-    showToast('Property deleted successfully');
-  } catch (err) {
-    console.error('Delete error:', err);
-    showToast('Failed to delete property');
-  }
-};
+        // Delete property from API
+        const deletePropertyById = async (id) => {
+          try {
+            const response = await fetch(`${API_BASE}/properties?id=${id}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Delete failed');
+            await loadProperties();
+            showToast('Property deleted successfully');
+          } catch (err) {
+            console.error('Delete error:', err);
+            showToast('Failed to delete property');
+          }
+        };
 
-// Form submit (updated for API)
-form.addEventListener('submit', async e => {
-  e.preventDefault();
-  const id = getEl('form-id').value ? parseInt(getEl('form-id').value) : null;
-  const propData = { 
-    id, 
-    lat: parseFloat(formInputs.lat.value),
-    lng: parseFloat(formInputs.lng.value),
-    coords: [parseFloat(formInputs.lat.value), parseFloat(formInputs.lng.value)]  // For map compat
-  };
-  Object.keys(formInputs).forEach(key => { 
-    if (key !== 'id' && key !== 'lat' && key !== 'lng') propData[key] = formInputs[key].value; 
-  });
-  await saveProperty(propData);
-  resetForm();
-});
+        // View Switching - will be redefined later with Data Management support
 
-// Delete button (updated for API)
-getEl('delete-btn').addEventListener('click', async () => {
-  if (confirm('Delete this property?')) {
-    const id = parseInt(getEl('form-id').value);
-    await deletePropertyById(id);
-    resetForm();
-  }
-});
+        // Dashboard Rendering
+        const propertiesGrid = getEl('properties-grid');
+        const dashboardSearch = getEl('dashboard-search');
+        const sortByEl = getEl('sort-by');
+        const navButtons = document.querySelectorAll('#dashboard-view .nav-bar .nav-button');
+        let currentCategory = 'all';
+        let currentDataCategory = 'all';
 
-// Global edit/delete for data management (updated for API)
-window.editProperty = (id) => {
-  const property = properties.find(p => p.id === id);
-  if (property) {
-    fillForm(property);
-    switchView('map');
-  }
-};
+        // Data Management category navigation
+        const dataNavButtons = document.querySelectorAll('#data-view .nav-bar .nav-button');
+        dataNavButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                dataNavButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentDataCategory = button.dataset.category;
+                renderDataTable();
+                renderDataList();
+            });
+        });
+        
+        // Add event listeners for category navigation buttons
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                navButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+                // Update current category
+                currentCategory = button.dataset.category;
+                // Re-render dashboard
+                renderDashboard();
+            });
+        });
+        
+        const renderDashboard = () => {
+            let filtered = properties;
+            const searchTerm = dashboardSearch.value.toLowerCase();
+            if (searchTerm) filtered = filtered.filter(p => (p.name || '') + (p.address || '') + (p.notes || '').toLowerCase().includes(searchTerm));
+            if (currentCategory !== 'all') filtered = filtered.filter(p => p.category === currentCategory);
+            const sortVal = sortByEl.value;
+            if (sortVal !== 'default') {
+                const [key, dir] = sortVal.split('-');
+                filtered.sort((a, b) => dir === 'asc' ? (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0) : (parseFloat(b[key]) || 0) - (parseFloat(a[key]) || 0));
+            }
+            propertiesGrid.innerHTML = filtered.map(p => `
+                <article class="property-card ${p.category === 'Top Prospect' ? 'top-prospect' : ''}">
+                    <div class="property-header">
+                        <div class="property-name">${p.category === 'Top Prospect' ? '⭐ ' : ''}${p.name}</div>
+                        ${p.price ? `<div class="property-price">${formatCurrency(p.price)}</div>` : ''}
+                    </div>
+                    <div class="property-address">${p.address || 'Coordinates-based location'}</div>
+                    <div class="property-specs">
+                        ${p.size_acres ? `<span class="spec-tag"><i class="fas fa-expand-alt mr-2"></i>${p.size_acres} Acres</span>` : ''}
+                        ${p.size_sf ? `<span class="spec-tag"><i class="far fa-building mr-2"></i>${formatSize(p.size_sf, 'SF')}</span>` : ''}
+                        ${p.category ? `<span class="spec-tag bg-${p.category.includes('Top') ? 'yellow' : 'blue'}-100">${p.category}</span>` : ''}
+                    </div>
+                    ${p.notes ? `<div class="property-notes">${p.notes.replace(/\n/g, '<br>')}</div>` : '<div class="property-notes" style="visibility:hidden;">&nbsp;</div>'}
+                    <div class="property-actions">
+                        ${p.pdf_url ? `<a class="btn btn-primary" href="${p.pdf_url}" target="_blank"><i class="fas fa-file-pdf mr-2"></i>OM/PDF</a>` : '<span class="btn-empty"></span>'}
+                        ${p.listing_url ? `<a class="btn btn-secondary" href="${p.listing_url}" target="_blank"><i class="fas fa-external-link-alt mr-2"></i>Listing</a>` : '<span class="btn-empty"></span>'}
+                    </div>
+                </article>
+            `).join('');
+        };
+        
+        // Navigation buttons handled by the new switchView function
+        
+        dashboardSearch.addEventListener('input', renderDashboard);
+        sortByEl.addEventListener('change', renderDashboard);
 
-window.deleteProperty = async (id) => {
-  if (confirm('Are you sure you want to delete this property?')) {
-    await deletePropertyById(id);
-    renderDataTable();
-    renderDataList();
-  }
-};
+        // Map Workspace
+        const map = L.map('map').setView([45.429, -122.775], 13);
+        L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', { maxZoom: 20, attribution: '© Google' }).addTo(map);
+        const taxlotService = L.esri.query({ url: "https://www.portlandmaps.com/arcgis/rest/services/Public/Taxlots/MapServer/0" });
+        const mapLayers = {};
+        const mapSearchInput = getEl('map-search-input');
+        const mapPropertiesList = getEl('map-properties-list');
+        const form = getEl('property-form');
+        const formInputs = { id: getEl('form-id'), name: getEl('form-name'), address: getEl('form-address'), lat: getEl('form-lat'), lng: getEl('form-lng'), category: getEl('form-category'), contacted: getEl('form-contacted'), price: getEl('form-price'), size_acres: getEl('form-size_acres'), size_sf: getEl('form-size_sf'), pdf_url: getEl('form-pdf_url'), listing_url: getEl('form-listing_url'), image_url: getEl('form-image_url'), notes: getEl('form-notes') };
+        const propertiesListSection = getEl('properties-list-section');
+        const propertyDetailsSection = getEl('property-details-section');
+        const selectedPropertyDetails = getEl('selected-property-details');
+        const backToListBtn = getEl('back-to-list-btn');
+        const renderMapWorkspace = () => {
+            const searchTerm = mapSearchInput.value.toLowerCase();
+            const filtered = properties.filter(p => JSON.stringify(p).toLowerCase().includes(searchTerm));
+            Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
+            mapPropertiesList.innerHTML = '';
+            filtered.forEach(p => {
+                const colors = { 'Top Prospect': '#f59e0b', 'For Sale: Land': '#10b981', 'For Sale: Building': '#3b82f6', 'Off-Market Target': '#ef4444', 'IPA Owned': '#8b5cf6', default: '#64748b' };
+                const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.9, fillOpacity: 0.3 };
+                
+                // Enhanced popup content for IPA properties
+                let popupContent = `<strong>${p.name}</strong><br>`;
+                if (p.image_url) {
+                    popupContent += `<img src="${p.image_url}" style="max-width: 200px; height: auto; border-radius: 4px; margin-bottom: 8px;" alt="Property Image"><br>`;
+                }
+                popupContent += `${p.address || 'Location'}<br>`;
+                popupContent += `<strong>Category:</strong> ${p.category || 'Uncategorized'}<br>`;
+                popupContent += `<strong>Status:</strong> ${p.contacted || 'Not Contacted'}`;
+                
+                // Add additional details for IPA properties
+                if (p.category === 'IPA Owned') {
+                    popupContent += `<br><strong>Type:</strong> Institutional Property`;
+                    if (p.notes) {
+                        popupContent += `<br><strong>Owner/Contact:</strong> ${p.notes}`;
+                    }
+                } else {
+                    popupContent += `<br><strong>Notes:</strong> ${p.notes || ''}`;
+                }
+                
+                taxlotService.contains(L.latLng(p.coords[0], p.coords[1])).run((err, fc) => {
+                    const layer = err || !fc?.features?.length ? L.marker(p.coords) : L.geoJSON(fc.features[0], { style });
+                    layer.bindPopup(popupContent).on('click', () => fillForm(p));
+                    mapLayers[p.id] = layer.addTo(map);
+                });
+                const li = document.createElement('div');
+                li.className = `list-item ${p.category === 'Top Prospect' ? 'bg-yellow-50' : p.category === 'IPA Owned' ? 'bg-purple-50 border-purple-200' : ''}`;
+                li.dataset.id = p.id;
+                li.innerHTML = `<div class="font-bold text-gray-800">${p.name}</div><div class="text-sm text-gray-500">${p.category || 'Uncategorized'}</div><div class="text-xs text-gray-400">${p.contacted}</div>`;
+                li.onclick = (e) => {
+                    e.stopPropagation();
+                    fillForm(p);
+                    map.flyTo(p.coords, 16);
+                    document.querySelectorAll('.list-item').forEach(item => item.classList.remove('active'));
+                    li.classList.add('active');
+                    showPropertyDetails(p);
+                };
+                mapPropertiesList.appendChild(li);
+            });
+        };
+        const fillForm = p => {
+            Object.keys(formInputs).forEach(key => formInputs[key].value = p[key] || '');
+            formInputs.lat.value = p.coords[0];
+            formInputs.lng.value = p.coords[1];
+            getEl('form-id').value = p.id;
+            getEl('delete-btn').classList.remove('hidden');
+            getEl('save-btn').innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Update Property';
+            document.querySelectorAll('.list-item').forEach(li => li.classList.remove('active'));
+            document.querySelector(`.list-item[data-id='${p.id}']`)?.classList.add('active');
+            showPropertyDetails(p);
+        };
+        const resetForm = () => {
+            form.reset();
+            getEl('form-id').value = '';
+            getEl('delete-btn').classList.add('hidden');
+            getEl('save-btn').innerHTML = '<i class="fas fa-save mr-2"></i>Save Property';
+            document.querySelectorAll('.list-item.active').forEach(li => li.classList.remove('active'));
+            // Hide details if open
+            propertyDetailsSection.classList.add('hidden');
+            propertiesListSection.classList.remove('hidden');
+        };
 
-// Export CSV (uses API-loaded properties, unchanged)
-const exportToCSV = () => {
-  const headers = ['ID', 'Name', 'Address', 'Category', 'Contacted', 'Price', 'Size (Acres)', 'Size (SF)', 'Image URL', 'Notes'];
-  const csvContent = [
-    headers.join(','),
-    ...properties.map(p => [
-      p.id,
-      `"${p.name || ''}"`,
-      `"${p.address || ''}"`,
-      `"${p.category || ''}"`,
-      `"${p.contacted || ''}"`,
-      p.price || '',
-      p.size_acres || '',
-      p.size_sf || '',
-      `"${p.image_url || ''}"`,
-      `"${p.notes || ''}"`
-    ].join(','))
-  ].join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv' });
-  const url = window.URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'tigard_properties.csv';
-  a.click();
-  window.URL.revokeObjectURL(url);
-  showToast('Data exported successfully!');
-};
+        const showPropertyDetails = (p) => {
+            propertiesListSection.classList.add('hidden');
+            propertyDetailsSection.classList.remove('hidden');
+            
+            let detailsHtml = `
+                <div class="property-detail-header">
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">${p.name || 'Unnamed Property'}</h3>
+                    <p class="text-sm text-gray-600 mb-3">${p.address || 'No address'}</p>
+                </div>
+            `;
+            
+            if (p.image_url) {
+                detailsHtml += `<img src="${p.image_url}" alt="Property Image" class="w-full h-48 object-cover rounded-lg mb-3">`;
+            }
+            
+            detailsHtml += `
+                <div class="property-detail-info space-y-2 text-sm">
+                    <p><strong>Category:</strong> <span class="text-gray-700">${p.category || 'Uncategorized'}</span></p>
+                    <p><strong>Contact Status:</strong> <span class="text-gray-700">${p.contacted || 'Not Contacted'}</span></p>
+                    ${p.price ? `<p><strong>Price:</strong> <span class="text-gray-700">${formatCurrency(p.price)}</span></p>` : ''}
+                    ${p.size_acres ? `<p><strong>Acres:</strong> <span class="text-gray-700">${p.size_acres}</span></p>` : ''}
+                    ${p.size_sf ? `<p><strong>SF:</strong> <span class="text-gray-700">${formatSize(p.size_sf, 'SF')}</span></p>` : ''}
+                    <p><strong>Notes:</strong></p>
+                    <div class="bg-gray-50 p-3 rounded-lg text-sm text-gray-700">${(p.notes || 'No notes available.').replace(/\n/g, '<br>')}</div>
+                    ${p.pdf_url ? `<p class="mt-3"><a href="${p.pdf_url}" target="_blank" class="btn btn-primary text-xs">View OM/PDF</a></p>` : ''}
+                    ${p.listing_url ? `<p><a href="${p.listing_url}" target="_blank" class="btn btn-secondary text-xs">View Listing</a></p>` : ''}
+                </div>
+            `;
+            
+            selectedPropertyDetails.innerHTML = detailsHtml;
+        };
 
-// IPA Data Integration (remove hardcoded, now from DB - optional if you want to keep as seed)
-const parseIPAData = () => { /* Keep if needed for initial seed, but DB has it */ };
+        backToListBtn.addEventListener('click', () => {
+            propertyDetailsSection.classList.add('hidden');
+            propertiesListSection.classList.remove('hidden');
+            document.querySelectorAll('.list-item.active').forEach(li => li.classList.remove('active'));
+        });
+        form.addEventListener('submit', async e => {
+          e.preventDefault();
+          const id = getEl('form-id').value ? parseInt(getEl('form-id').value) : null;
+          const propData = {
+            id,
+            lat: parseFloat(formInputs.lat.value),
+            lng: parseFloat(formInputs.lng.value),
+            coords: [parseFloat(formInputs.lat.value), parseFloat(formInputs.lng.value)]  // For map compat
+          };
+          Object.keys(formInputs).forEach(key => {
+            if (key !== 'id' && key !== 'lat' && key !== 'lng') propData[key] = formInputs[key].value;
+          });
+          await saveProperty(propData);
+          resetForm();
+        });
+        getEl('delete-btn').addEventListener('click', async () => {
+          if (confirm('Delete this property?')) {
+            const id = parseInt(getEl('form-id').value);
+            await deletePropertyById(id);
+            resetForm();
+          }
+        });
 
-// All other functions unchanged: renderDashboard, renderMapWorkspace, fillForm, resetForm, saveAndRerender (update to use API), switchView, etc.
-// Note: saveAndRerender can be replaced with loadProperties() calls where needed.
+        // Sidebar Toggles (Fixed)
+        const toggleSidebar = (sidebar, toggleBtn, isRight = false) => {
+            sidebar.classList.toggle('collapsed');
+            const isCollapsed = sidebar.classList.contains('collapsed');
+            const iconClass = `fas fa-chevron-${isCollapsed ? (isRight ? 'left' : 'right') : (isRight ? 'right' : 'left')}`;
+            toggleBtn.querySelector('i').className = iconClass;
+            setTimeout(() => map.invalidateSize(), 350);
+        };
+        const sidebarLeft = getEl('sidebar-left'), toggleLeft = getEl('toggle-left'), collapsedLeft = getEl('collapsed-left-btn');
+        const sidebarRight = getEl('sidebar-right'), toggleRight = getEl('toggle-right'), collapsedRight = getEl('collapsed-right-btn');
+        [toggleLeft, collapsedLeft].forEach(btn => btn.addEventListener('click', () => toggleSidebar(sidebarLeft, toggleLeft)));
+        [toggleRight, collapsedRight].forEach(btn => btn.addEventListener('click', () => toggleSidebar(sidebarRight, toggleRight, true)));
 
-// Initial Load (replace hardcoded init)
-loadProperties();  // Loads from API and renders everything
-</script>
+        // Event Listeners
+        getEl('new-property-btn').addEventListener('click', resetForm);
+        mapSearchInput.addEventListener('input', renderMapWorkspace);
+        map.on('click', e => { if (!getEl('form-id').value) { formInputs.lat.value = e.latlng.lat.toFixed(5); formInputs.lng.value = e.latlng.lng.toFixed(5); } });
 
+        // Initialize Categories
+        const categories = [...new Set(properties.map(p => p.category).filter(Boolean))].sort();
+        const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+        // Note: filterCategoryEl is not defined in this version, so we skip it
+        formInputs.category.innerHTML = '<option value="">Select Category</option>' + catOptions;
+
+        // Data Management View
+        const dataView = getEl('data-view');
+        const dataSearch = getEl('data-search');
+        const dataSort = getEl('data-sort');
+        const tableView = getEl('table-view');
+        const listView = getEl('list-view');
+        const tableViewBtn = getEl('table-view-btn');
+        const listViewBtn = getEl('list-view-btn');
+        const dataTableBody = getEl('data-table-body');
+        const dataList = getEl('data-list');
+        const addPropertyBtn = getEl('add-property-btn');
+        const exportDataBtn = getEl('export-data-btn');
+
+        // View Switching for Data Management
+        const switchDataView = (viewType) => {
+            if (viewType === 'table') {
+                tableView.classList.remove('hidden');
+                listView.classList.add('hidden');
+                tableViewBtn.classList.add('active');
+                listViewBtn.classList.remove('active');
+            } else {
+                tableView.classList.add('hidden');
+                listView.classList.remove('hidden');
+                tableViewBtn.classList.remove('active');
+                listViewBtn.classList.add('active');
+            }
+        };
+
+        // Render Data Table
+        const renderDataTable = () => {
+            let filtered = properties;
+            const searchTerm = dataSearch.value.toLowerCase();
+            if (searchTerm) filtered = filtered.filter(p => (p.name || '') + (p.address || '') + (p.notes || '').toLowerCase().includes(searchTerm));
+            
+            if (currentDataCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === currentDataCategory);
+            }
+            
+            const sortVal = dataSort.value;
+            if (sortVal !== 'default') {
+                const [key, dir] = sortVal.split('-');
+                filtered.sort((a, b) => {
+                    if (key === 'name' || key === 'category') {
+                        return dir === 'asc' ?
+                            (a[key] || '').localeCompare(b[key] || '') :
+                            (b[key] || '').localeCompare(a[key] || '');
+                    } else {
+                        return dir === 'asc' ?
+                            (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0) :
+                            (parseFloat(b[key]) || 0) - (parseFloat(a[key]) || 0);
+                    }
+                });
+            }
+
+            dataTableBody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${p.name || ''}</td>
+                    <td class="px-6 py-4 text-sm text-gray-900 max-w-xs truncate" title="${p.address || ''}">${p.address || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.category || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.contacted || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.price ? formatCurrency(p.price) : ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.size_acres || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${p.size_sf || ''}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        ${p.image_url ? `<img src="${p.image_url}" style="max-width: 50px; height: auto; border-radius: 4px;" alt="Property Image">` : ''}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="action-btn edit-btn" onclick="editProperty(${p.id})">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteProperty(${p.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        // Render Data List
+        const renderDataList = () => {
+            let filtered = properties;
+            const searchTerm = dataSearch.value.toLowerCase();
+            if (searchTerm) filtered = filtered.filter(p => (p.name || '') + (p.address || '') + (p.notes || '').toLowerCase().includes(searchTerm));
+            
+            if (currentDataCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === currentDataCategory);
+            }
+            
+            const sortVal = dataSort.value;
+            if (sortVal !== 'default') {
+                const [key, dir] = sortVal.split('-');
+                filtered.sort((a, b) => {
+                    if (key === 'name' || key === 'category') {
+                        return dir === 'asc' ?
+                            (a[key] || '').localeCompare(b[key] || '') :
+                            (b[key] || '').localeCompare(a[key] || '');
+                    } else {
+                        return dir === 'asc' ?
+                            (parseFloat(a[key]) || 0) - (parseFloat(b[key]) || 0) :
+                            (parseFloat(b[key]) || 0) - (parseFloat(a[key]) || 0);
+                    }
+                });
+            }
+
+            // Group by category for list view
+            const grouped = {};
+            filtered.forEach(p => {
+                const cat = p.category || 'Uncategorized';
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(p);
+            });
+            
+            let html = '';
+            Object.keys(grouped).sort().forEach(cat => {
+                const items = grouped[cat];
+                html += `
+<div class="category-section">
+    <h2 class="category-header">${cat} (${items.length})</h2>
+    <div class="category-items">
+        ${items.map(p => `
+            <div class="data-list-item">
+                <h3>${p.name || 'Unnamed Property'}</h3>
+                <p><strong>Address:</strong> ${p.address || 'No address'}</p>
+                <p><strong>Category:</strong> ${p.category || 'Uncategorized'}</p>
+                <p><strong>Contact Status:</strong> ${p.contacted || 'Not Contacted'}</p>
+                <p><strong>Price:</strong> ${p.price ? formatCurrency(p.price) : 'No price'}</p>
+                <p><strong>Size:</strong> ${p.size_acres ? p.size_acres + ' acres' : ''} ${p.size_sf ? p.size_sf + ' SF' : ''}</p>
+                <div class="actions">
+                    <button class="action-btn edit-btn" onclick="editProperty(${p.id})">Edit</button>
+                    <button class="action-btn delete-btn" onclick="deleteProperty(${p.id})">Delete</button>
+                </div>
+            </div>
+        `).join('')}
+    </div>
+</div>
+                `;
+            });
+            dataList.innerHTML = html;
+        };
+
+        // Edit Property
+        window.editProperty = (id) => {
+            const property = properties.find(p => p.id === id);
+            if (property) {
+                fillForm(property);
+                switchView('map'); // Switch to map view to use the existing form
+            }
+        };
+
+        // Delete Property
+        window.deleteProperty = async (id) => {
+          if (confirm('Are you sure you want to delete this property?')) {
+            await deletePropertyById(id);
+            renderDataTable();
+            renderDataList();
+          }
+        };
+
+        // Export to CSV
+        const exportToCSV = () => {
+            const headers = ['ID', 'Name', 'Address', 'Category', 'Contacted', 'Price', 'Size (Acres)', 'Size (SF)', 'Image URL', 'Notes'];
+            const csvContent = [
+                headers.join(','),
+                ...properties.map(p => [
+                    p.id,
+                    `"${p.name || ''}"`,
+                    `"${p.address || ''}"`,
+                    `"${p.category || ''}"`,
+                    `"${p.contacted || ''}"`,
+                    p.price || '',
+                    p.size_acres || '',
+                    p.size_sf || '',
+                    `"${p.image_url || ''}"`,
+                    `"${p.notes || ''}"`
+                ].join(','))
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'tigard_properties.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            showToast('Data exported successfully!');
+        };
+
+        // Event Listeners for Data Management
+        tableViewBtn.addEventListener('click', () => switchDataView('table'));
+        listViewBtn.addEventListener('click', () => switchDataView('list'));
+        dataSearch.addEventListener('input', () => {
+            renderDataTable();
+            renderDataList();
+        });
+        dataSort.addEventListener('change', () => {
+            renderDataTable();
+            renderDataList();
+        });
+        addPropertyBtn.addEventListener('click', () => {
+            resetForm();
+            switchView('map'); // Switch to map view to use the existing form
+        });
+        exportDataBtn.addEventListener('click', exportToCSV);
+        
+        // Reset data button
+        getEl('reset-data-btn').addEventListener('click', () => {
+            if (confirm('Are you sure? This will reset to the default full dataset and lose any unsaved changes.')) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        });
+
+        // Update View Switching to include Data Management
+        const navBtns = { dashboard: getEl('nav-dashboard'), map: getEl('nav-map'), data: getEl('nav-data') };
+        const views = { dashboard: getEl('dashboard-view'), map: getEl('map-view'), data: dataView };
+        const switchView = viewName => {
+            Object.values(views).forEach(v => v.classList.remove('active'));
+            Object.values(navBtns).forEach(b => b.classList.remove('active'));
+            views[viewName].classList.add('active');
+            navBtns[viewName].classList.add('active');
+            if (viewName === 'map') setTimeout(() => map?.invalidateSize(), 350);
+            if (viewName === 'data') {
+                renderDataTable();
+                renderDataList();
+            }
+        };
+        navBtns.dashboard.addEventListener('click', () => switchView('dashboard'));
+        navBtns.map.addEventListener('click', () => switchView('map'));
+        navBtns.data.addEventListener('click', () => switchView('data'));
+
+        // Initial Load
+        loadProperties();
+        resetForm();
+    </script>
 </body>
 </html>
