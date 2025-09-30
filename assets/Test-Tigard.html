@@ -871,6 +871,7 @@
         const legendBtn = getEl('legend-btn');
         const legendPanel = getEl('legend-panel');
         const colors = { 'Top Prospect': '#d9b73d', 'For Sale: Land': '#578463', 'For Sale: Building': '#6188c7', 'Off-Market Target': '#e4c90a', 'IPA Owned': '#8b5cf6', 'For Lease': '#b82e08', default: '#d3d8e0' };
+        const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.8, fillOpacity: 0.4 };
 
         let selectedCategories = new Set(Object.keys(colors).filter(k => k !== 'default'));
 
