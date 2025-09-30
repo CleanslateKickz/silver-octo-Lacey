@@ -598,8 +598,8 @@
             Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
             mapPropertiesList.innerHTML = '';
             filtered.forEach(p => {
-                const colors = { 'Top Prospect': '#f59e0b', 'For Sale: Land': '#10b981', 'For Sale: Building': '#3b82f6', 'Off-Market Target': '#ef4444', 'IPA Owned': '#8b5cf6', default: '#64748b' };
-                const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.9, fillOpacity: 0.3 };
+                const colors = { 'Top Prospect': '#d1b809', 'For Sale: Land': '#578463', 'For Sale: Building': '#669975', 'Off-Market Target': '#e4c90a', 'IPA Owned': '#8b5cf6', 'For Lease': '#b82e08', default: '#d3d8e0' };
+                const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.7, fillOpacity: 0.3 };
                 
                 // Enhanced popup content for IPA properties
                 let popupContent = `<strong>${p.name}</strong><br>`;
