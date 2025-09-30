@@ -125,7 +125,7 @@
             color: white;
             border-color: var(--accent);
         }
-        @media (max-width: 768px) { .properties-grid { grid-template-columns: 1fr; } .filters { flex-direction: column; } .sidebar { width: 100% !important; } .toggle-btn { display: none; } }
+        @media (max-width: 768px) { .properties-grid { grid-template-columns: 1fr; } .filters { flex-direction: column; } .sidebar { width: 100% !important; } .toggle-btn { display: none; } .legend-btn { top: 6rem; right: 0.5rem; font-size: 0.75rem; padding: 0.375rem 0.75rem; } .legend-panel { top: 7.5rem; right: 0.5rem; min-width: 180px; left: 0.5rem; } }
         
         /* Data Management Styles */
         .view-toggle { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
@@ -201,6 +201,64 @@
             box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
           }
         }
+        
+        .legend-btn {
+          position: absolute;
+          top: 5.5rem;
+          right: 1rem;
+          z-index: 1003;
+          background: white;
+          border: 1px solid var(--border);
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          font-weight: 500;
+          color: var(--secondary);
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          font-size: 0.875rem;
+        }
+        
+        .legend-btn:hover {
+          background: var(--border);
+          color: var(--primary);
+        }
+        
+        .legend-panel {
+          position: absolute;
+          top: 7rem;
+          right: 1rem;
+          background: white;
+          border: 1px solid var(--border);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+          z-index: 1002;
+          min-width: 220px;
+          max-height: none;
+          display: none;
+        }
+        
+        .legend-panel.show {
+          display: block;
+        }
+        
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 0.75rem;
+          padding: 0.25rem 0;
+          font-size: 0.875rem;
+        }
+        
+        .legend-color {
+          width: 16px;
+          height: 16px;
+          border-radius: 3px;
+          border: 1px solid #e5e7eb;
+          flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
@@ -270,8 +328,10 @@
                                 <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Building SF</label><input type="text" id="form-size_sf" class="form-control" placeholder="e.g., 40000" /></div>
                                 <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Land Acres</label><input type="text" id="form-size_acres" class="form-control" placeholder="e.g., 2.5" /></div>
                             </div>
-                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">OM/PDF URL</label><input type="url" id="form-pdf_url" class="form-control" /></div>
-                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Listing URL</label><input type="url" id="form-listing_url" class="form-control" /></div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">OM/PDF URL</label><input type="url" id="form-pdf_url" class="form-control" /></div>
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Listing URL</label><input type="url" id="form-listing_url" class="form-control" /></div>
+                            </div>
                             <div class="mb-4"><label class="font-bold block mb-1 text-gray-700">Notes / Owner Info</label><textarea id="form-notes" class="form-control" rows="4" placeholder="Owner details, contact notes, criteria match..."></textarea></div>
                             <div class="flex gap-3 mt-4">
                                 <button type="submit" id="save-btn" class="btn btn-primary flex-1"><i class="fas fa-save mr-2"></i>Save Property</button>
@@ -287,6 +347,8 @@
                         <input type="text" id="address-search" placeholder="Search for an address..." class="form-control flex-1">
                         <button id="search-btn" class="btn btn-primary px-4"><i class="fas fa-search"></i></button>
                     </div>
+                    <button id="legend-btn" class="legend-btn">Legend</button>
+                    <div id="legend-panel" class="legend-panel"></div>
                     <div id="map"></div>
                 </div>
 
@@ -594,31 +656,27 @@
         const backToListBtn = getEl('back-to-list-btn');
         const renderMapWorkspace = () => {
             const searchTerm = mapSearchInput.value.toLowerCase();
-            const filtered = properties.filter(p => JSON.stringify(p).toLowerCase().includes(searchTerm));
+            let filtered = properties.filter(p => JSON.stringify(p).toLowerCase().includes(searchTerm));
+
+            // Apply category filter
+            if (selectedCategories.size === 0) {
+              filtered = [];
+            } else {
+              filtered = filtered.filter(p => selectedCategories.has(p.category));
+            }
             Object.values(mapLayers).forEach(layer => map.removeLayer(layer));
             mapPropertiesList.innerHTML = '';
             filtered.forEach(p => {
-                const colors = { 'Top Prospect': '#d1b809', 'For Sale: Land': '#578463', 'For Sale: Building': '#669975', 'Off-Market Target': '#e4c90a', 'IPA Owned': '#8b5cf6', 'For Lease': '#b82e08', default: '#d3d8e0' };
                 const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.8, fillOpacity: 0.4 };
                 
-                // Enhanced popup content for IPA properties
+                // Simplified popup content
                 let popupContent = `<strong>${p.name}</strong><br>`;
                 if (p.image_url) {
                     popupContent += `<img src="${p.image_url}" style="max-width: 200px; height: auto; border-radius: 4px; margin-bottom: 8px;" alt="Property Image"><br>`;
                 }
-                popupContent += `${p.address || 'Location'}<br>`;
-                popupContent += `<strong>Category:</strong> ${p.category || 'Uncategorized'}<br>`;
-                popupContent += `<strong>Status:</strong> ${p.contacted || 'Not Contacted'}`;
-                
-                // Add additional details for IPA properties
-                if (p.category === 'IPA Owned') {
-                    popupContent += `<br><strong>Type:</strong> Institutional Property`;
-                    if (p.notes) {
-                        popupContent += `<br><strong>Owner/Contact:</strong> ${p.notes}`;
-                    }
-                } else {
-                    popupContent += `<br><strong>Notes:</strong> ${p.notes || ''}`;
-                }
+                const addressParts = (p.address || '').split(', ');
+                const simpleAddress = addressParts.length >= 2 ? addressParts.slice(0, 2).join(', ') : (p.address || 'Location');
+                popupContent += simpleAddress;
                 
                 taxlotService.contains(L.latLng(p.coords[0], p.coords[1])).run((err, fc) => {
                     const layer = err || !fc?.features?.length ? L.marker(p.coords) : L.geoJSON(fc.features[0], { style });
@@ -800,6 +858,52 @@
           const catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
           formInputs.category.innerHTML = '<option value="">Select Category</option>' + catOptions;
         };
+
+        // Legend functionality
+        const legendBtn = getEl('legend-btn');
+        const legendPanel = getEl('legend-panel');
+        const colors = { 'Top Prospect': '#d9b73d', 'For Sale: Land': '#578463', 'For Sale: Building': '#6188c7', 'Off-Market Target': '#e4c90a', 'IPA Owned': '#8b5cf6', 'For Lease': '#b82e08', default: '#d3d8e0' };
+
+        let selectedCategories = new Set(Object.keys(colors).filter(k => k !== 'default'));
+
+        const renderLegend = () => {
+          if (!legendPanel) return;
+          legendPanel.innerHTML = `
+            <h4 style="margin: 0 0 1rem 0; font-size: 1rem; font-weight: bold; color: var(--primary);">Property Categories</h4>
+            ${Object.entries(colors).filter(([k]) => k !== 'default').map(([cat, color]) => `
+              <div class="legend-item">
+                <input type="checkbox" id="cat-${cat.replace(/[^a-zA-Z0-9]/g, '')}" data-category="${cat}" ${selectedCategories.has(cat) ? 'checked' : ''} style="margin-right: 0.5rem;">
+                <div class="legend-color" style="background-color: ${color};"></div>
+                <label for="cat-${cat.replace(/[^a-zA-Z0-9]/g, '')}" style="color: #374151; cursor: pointer; margin-left: 0.25rem; flex: 1;">${cat}</label>
+              </div>
+            `).join('')}
+          `;
+
+          // Attach event listeners to checkboxes
+          legendPanel.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+              const cat = e.target.dataset.category;
+              if (e.target.checked) {
+                selectedCategories.add(cat);
+              } else {
+                selectedCategories.delete(cat);
+              }
+              renderMapWorkspace();
+            });
+          });
+
+        };
+
+        if (legendBtn && legendPanel) {
+          legendBtn.addEventListener('click', () => {
+            if (legendPanel.classList.contains('show')) {
+              legendPanel.classList.remove('show');
+            } else {
+              legendPanel.classList.add('show');
+              renderLegend();
+            }
+          });
+        }
 
         // Data Management View
         const dataView = getEl('data-view');
