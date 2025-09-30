@@ -328,8 +328,10 @@
                                 <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Building SF</label><input type="text" id="form-size_sf" class="form-control" placeholder="e.g., 40000" /></div>
                                 <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Land Acres</label><input type="text" id="form-size_acres" class="form-control" placeholder="e.g., 2.5" /></div>
                             </div>
-                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">OM/PDF URL</label><input type="url" id="form-pdf_url" class="form-control" /></div>
-                            <div class="mb-3"><label class="font-bold block mb-1 text-gray-700">Listing URL</label><input type="url" id="form-listing_url" class="form-control" /></div>
+                            <div class="flex gap-3 mb-3">
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">OM/PDF URL</label><input type="url" id="form-pdf_url" class="form-control" /></div>
+                                <div class="flex-1"><label class="font-bold block mb-1 text-gray-700">Listing URL</label><input type="url" id="form-listing_url" class="form-control" /></div>
+                            </div>
                             <div class="mb-4"><label class="font-bold block mb-1 text-gray-700">Notes / Owner Info</label><textarea id="form-notes" class="form-control" rows="4" placeholder="Owner details, contact notes, criteria match..."></textarea></div>
                             <div class="flex gap-3 mt-4">
                                 <button type="submit" id="save-btn" class="btn btn-primary flex-1"><i class="fas fa-save mr-2"></i>Save Property</button>
@@ -667,24 +669,14 @@
             filtered.forEach(p => {
                 const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.8, fillOpacity: 0.4 };
                 
-                // Enhanced popup content for IPA properties
+                // Simplified popup content
                 let popupContent = `<strong>${p.name}</strong><br>`;
                 if (p.image_url) {
                     popupContent += `<img src="${p.image_url}" style="max-width: 200px; height: auto; border-radius: 4px; margin-bottom: 8px;" alt="Property Image"><br>`;
                 }
-                popupContent += `${p.address || 'Location'}<br>`;
-                popupContent += `<strong>Category:</strong> ${p.category || 'Uncategorized'}<br>`;
-                popupContent += `<strong>Status:</strong> ${p.contacted || 'Not Contacted'}`;
-                
-                // Add additional details for IPA properties
-                if (p.category === 'IPA Owned') {
-                    popupContent += `<br><strong>Type:</strong> Institutional Property`;
-                    if (p.notes) {
-                        popupContent += `<br><strong>Owner/Contact:</strong> ${p.notes}`;
-                    }
-                } else {
-                    popupContent += `<br><strong>Notes:</strong> ${p.notes || ''}`;
-                }
+                const addressParts = (p.address || '').split(', ');
+                const simpleAddress = addressParts.length >= 2 ? addressParts.slice(0, 2).join(', ') : (p.address || 'Location');
+                popupContent += simpleAddress;
                 
                 taxlotService.contains(L.latLng(p.coords[0], p.coords[1])).run((err, fc) => {
                     const layer = err || !fc?.features?.length ? L.marker(p.coords) : L.geoJSON(fc.features[0], { style });
