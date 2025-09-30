@@ -599,7 +599,7 @@
             mapPropertiesList.innerHTML = '';
             filtered.forEach(p => {
                 const colors = { 'Top Prospect': '#d1b809', 'For Sale: Land': '#578463', 'For Sale: Building': '#669975', 'Off-Market Target': '#e4c90a', 'IPA Owned': '#8b5cf6', 'For Lease': '#b82e08', default: '#d3d8e0' };
-                const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.7, fillOpacity: 0.3 };
+                const style = { color: colors[p.category] || colors.default, weight: 3, opacity: 0.8, fillOpacity: 0.4 };
                 
                 // Enhanced popup content for IPA properties
                 let popupContent = `<strong>${p.name}</strong><br>`;
