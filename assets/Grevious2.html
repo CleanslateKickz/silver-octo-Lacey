@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grievous Property Tracker</title>
+<style>
+
+</style>
+</head>
+<body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Tracker - Real Estate Portfolio Management</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #6366F1;
+            --success: #10B981;
+            --info: #3B82F6;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --light: #F9FAFB;
+            --dark: #1F2937;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Header Styles */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .app-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 0.25rem 0 0 0;
+        }
+
+        /* Metrics Bar */
+        .metrics-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 1rem;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Controls Section */
+        .controls-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background-color: var(--gray-100);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-500);
+        }
+
+        /* Form Styles */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            padding: 0.75rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            outline: none;
+        }
+
+        .image-preview {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Property Cards */
+        .properties-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .property-image-container {
+            position: relative;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .property-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .property-card:hover .property-image {
+            transform: scale(1.05);
+        }
+
+        .property-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-buyer {
+            background-color: rgba(16, 185, 129, 0.9);
+            color: white;
+        }
+
+        .badge-seller {
+            background-color: rgba(59, 130, 246, 0.9);
+            color: white;
+        }
+
+        .badge-double-ended {
+            background-color: rgba(245, 158, 11, 0.9);
+            color: white;
+        }
+
+        .property-details {
+            padding: 1.25rem;
+        }
+
+        .property-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .property-address {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .property-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .property-stat {
+            text-align: center;
+        }
+
+        .property-stat-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .property-stat-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+        }
+
+        .property-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Table View */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .properties-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .properties-table th {
+            background-color: var(--gray-100);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .properties-table th:hover {
+            background-color: var(--gray-200);
+        }
+
+        .properties-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .properties-table tr:hover {
+            background-color: var(--gray-50);
+        }
+
+        .table-image {
+            width: 60px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            background-color: var(--gray-100);
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background-color: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--gray-600);
+            font-weight: 500;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 0.75rem 1rem;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            border-bottom-color: var(--gray-300);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: transparent;
+            border-bottom-color: var(--primary);
+        }
+
+        .modal-property-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: var(--gray-800);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .custom-toast {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast-message {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-text {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .properties-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-container {
+                padding: 1rem;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .controls-container {
+                padding: 1rem;
+            }
+            
+            .form-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1 class="app-title">
+                        <i class="bi bi-building"></i>
+                        Property Tracker
+                    </h1>
+                    <p class="app-subtitle">Real Estate Portfolio Management System</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-light" id="exportBtn">
+                        <i class="bi bi-download me-2"></i>Export Data
+                    </button>
+                    <div class="btn-group ms-2">
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                        <button class="btn btn-light" onclick="document.getElementById('importFile').click()">
+                            <i class="bi bi-upload me-2"></i>Import Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container my-4">
+        <!-- Metrics Dashboard -->
+        <div class="metrics-container fade-in">
+            <div class="row g-3">
+                <div class="col-md-3 col-6">
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalProperties">0</div>
+                        <div class="metric-label">Total Properties</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="metric-card">
+                        <div class="metric-value" id="totalSaleValue">$0</div>
+                        <div class="metric-label">Total Sale Value</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="metric-card">
+                        <div class="metric-value" id="buyerSideDeals">0</div>
+                        <div class="metric-label">Buyer Side Deals</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="metric-card">
+                        <div class="metric-value" id="sellerSideDeals">0</div>
+                        <div class="metric-label">Seller Side Deals</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-container fade-in">
+            <div class="row align-items-center g-3">
+                <div class="col-md-6">
+                    <div class="position-relative">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input ps-4" id="searchInput" placeholder="Search by address, name, or owner...">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-md-end gap-2">
+                        <div class="view-toggle">
+                            <button class="view-btn active" id="cardViewBtn">
+                                <i class="bi bi-grid-3x3-gap me-1"></i> Cards
+                            </button>
+                            <button class="view-btn" id="tableViewBtn">
+                                <i class="bi bi-table me-1"></i> Table
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" id="addPropertyBtn">
+                            <i class="bi bi-plus-circle me-2"></i>Add Property
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add/Edit Property Form -->
+        <div class="form-container" id="formContainer">
+            <h2 class="form-title" id="formTitle">Add New Property</h2>
+            <form id="propertyForm">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="propertyAddress" class="form-label">Property Address *</label>
+                        <input type="text" class="form-control" id="propertyAddress" required>
+                        <div class="invalid-feedback">Property address is required</div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="propertyName" class="form-label">Property Name</label>
+                        <input type="text" class="form-control" id="propertyName">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="salePrice" class="form-label">Sale Price</label>
+                        <input type="number" class="form-control" id="salePrice" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="saleDate" class="form-label">Sale Date</label>
+                        <input type="date" class="form-control" id="saleDate">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="capRate" class="form-label">Cap Rate (%)</label>
+                        <input type="number" class="form-control" id="capRate" min="0" step="0.01">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="propertyType" class="form-label">Property Type</label>
+                        <select class="form-select" id="propertyType">
+                            <option value="">Select Type</option>
+                            <option value="Residential">Residential</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Industrial">Industrial</option>
+                            <option value="Land">Land</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="representation" class="form-label">Representation *</label>
+                        <select class="form-select" id="representation" required>
+                            <option value="">Select Representation</option>
+                            <option value="Buyer">Buyer</option>
+                            <option value="Seller">Seller</option>
+                            <option value="Double-Ended">Double-Ended</option>
+                        </select>
+                        <div class="invalid-feedback">Representation is required</div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="propertyId" class="form-label">Property ID</label>
+                        <input type="text" class="form-control" id="propertyId">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ownerName" class="form-label">Owner Name</label>
+                        <input type="text" class="form-control" id="ownerName">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="ownerContact" class="form-label">Owner Contact</label>
+                        <input type="text" class="form-control" id="ownerContact" placeholder="Email or phone">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="propertyImageUrl" class="form-label">Property Image URL</label>
+                        <input type="url" class="form-control" id="propertyImageUrl" placeholder="https://example.com/image.jpg">
+                        <img id="imagePreview" class="image-preview d-none" alt="Property preview">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="costarUrl" class="form-label">CoStar URL</label>
+                        <input type="url" class="form-control" id="costarUrl" placeholder="https://example.com">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="commissionCalculation" class="form-label">Commission Calculation</label>
+                        <input type="text" class="form-control" id="commissionCalculation">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="saleNotes" class="form-label">Sale Notes</label>
+                        <textarea class="form-control" id="saleNotes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Save Property</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Properties List - Card View -->
+        <div class="properties-container fade-in" id="cardView">
+            <!-- Property cards will be inserted here -->
+        </div>
+
+        <!-- Properties List - Table View -->
+        <div class="table-container fade-in d-none" id="tableView">
+            <table class="properties-table">
+                <thead>
+                    <tr>
+                        <th data-sort="saleDate">Sale Date <i class="bi bi-arrow-down-up"></i></th>
+                        <th data-sort="salePrice">Sale Price <i class="bi bi-arrow-down-up"></i></th>
+                        <th>Image</th>
+                        <th>Property Address</th>
+                        <th>Property Name</th>
+                        <th>Owner Name</th>
+                        <th>Representation</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="propertiesTableBody">
+                    <!-- Table rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state d-none" id="emptyState">
+            <div class="empty-state-icon">
+                <i class="bi bi-house"></i>
+            </div>
+            <h3 class="empty-state-title">No Properties Found</h3>
+            <p>Add your first property to get started tracking your real estate portfolio.</p>
+        </div>
+    </main>
+
+    <!-- Property Detail Modal -->
+    <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="propertyModalLabel">Property Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="modalPropertyImage" class="modal-property-image" src="" alt="Property Image">
+                    
+                    <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab" aria-controls="transaction" aria-selected="false">Transaction</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner" type="button" role="tab" aria-controls="owner" aria-selected="false">Owner</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="links-tab" data-bs-toggle="tab" data-bs-target="#links" type="button" role="tab" aria-controls="links" aria-selected="false">Links</button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-content mt-3" id="propertyTabContent">
+                        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Property Address</div>
+                                        <div class="detail-value" id="modalAddress"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Property Name</div>
+                                        <div class="detail-value" id="modalName"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Property Type</div>
+                                        <div class="detail-value" id="modalType"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Property ID</div>
+                                        <div class="detail-value" id="modalId"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="transaction" role="tabpanel" aria-labelledby="transaction-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Sale Price</div>
+                                        <div class="detail-value" id="modalPrice"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Sale Date</div>
+                                        <div class="detail-value" id="modalDate"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Cap Rate</div>
+                                        <div class="detail-value" id="modalCapRate"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Representation</div>
+                                        <div class="detail-value" id="modalRepresentation"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Commission Calculation</div>
+                                        <div class="detail-value" id="modalCommission"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Sale Notes</div>
+                                        <div class="detail-value" id="modalNotes"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="owner" role="tabpanel" aria-labelledby="owner-tab">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Owner Name</div>
+                                        <div class="detail-value" id="modalOwnerName"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Owner Contact</div>
+                                        <div class="detail-value" id="modalOwnerContact"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Property Image URL</div>
+                                        <div class="detail-value">
+                                            <a id="modalImageUrl" href="" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-image me-1"></i>View Image
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="detail-item">
+                                        <div class="detail-label">CoStar URL</div>
+                                        <div class="detail-value">
+                                            <a id="modalCostarUrl" href="" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-link-45deg me-1"></i>View on CoStar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="modalEditBtn">
+                        <i class="bi bi-pencil me-2"></i>Edit Property
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Base data from CSV files
+        const baseData = [
+            {
+                "id": "prop-1",
+                "propertyAddress": "11520 SE 82nd Ave, Clackamas, OR 97086",
+                "salePrice": 4050000,
+                "saleDate": "2020-12-14",
+                "saleNotes": "Clackamas Service Center",
+                "propertyType": "Commercial",
+                "capRate": 6.81,
+                "propertyName": "Clackamas Service Center",
+                "ownerName": "Watumull Properties Corporation; Gulsons 82nd LLC",
+                "ownerContact": "",
+                "propertyId": "1332101",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property1/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-2",
+                "propertyAddress": "12035 NE Halsey St, Portland, OR 97220",
+                "salePrice": 1460000,
+                "saleDate": "2021-04-05",
+                "saleNotes": "Arby's",
+                "propertyType": "Commercial",
+                "capRate": 5.50,
+                "propertyName": "Arby's",
+                "ownerName": "Arctic Circle; Aca Properties Lc",
+                "ownerContact": "",
+                "propertyId": "5060036",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property2/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-3",
+                "propertyAddress": "3602 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 1636504,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 2 (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Building 2",
+                "ownerName": "Western Properties Ii Llc",
+                "ownerContact": "",
+                "propertyId": "7064945",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property3/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-4",
+                "propertyAddress": "3600 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 1735312,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 1 (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Building 1",
+                "ownerName": "Western Properties Ii Llc",
+                "ownerContact": "",
+                "propertyId": "9710877",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property4/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-5",
+                "propertyAddress": "3604 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 2153984,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 3 (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Building 3",
+                "ownerName": "Western Properties Ii Llc",
+                "ownerContact": "",
+                "propertyId": "9742038",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property5/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-6",
+                "propertyAddress": "250 Northstar Dr, Rural Hall, NC 27045",
+                "salePrice": 4800000,
+                "saleDate": "2021-07-26",
+                "saleNotes": "American Tire",
+                "propertyType": "Industrial",
+                "capRate": 7.14,
+                "propertyName": "American Tire",
+                "ownerName": "Countryside Enterprise Llc; Akb Ltd Liabilty Co",
+                "ownerContact": "",
+                "propertyId": "7533643",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property6/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-7",
+                "propertyAddress": "6105 NE 114th Ave, Vancouver, WA 98662",
+                "salePrice": 6050000,
+                "saleDate": "2021-09-21",
+                "saleNotes": "Orchards Retail Center",
+                "propertyType": "Commercial",
+                "capRate": 5.71,
+                "propertyName": "Orchards Retail Center",
+                "ownerName": "Triad Investment Llc",
+                "ownerContact": "",
+                "propertyId": "1518725",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property7/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-8",
+                "propertyAddress": "930 SW Scotton Way, Battle Ground, WA 98604",
+                "salePrice": 2842105,
+                "saleDate": "2021-10-29",
+                "saleNotes": "Burger King",
+                "propertyType": "Commercial",
+                "capRate": 4.34,
+                "propertyName": "Burger King",
+                "ownerName": "Ambrosia QSR",
+                "ownerContact": "",
+                "propertyId": "12621462",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property8/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-9",
+                "propertyAddress": "23038 Twain Harte Dr, Twain Harte, CA 95383",
+                "salePrice": 267000,
+                "saleDate": "2021-11-30",
+                "saleNotes": "",
+                "propertyType": "Land",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "",
+                "ownerContact": "",
+                "propertyId": "12621365",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property9/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-10",
+                "propertyAddress": "3007 22nd Pl, Forest Grove, OR 97116",
+                "salePrice": 1700000,
+                "saleDate": "2021-12-23",
+                "saleNotes": "Kaylee Apartments",
+                "propertyType": "Residential",
+                "capRate": null,
+                "propertyName": "Kaylee Apartments",
+                "ownerName": "Kaylee Apartments Llc",
+                "ownerContact": "",
+                "propertyId": "9058789",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property10/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-11",
+                "propertyAddress": "2800 NE 162nd Ave, Vancouver, WA 98682",
+                "salePrice": 6195000,
+                "saleDate": "2021-12-23",
+                "saleNotes": "Rite Aid",
+                "propertyType": "Commercial",
+                "capRate": 7.02,
+                "propertyName": "Rite Aid",
+                "ownerName": "Hummelt Development Co.; Tph Partners Llc",
+                "ownerContact": "",
+                "propertyId": "5965451",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property11/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-12",
+                "propertyAddress": "305 NE 4th Ave, Camas, WA 98607",
+                "salePrice": 2750000,
+                "saleDate": "2022-05-24",
+                "saleNotes": "Farrell Building",
+                "propertyType": "Commercial",
+                "capRate": 6.01,
+                "propertyName": "Farrell Building",
+                "ownerName": "The Farrell Building LLC",
+                "ownerContact": "",
+                "propertyId": "4489907",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property12/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-13",
+                "propertyAddress": "6606 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 1038291,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "Red Mountain Plaza",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
+                "ownerContact": "",
+                "propertyId": "7102669",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property13/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-14",
+                "propertyAddress": "6626-6640 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 5909692,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "Red Mountain Plaza",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
+                "ownerContact": "",
+                "propertyId": "850131",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property14/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-15",
+                "propertyAddress": "6620 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 9452017,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza-Shops D (Part of a 3 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "Red Mountain Plaza-Shops D",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
+                "ownerContact": "",
+                "propertyId": "6861142",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property15/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-16",
+                "propertyAddress": "454-470 Lancaster Dr NE, Salem, OR 97301",
+                "salePrice": 691476,
+                "saleDate": "2022-12-22",
+                "saleNotes": "Multi-Property Sale (Part of a 2 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 7.99,
+                "propertyName": "Multi-Property Sale",
+                "ownerName": "Joseph R Fox",
+                "ownerContact": "",
+                "propertyId": "1237416",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property16/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-17",
+                "propertyAddress": "446-448 Lancaster Dr, Salem, OR 97301",
+                "salePrice": 2258524,
+                "saleDate": "2022-12-22",
+                "saleNotes": "Multi-Property Sale (Part of a 2 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 6.74,
+                "propertyName": "Multi-Property Sale",
+                "ownerName": "Joseph R Fox",
+                "ownerContact": "",
+                "propertyId": "6637034",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property17/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-18",
+                "propertyAddress": "201 Cascade Mall Dr, Burlington, WA 98233",
+                "salePrice": 12295000,
+                "saleDate": "2023-04-07",
+                "saleNotes": "Cross Court Plaza (Part of a 2 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 7.63,
+                "propertyName": "Cross Court Plaza",
+                "ownerName": "Merlone Geier Management, Inc.; MGP XI Cascade LLC",
+                "ownerContact": "",
+                "propertyId": "1170876",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property18/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-19",
+                "propertyAddress": "2680 Coweeman Park Dr, Kelso, WA 98626",
+                "salePrice": 1030568,
+                "saleDate": "2023-05-31",
+                "saleNotes": "",
+                "propertyType": "Industrial",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "Janice I Lewis",
+                "ownerContact": "",
+                "propertyId": "7733798",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property19/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-20",
+                "propertyAddress": "11621 Island Ave, La Grande, OR 97850",
+                "salePrice": 1600000,
+                "saleDate": "2023-08-01",
+                "saleNotes": "",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "Mark E Handy",
+                "ownerContact": "",
+                "propertyId": "6818721",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property20/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-21",
+                "propertyAddress": "340 NE Beacon Dr, Grants Pass, OR 97526",
+                "salePrice": 6400000,
+                "saleDate": "2023-08-31",
+                "saleNotes": "",
+                "propertyType": "Commercial",
+                "capRate": 6.50,
+                "propertyName": "",
+                "ownerName": "Metro Partners LLC",
+                "ownerContact": "",
+                "propertyId": "5850186",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property21/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-22",
+                "propertyAddress": "14602-14612 NE Fourth Plain Blvd, Vancouver, WA 98682",
+                "salePrice": 3575000,
+                "saleDate": "2023-10-17",
+                "saleNotes": "Y Plaza (Part of a 2 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 6.00,
+                "propertyName": "Y Plaza",
+                "ownerName": "Slosar Properties Inc",
+                "ownerContact": "",
+                "propertyId": "5023349",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property22/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-23",
+                "propertyAddress": "14602 NE Fourth Plain Dr, Vancouver, WA 98682",
+                "salePrice": 3575000,
+                "saleDate": "2023-10-17",
+                "saleNotes": "Y Plaza (Part of a 2 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 6.00,
+                "propertyName": "Y Plaza",
+                "ownerName": "Slosar Properties Inc",
+                "ownerContact": "",
+                "propertyId": "4404779",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property23/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-24",
+                "propertyAddress": "105 W 29th St, Vancouver, WA 98660",
+                "salePrice": 1750000,
+                "saleDate": "2023-12-18",
+                "saleNotes": "Courtyard Apartments",
+                "propertyType": "Residential",
+                "capRate": 4.19,
+                "propertyName": "Courtyard Apartments",
+                "ownerName": "Duane K Woodruff; Ruth M Woodruff",
+                "ownerContact": "",
+                "propertyId": "4283062",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property24/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-25",
+                "propertyAddress": "1105 NW 9th St, Corvallis, OR 97330",
+                "salePrice": 1515000,
+                "saleDate": "2024-01-05",
+                "saleNotes": "",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "HDH Properties, LLC",
+                "ownerContact": "",
+                "propertyId": "6532056",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property25/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-26",
+                "propertyAddress": "14231 E 40 Hwy, Kansas City, MO 64136",
+                "salePrice": 306471,
+                "saleDate": "2024-01-09",
+                "saleNotes": "Hawthorne 40 Shopping Center (Part of a 4 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 10.00,
+                "propertyName": "Hawthorne 40 Shopping Center",
+                "ownerName": "K & H Hawthorne Llc",
+                "ownerContact": "",
+                "propertyId": "6273868",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property26/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-27",
+                "propertyAddress": "14227 E US Hwy 40, Kansas City, MO 64136",
+                "salePrice": 342358,
+                "saleDate": "2024-01-09",
+                "saleNotes": "My Dentist (Part of a 4 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 10.00,
+                "propertyName": "My Dentist",
+                "ownerName": "K & H Hawthorne Llc",
+                "ownerContact": "",
+                "propertyId": "5619689",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property27/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-28",
+                "propertyAddress": "14171 E Us-40 Hwy, Kansas City, MO 64136",
+                "salePrice": 515535,
+                "saleDate": "2024-01-09",
+                "saleNotes": "Pizza Hut & Wing Street (Part of a 4 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 10.00,
+                "propertyName": "Pizza Hut & Wing Street",
+                "ownerName": "K & H Hawthorne Llc",
+                "ownerContact": "",
+                "propertyId": "581133",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property28/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-29",
+                "propertyAddress": "14121-14221 E Us Highway 40, Kansas City, MO 64136",
+                "salePrice": 7435636,
+                "saleDate": "2024-01-09",
+                "saleNotes": "Hawthorne 40 S/C (Part of a 4 Property Sale)",
+                "propertyType": "Commercial",
+                "capRate": 10.00,
+                "propertyName": "Hawthorne 40 S/C",
+                "ownerName": "K & H Hawthorne Llc",
+                "ownerContact": "",
+                "propertyId": "597152",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property29/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-30",
+                "propertyAddress": "2609-2619 NW 9th St, Corvallis, OR 97330",
+                "salePrice": 1650000,
+                "saleDate": "2024-03-25",
+                "saleNotes": "Westview Plaza",
+                "propertyType": "Commercial",
+                "capRate": 7.20,
+                "propertyName": "Westview Plaza",
+                "ownerName": "Armstrong Hann Living Trust",
+                "ownerContact": "",
+                "propertyId": "6576517",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property30/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-31",
+                "propertyAddress": "2221 NW Myhre Rd, Silverdale, WA 98383",
+                "salePrice": 12300000,
+                "saleDate": "2024-05-16",
+                "saleNotes": "Lowe's",
+                "propertyType": "Commercial",
+                "capRate": 6.00,
+                "propertyName": "Lowe's",
+                "ownerName": "Rosenthal & Rosenthal; Broadway Tenth/Silverdale LLC",
+                "ownerContact": "",
+                "propertyId": "7006688",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property31/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-32",
+                "propertyAddress": "11808 NE Fourth Plain Blvd, Vancouver, WA 98682",
+                "salePrice": 21000000,
+                "saleDate": "2024-05-30",
+                "saleNotes": "Evergreen Station",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "Evergreen Station",
+                "ownerName": "Hurley Development; Ten Talents Investments 21 LLC",
+                "ownerContact": "",
+                "propertyId": "715721",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property32/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-33",
+                "propertyAddress": "320 Pacific Ave S, Monmouth, OR 97361",
+                "salePrice": 2260000,
+                "saleDate": "2024-05-31",
+                "saleNotes": "Dairy Queen",
+                "propertyType": "Commercial",
+                "capRate": 5.98,
+                "propertyName": "Dairy Queen",
+                "ownerName": "Mary Lee Revocable Trust",
+                "ownerContact": "",
+                "propertyId": "9659375",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://picsum.photos/seed/property33/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-34",
+                "propertyAddress": "2095 S Santiam Hwy, Lebanon, OR 97355",
+                "salePrice": 1750000,
+                "saleDate": "2024-06-13",
+                "saleNotes": "Part of a 2 Property Portfolio",
+                "propertyType": "Commercial",
+                "capRate": 7.17,
+                "propertyName": "",
+                "ownerName": "Boss Aften Properties Llc",
+                "ownerContact": "",
+                "propertyId": "6485359",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property34/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-35",
+                "propertyAddress": "1445 N Pacific Hwy, Woodburn, OR 97071",
+                "salePrice": 1750000,
+                "saleDate": "2024-06-13",
+                "saleNotes": "Part of a 2 Property Portfolio",
+                "propertyType": "Commercial",
+                "capRate": 7.17,
+                "propertyName": "",
+                "ownerName": "Boss Aften Properties Llc",
+                "ownerContact": "",
+                "propertyId": "1409049",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://picsum.photos/seed/property35/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-36",
+                "propertyAddress": "1326 E Bypass 287, Alvord, TX 76225",
+                "salePrice": 1140000,
+                "saleDate": "2024-06-21",
+                "saleNotes": "Dollar General",
+                "propertyType": "Commercial",
+                "capRate": 8.26,
+                "propertyName": "Dollar General",
+                "ownerName": "Kjt Legacy Llc",
+                "ownerContact": "",
+                "propertyId": "9691561",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property36/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-37",
+                "propertyAddress": "4411 S Settler Dr, Ridgefield, WA 98642",
+                "salePrice": 1670000,
+                "saleDate": "2024-08-05",
+                "saleNotes": "Ridgefield Pioneer Village #14",
+                "propertyType": "Commercial",
+                "capRate": 6.30,
+                "propertyName": "Ridgefield Pioneer Village #14",
+                "ownerName": "",
+                "ownerContact": "",
+                "propertyId": "19815074",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property37/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            },
+            {
+                "id": "prop-38",
+                "propertyAddress": "2020 NW Industrial Park Rd, Prineville, OR 97754",
+                "salePrice": 1125000,
+                "saleDate": "",
+                "saleNotes": "",
+                "propertyType": "Industrial",
+                "capRate": 8.00,
+                "propertyName": "",
+                "ownerName": "",
+                "ownerContact": "",
+                "propertyId": "10094162",
+                "representation": "Seller",
+                "propertyImageUrl": "https://picsum.photos/seed/property38/800/500.jpg",
+                "costarUrl": "",
+                "commissionCalculation": ""
+            }
+        ];
+
+        // Data management
+        let properties = [];
+        let editingId = null;
+        let currentView = 'card'; // 'card' or 'table'
+        let sortField = 'saleDate';
+        let sortDirection = 'desc';
+        let currentModalPropertyId = null;
+
+        // DOM elements
+        const formContainer = document.getElementById('formContainer');
+        const formTitle = document.getElementById('formTitle');
+        const propertyForm = document.getElementById('propertyForm');
+        const cardView = document.getElementById('cardView');
+        const tableView = document.getElementById('tableView');
+        const propertiesTableBody = document.getElementById('propertiesTableBody');
+        const emptyState = document.getElementById('emptyState');
+        const searchInput = document.getElementById('searchInput');
+        const addPropertyBtn = document.getElementById('addPropertyBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const exportBtn = document.getElementById('exportBtn');
+        const importFile = document.getElementById('importFile');
+        const cardViewBtn = document.getElementById('cardViewBtn');
+        const tableViewBtn = document.getElementById('tableViewBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const propertyImageUrl = document.getElementById('propertyImageUrl');
+        const propertyModal = new bootstrap.Modal(document.getElementById('propertyModal'));
+        const modalEditBtn = document.getElementById('modalEditBtn');
+
+        // Initialize the app
+        function init() {
+            loadPropertiesFromStorage();
+            renderProperties();
+            updateStats();
+            setupEventListeners();
+        }
+
+        // Load properties from localStorage or use base data
+        function loadPropertiesFromStorage() {
+            const storedProperties = localStorage.getItem('properties');
+            if (storedProperties) {
+                properties = JSON.parse(storedProperties);
+            } else {
+                // First time loading - use base data
+                properties = [...baseData];
+                savePropertiesToStorage();
+            }
+        }
+
+        // Save properties to localStorage
+        function savePropertiesToStorage() {
+            localStorage.setItem('properties', JSON.stringify(properties));
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Form submission
+            propertyForm.addEventListener('submit', handleFormSubmit);
+            
+            // Add property button
+            addPropertyBtn.addEventListener('click', showAddForm);
+            
+            // Cancel button
+            cancelBtn.addEventListener('click', hideForm);
+            
+            // Search input
+            searchInput.addEventListener('input', handleSearch);
+            
+            // Export button
+            exportBtn.addEventListener('click', exportData);
+            
+            // Import file
+            importFile.addEventListener('change', importData);
+            
+            // View toggle buttons
+            cardViewBtn.addEventListener('click', () => switchView('card'));
+            tableViewBtn.addEventListener('click', () => switchView('table'));
+            
+            // Image URL input
+            propertyImageUrl.addEventListener('input', handleImagePreview);
+            
+            // Modal edit button
+            modalEditBtn.addEventListener('click', () => {
+                propertyModal.hide();
+                showEditForm(currentModalPropertyId);
+            });
+            
+            // Table headers for sorting
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    sortField = th.getAttribute('data-sort');
+                    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    renderProperties();
+                });
+            });
+        }
+
+        // Handle form submission
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            const propertyAddress = document.getElementById('propertyAddress').value.trim();
+            const representation = document.getElementById('representation').value;
+            
+            let isValid = true;
+            
+            if (!propertyAddress) {
+                document.getElementById('propertyAddress').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('propertyAddress').classList.remove('is-invalid');
+            }
+            
+            if (!representation) {
+                document.getElementById('representation').classList.add('is-invalid');
+                isValid = false;
+            } else {
+                document.getElementById('representation').classList.remove('is-invalid');
+            }
+            
+            if (!isValid) return;
+            
+            // Get form values
+            const propertyData = {
+                id: editingId || generateId(),
+                propertyAddress,
+                salePrice: parseFloat(document.getElementById('salePrice').value) || null,
+                saleDate: document.getElementById('saleDate').value || null,
+                saleNotes: document.getElementById('saleNotes').value.trim(),
+                commissionCalculation: document.getElementById('commissionCalculation').value.trim(),
+                propertyType: document.getElementById('propertyType').value,
+                capRate: parseFloat(document.getElementById('capRate').value) || null,
+                propertyName: document.getElementById('propertyName').value.trim(),
+                ownerName: document.getElementById('ownerName').value.trim(),
+                ownerContact: document.getElementById('ownerContact').value.trim(),
+                propertyId: document.getElementById('propertyId').value.trim(),
+                representation,
+                propertyImageUrl: document.getElementById('propertyImageUrl').value.trim(),
+                costarUrl: document.getElementById('costarUrl').value.trim()
+            };
+            
+            if (editingId) {
+                // Update existing property
+                const index = properties.findIndex(p => p.id === editingId);
+                if (index !== -1) {
+                    properties[index] = propertyData;
+                    showToast('Property updated successfully', 'success');
+                }
+            } else {
+                // Add new property
+                properties.push(propertyData);
+                showToast('Property added successfully', 'success');
+            }
+            
+            savePropertiesToStorage();
+            renderProperties();
+            updateStats();
+            hideForm();
+        }
+
+        // Show add form
+        function showAddForm() {
+            editingId = null;
+            formTitle.textContent = 'Add New Property';
+            propertyForm.reset();
+            imagePreview.classList.add('d-none');
+            formContainer.classList.add('active');
+        }
+
+        // Show edit form
+        function showEditForm(id) {
+            editingId = id;
+            const property = properties.find(p => p.id === id);
+            
+            if (!property) return;
+            
+            formTitle.textContent = 'Edit Property';
+            
+            // Populate form with property data
+            document.getElementById('propertyAddress').value = property.propertyAddress || '';
+            document.getElementById('salePrice').value = property.salePrice || '';
+            document.getElementById('saleDate').value = property.saleDate || '';
+            document.getElementById('saleNotes').value = property.saleNotes || '';
+            document.getElementById('commissionCalculation').value = property.commissionCalculation || '';
+            document.getElementById('propertyType').value = property.propertyType || '';
+            document.getElementById('capRate').value = property.capRate || '';
+            document.getElementById('propertyName').value = property.propertyName || '';
+            document.getElementById('ownerName').value = property.ownerName || '';
+            document.getElementById('ownerContact').value = property.ownerContact || '';
+            document.getElementById('propertyId').value = property.propertyId || '';
+            document.getElementById('representation').value = property.representation || '';
+            document.getElementById('propertyImageUrl').value = property.propertyImageUrl || '';
+            document.getElementById('costarUrl').value = property.costarUrl || '';
+            
+            // Show image preview if URL exists
+            if (property.propertyImageUrl) {
+                imagePreview.src = property.propertyImageUrl;
+                imagePreview.classList.remove('d-none');
+            } else {
+                imagePreview.classList.add('d-none');
+            }
+            
+            formContainer.classList.add('active');
+        }
+
+        // Hide form
+        function hideForm() {
+            formContainer.classList.remove('active');
+            propertyForm.reset();
+            imagePreview.classList.add('d-none');
+            editingId = null;
+            
+            // Remove validation classes
+            document.getElementById('propertyAddress').classList.remove('is-invalid');
+            document.getElementById('representation').classList.remove('is-invalid');
+        }
+
+        // Delete property
+        function deleteProperty(id) {
+            if (confirm('Are you sure you want to delete this property?')) {
+                properties = properties.filter(p => p.id !== id);
+                savePropertiesToStorage();
+                renderProperties();
+                updateStats();
+                showToast('Property deleted successfully', 'success');
+            }
+        }
+
+        // Handle search
+        function handleSearch() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            renderProperties(searchTerm);
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalProperties = properties.length;
+            const totalSaleValue = properties.reduce((sum, p) => sum + (p.salePrice || 0), 0);
+            const buyerSideDeals = properties.filter(p => p.representation === 'Buyer' || p.representation === 'Double-Ended').length;
+            const sellerSideDeals = properties.filter(p => p.representation === 'Seller' || p.representation === 'Double-Ended').length;
+            
+            document.getElementById('totalProperties').textContent = totalProperties;
+            document.getElementById('totalSaleValue').textContent = formatCurrency(totalSaleValue);
+            document.getElementById('buyerSideDeals').textContent = buyerSideDeals;
+            document.getElementById('sellerSideDeals').textContent = sellerSideDeals;
+        }
+
+        // Switch between card and table view
+        function switchView(view) {
+            currentView = view;
+            
+            if (view === 'card') {
+                cardView.classList.remove('d-none');
+                tableView.classList.add('d-none');
+                cardViewBtn.classList.add('active');
+                tableViewBtn.classList.remove('active');
+            } else {
+                cardView.classList.add('d-none');
+                tableView.classList.remove('d-none');
+                cardViewBtn.classList.remove('active');
+                tableViewBtn.classList.add('active');
+            }
+            
+            renderProperties();
+        }
+
+        // Handle image preview
+        function handleImagePreview() {
+            const url = propertyImageUrl.value.trim();
+            
+            if (url) {
+                imagePreview.src = url;
+                imagePreview.classList.remove('d-none');
+                
+                // Handle image load error
+                imagePreview.onerror = function() {
+                    this.src = 'https://via.placeholder.com/400x250/E5E7EB/6B7280?text=Invalid+Image+URL';
+                };
+            } else {
+                imagePreview.classList.add('d-none');
+            }
+        }
+
+        // Show property details in modal
+        function showPropertyDetails(id) {
+            const property = properties.find(p => p.id === id);
+            if (!property) return;
+            
+            currentModalPropertyId = id;
+            
+            // Set modal title
+            document.getElementById('propertyModalLabel').textContent = property.propertyName || 'Property Details';
+            
+            // Set modal image
+            const modalImage = document.getElementById('modalPropertyImage');
+            modalImage.src = property.propertyImageUrl || 'https://via.placeholder.com/800x500/E5E7EB/6B7280?text=No+Image+Available';
+            modalImage.onerror = function() {
+                this.src = 'https://via.placeholder.com/800x500/E5E7EB/6B7280?text=Invalid+Image+URL';
+            };
+            
+            // Populate overview tab
+            document.getElementById('modalAddress').textContent = property.propertyAddress || 'Not specified';
+            document.getElementById('modalName').textContent = property.propertyName || 'Not specified';
+            document.getElementById('modalType').textContent = property.propertyType || 'Not specified';
+            document.getElementById('modalId').textContent = property.propertyId || 'Not specified';
+            
+            // Populate transaction tab
+            document.getElementById('modalPrice').textContent = property.salePrice ? formatCurrency(property.salePrice) : 'Not specified';
+            document.getElementById('modalDate').textContent = property.saleDate ? formatDate(property.saleDate) : 'Not specified';
+            document.getElementById('modalCapRate').textContent = property.capRate ? `${property.capRate}%` : 'Not specified';
+            document.getElementById('modalRepresentation').textContent = property.representation || 'Not specified';
+            document.getElementById('modalCommission').textContent = property.commissionCalculation || 'Not specified';
+            document.getElementById('modalNotes').textContent = property.saleNotes || 'No notes available';
+            
+            // Populate owner tab
+            document.getElementById('modalOwnerName').textContent = property.ownerName || 'Not specified';
+            document.getElementById('modalOwnerContact').textContent = property.ownerContact || 'Not specified';
+            
+            // Populate links tab
+            const imageUrlLink = document.getElementById('modalImageUrl');
+            if (property.propertyImageUrl) {
+                imageUrlLink.href = property.propertyImageUrl;
+                imageUrlLink.style.display = 'inline-block';
+            } else {
+                imageUrlLink.style.display = 'none';
+            }
+            
+            const costarUrlLink = document.getElementById('modalCostarUrl');
+            if (property.costarUrl) {
+                costarUrlLink.href = property.costarUrl;
+                costarUrlLink.style.display = 'inline-block';
+            } else {
+                costarUrlLink.style.display = 'none';
+            }
+            
+            // Show modal
+            propertyModal.show();
+        }
+
+        // Render properties
+        function renderProperties(searchTerm = '') {
+            let filteredProperties = properties;
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredProperties = properties.filter(property => {
+                    return (
+                        (property.propertyAddress && property.propertyAddress.toLowerCase().includes(searchTerm)) ||
+                        (property.ownerName && property.ownerName.toLowerCase().includes(searchTerm)) ||
+                        (property.propertyName && property.propertyName.toLowerCase().includes(searchTerm))
+                    );
+                });
+            }
+            
+            // Apply sorting
+            filteredProperties.sort((a, b) => {
+                let aValue = a[sortField];
+                let bValue = b[sortField];
+                
+                // Handle null values
+                if (aValue === null) aValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
+                if (bValue === null) bValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
+                
+                if (sortField === 'salePrice' || sortField === 'capRate') {
+                    aValue = parseFloat(aValue) || 0;
+                    bValue = parseFloat(bValue) || 0;
+                }
+                
+                if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+                if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            // Show empty state if no properties
+            if (filteredProperties.length === 0) {
+                emptyState.classList.remove('d-none');
+                cardView.classList.add('d-none');
+                tableView.classList.add('d-none');
+                return;
+            } else {
+                emptyState.classList.add('d-none');
+                
+                if (currentView === 'card') {
+                    cardView.classList.remove('d-none');
+                    tableView.classList.add('d-none');
+                    renderCardView(filteredProperties);
+                } else {
+                    cardView.classList.add('d-none');
+                    tableView.classList.remove('d-none');
+                    renderTableView(filteredProperties);
+                }
+            }
+        }
+
+        // Render card view
+        function renderCardView(filteredProperties) {
+            cardView.innerHTML = '';
+            
+            filteredProperties.forEach(property => {
+                const card = document.createElement('div');
+                card.className = 'property-card';
+                card.onclick = () => showPropertyDetails(property.id); // Make card clickable for details
+                
+                // Determine badge class based on representation
+                let badgeClass = '';
+                if (property.representation === 'Buyer') {
+                    badgeClass = 'badge-buyer';
+                } else if (property.representation === 'Seller') {
+                    badgeClass = 'badge-seller';
+                } else if (property.representation === 'Double-Ended') {
+                    badgeClass = 'badge-double-ended';
+                }
+                
+                // Format sale price
+                const salePrice = property.salePrice ? formatCurrency(property.salePrice) : 'Not specified';
+                
+                // Format cap rate
+                const capRate = property.capRate ? `${property.capRate}%` : 'N/A';
+                
+                // Create property image URL with fallback
+                const imageUrl = property.propertyImageUrl || 'https://via.placeholder.com/400x250/E5E7EB/6B7280?text=No+Image+Available';
+                
+                card.innerHTML = `
+                    <div class="property-image-container">
+                        <img src="${imageUrl}" alt="${property.propertyName || 'Property'}" class="property-image" 
+                             onerror="this.src='https://via.placeholder.com/400x250/E5E7EB/6B7280?text=Invalid+Image+URL'">
+                        ${property.representation ? `<span class="property-badge ${badgeClass}">${property.representation}</span>` : ''}
+                    </div>
+                    <div class="property-details">
+                        <h3 class="property-name">${property.propertyName || 'Property'}</h3>
+                        <p class="property-address">${property.propertyAddress || 'No address specified'}</p>
+                        <div class="property-stats">
+                            <div class="property-stat">
+                                <div class="property-stat-value">${salePrice}</div>
+                                <div class="property-stat-label">Price</div>
+                            </div>
+                            <div class="property-stat">
+                                <div class="property-stat-value">${capRate}</div>
+                                <div class="property-stat-label">Cap Rate</div>
+                            </div>
+                            <div class="property-stat">
+                                <div class="property-stat-value">${property.propertyType || 'N/A'}</div>
+                                <div class="property-stat-label">Type</div>
+                            </div>
+                        </div>
+                        <div class="property-actions">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); showEditForm('${property.id}')">
+                                <i class="bi bi-pencil me-1"></i>Edit
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteProperty('${property.id}')">
+                                <i class="bi bi-trash me-1"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                cardView.appendChild(card);
+            });
+        }
+
+        // Render table view
+        function renderTableView(filteredProperties) {
+            propertiesTableBody.innerHTML = '';
+            
+            filteredProperties.forEach(property => {
+                const row = document.createElement('tr');
+                row.onclick = () => showPropertyDetails(property.id); // Make row clickable for details
+                
+                // Format sale date
+                const saleDate = property.saleDate ? formatDate(property.saleDate) : '';
+                
+                // Format sale price
+                const salePrice = property.salePrice ? formatCurrency(property.salePrice) : '';
+                
+                // Create table image with fallback
+                const imageUrl = property.propertyImageUrl || 'https://via.placeholder.com/60x40/E5E7EB/6B7280?text=No+Image';
+                
+                row.innerHTML = `
+                    <td>${saleDate}</td>
+                    <td>${salePrice}</td>
+                    <td>
+                        <img src="${imageUrl}" alt="Property" class="table-image" 
+                             onerror="this.src='https://via.placeholder.com/60x40/E5E7EB/6B7280?text=Error'">
+                    </td>
+                    <td>${property.propertyAddress || ''}</td>
+                    <td>${property.propertyName || ''}</td>
+                    <td>${property.ownerName || ''}</td>
+                    <td>${property.representation || ''}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); showEditForm('${property.id}')">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteProperty('${property.id}')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                propertiesTableBody.appendChild(row);
+            });
+        }
+
+        // Export data
+        function exportData() {
+            const dataStr = JSON.stringify(properties, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `properties_${new Date().toISOString().slice(0,10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showToast('Data exported successfully', 'success');
+        }
+
+        // Import data
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedProperties = JSON.parse(event.target.result);
+                    
+                    if (Array.isArray(importedProperties)) {
+                        properties = importedProperties;
+                        savePropertiesToStorage();
+                        renderProperties();
+                        updateStats();
+                        showToast('Data imported successfully', 'success');
+                    } else {
+                        showToast('Invalid file format', 'error');
+                    }
+                } catch (error) {
+                    showToast('Error importing data', 'error');
+                }
+            };
+            
+            reader.readAsText(file);
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toastContainer');
+            
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${type}`;
+            
+            const iconClass = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="bi ${iconClass}"></i>
+                </div>
+                <div class="toast-message">
+                    <div class="toast-title">${type === 'success' ? 'Success' : 'Error'}</div>
+                    <div class="toast-text">${message}</div>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+                setTimeout(() => {
+                    toastContainer.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+
+        // Format currency
+        function formatCurrency(value) {
+            if (!value && value !== 0) return '$0';
+            
+            // Format large values with M for millions
+            if (value >= 1000000) {
+                return `$${(value / 1000000).toFixed(1)}M`;
+            }
+            
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
+<script>
+
+</script>
+</body>
+</html>
