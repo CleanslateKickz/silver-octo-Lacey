@@ -672,6 +672,9 @@
                                 <i class="bi bi-table me-1"></i> Table
                             </button>
                         </div>
+                        <button class="btn btn-primary" id="addPropertyBtn">
+                            <i class="bi bi-plus-circle me-2"></i>Add Property
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1769,7 +1772,9 @@
             propertyForm.addEventListener('submit', handleFormSubmit);
             
             // Add property button
-            addPropertyBtn.addEventListener('click', showAddForm);
+            if (addPropertyBtn) {
+                addPropertyBtn.addEventListener('click', showAddForm);
+            }
             
             // Cancel button
             cancelBtn.addEventListener('click', hideForm);
@@ -1938,6 +1943,7 @@
             imagePreview.classList.add('d-none');
             saleDateInput.classList.remove('is-invalid');
             formContainer.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Show edit form
@@ -1982,6 +1988,9 @@
             
             saleDateInput.classList.remove('is-invalid');
             formContainer.classList.add('active');
+
+            // Scroll to the top of the page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         // Hide form
@@ -2089,7 +2098,7 @@
             // Populate transaction tab
             document.getElementById('modalPrice').textContent = property.salePrice ? formatCurrency(property.salePrice) : 'Not specified';
             document.getElementById('modalDate').textContent = property.saleDate ? formatDate(property.saleDate) : 'Not specified';
-            document.getElementById('modalCapRate').textContent = property.capRate ? `${property.capRate}%` : 'Not specified';
+            document.getElementById('modalCapRate').textContent = property.capRate ? `${property.capRate}%` : 'N/A';
             document.getElementById('modalRepresentation').textContent = property.representation || 'Not specified';
             document.getElementById('modalCommission').textContent = property.commissionCalculation || 'Not specified';
             document.getElementById('modalNotes').textContent = property.saleNotes || 'No notes available';
