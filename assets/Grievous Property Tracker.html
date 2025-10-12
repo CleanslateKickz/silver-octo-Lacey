@@ -452,6 +452,16 @@
         .detail-item {
             margin-bottom: 1rem;
         }
+        /* Compact modal tweaks */
+        #compactDetails h6.text-muted {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        #compactDetails .detail-item .form-control,
+        #compactDetails .detail-item .form-select,
+        #compactDetails .detail-item textarea {
+            margin-top: 0.25rem;
+        }
 
         .detail-label {
             font-weight: 600;
@@ -671,6 +681,9 @@
                             <button class="view-btn" id="tableViewBtn">
                                 <i class="bi bi-table me-1"></i> Table
                             </button>
+                            <button class="view-btn" id="insightsViewBtn">
+                                <i class="bi bi-graph-up me-1"></i> Insights
+                            </button>
                         </div>
                         <button class="btn btn-primary" id="addPropertyBtn">
                             <i class="bi bi-plus-circle me-2"></i>Add Property
@@ -800,6 +813,48 @@
             </table>
         </div>
 
+        <!-- Insights View -->
+        <div class="insights-container fade-in d-none" id="insightsView">
+            <div class="row g-3 mb-3">
+                <div class="col-md-4 col-12">
+                    <div class="metric-card">
+                        <div class="metric-value" id="insightsBuyerCount">0</div>
+                        <div class="metric-label">Buyer Side (incl. double-ended)</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="metric-card">
+                        <div class="metric-value" id="insightsSellerCount">0</div>
+                        <div class="metric-label">Seller Side (incl. double-ended)</div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-12">
+                    <div class="metric-card">
+                        <div class="metric-value" id="insightsDoubleCount">0</div>
+                        <div class="metric-label">Double-Ended Deals</div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">Representation Mix</h6>
+                            <canvas id="representationChartCanvas" height="220"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">Yearly Deals by Side</h6>
+                            <canvas id="yearlyDealsChartCanvas" height="220"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Empty State -->
         <div class="empty-state d-none" id="emptyState">
             <div class="empty-state-icon">
@@ -821,23 +876,10 @@
                 <div class="modal-body">
                     <img id="modalPropertyImage" class="modal-property-image" src="" alt="Property Image">
                     
-                    <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab" aria-controls="transaction" aria-selected="false">Transaction</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="parties-tab" data-bs-toggle="tab" data-bs-target="#parties" type="button" role="tab" aria-controls="parties" aria-selected="false">Parties</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="links-tab" data-bs-toggle="tab" data-bs-target="#links" type="button" role="tab" aria-controls="links" aria-selected="false">Links</button>
-                        </li>
-                    </ul>
-                    
-                    <div class="tab-content mt-3" id="propertyTabContent">
-                        <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <!-- Compact consolidated details view -->
+                    <div class="mt-3" id="compactDetails">
+                        <div class="mb-3">
+                            <h6 class="text-muted">Overview</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="detail-item">
@@ -865,7 +907,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="transaction" role="tabpanel" aria-labelledby="transaction-tab">
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Transaction</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="detail-item">
@@ -905,37 +949,39 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="parties" role="tabpanel" aria-labelledby="parties-tab">
+
+                        <div class="mb-3">
+                            <h6 class="text-muted">Parties</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="parties-section">
-                                        <h6>Seller/Owner</h6>
                                         <div class="detail-item">
-                                            <div class="detail-label">Name</div>
+                                            <div class="detail-label">Seller/Owner Name</div>
                                             <div class="detail-value" id="modalOwnerName"></div>
                                         </div>
                                         <div class="detail-item">
-                                            <div class="detail-label">Contact</div>
+                                            <div class="detail-label">Seller/Owner Contact</div>
                                             <div class="detail-value" id="modalOwnerContact"></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="parties-section">
-                                        <h6>Buyer</h6>
                                         <div class="detail-item">
-                                            <div class="detail-label">Name</div>
+                                            <div class="detail-label">Buyer Name</div>
                                             <div class="detail-value" id="modalBuyerName"></div>
                                         </div>
                                         <div class="detail-item">
-                                            <div class="detail-label">Contact</div>
+                                            <div class="detail-label">Buyer Contact</div>
                                             <div class="detail-value" id="modalBuyerContact"></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
+
+                        <div class="mb-1">
+                            <h6 class="text-muted">Links</h6>
                             <div class="row g-3">
                                 <div class="col-md-12">
                                     <div class="detail-item">
@@ -944,6 +990,7 @@
                                             <a id="modalImageUrl" href="" target="_blank" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-image me-1"></i>View Image
                                             </a>
+                                            <!-- Editable input will appear in edit mode -->
                                         </div>
                                     </div>
                                 </div>
@@ -954,6 +1001,7 @@
                                             <a id="modalCostarUrl" href="" target="_blank" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-link-45deg me-1"></i>View on CoStar
                                             </a>
+                                            <!-- Editable input will appear in edit mode -->
                                         </div>
                                     </div>
                                 </div>
@@ -963,8 +1011,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-outline-secondary" id="modalCancelEditBtn" style="display:none;">
+                        Cancel
+                    </button>
+                    <button type="button" class="btn btn-success" id="modalSaveBtn" style="display:none;">
+                        <i class="bi bi-check-lg me-2"></i>Save Changes
+                    </button>
                     <button type="button" class="btn btn-primary" id="modalEditBtn">
-                        <i class="bi bi-pencil me-2"></i>Edit Property
+                        <i class="bi bi-pencil me-2"></i>Edit in Modal
                     </button>
                 </div>
             </div>
@@ -976,294 +1030,368 @@
 
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Charts Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
         // Base data from CSV files
         const baseData = [
             {
-                "id": "prop-1",
-                "propertyAddress": "11520 SE 82nd Ave, Clackamas, OR 97086",
-                "salePrice": 4050000,
-                "saleDate": "2020-12-14",
-                "saleNotes": "Clackamas Service Center",
-                "propertyType": "Commercial",
-                "capRate": 6.81,
-                "propertyName": "Clackamas Service Center",
-                "ownerName": "Watumull Properties Corporation; Gulsons 82nd LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "1332101",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property1/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-2",
-                "propertyAddress": "12035 NE Halsey St, Portland, OR 97220",
-                "salePrice": 1460000,
-                "saleDate": "2021-04-05",
-                "saleNotes": "Arby's",
-                "propertyType": "Commercial",
-                "capRate": 5.50,
-                "propertyName": "Arby's",
-                "ownerName": "Arctic Circle; Aca Properties Lc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "5060036",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property2/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-3",
-                "propertyAddress": "3602 NW 119th St, Vancouver, WA 98685",
-                "salePrice": 1636504,
-                "saleDate": "2021-07-22",
-                "saleNotes": "Building 2 (Part of a 3 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 5.99,
-                "propertyName": "Building 2",
-                "ownerName": "Western Properties Ii Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "7064945",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property3/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-4",
-                "propertyAddress": "3600 NW 119th St, Vancouver, WA 98685",
-                "salePrice": 1735312,
-                "saleDate": "2021-07-22",
-                "saleNotes": "Building 1 (Part of a 3 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 5.99,
-                "propertyName": "Building 1",
-                "ownerName": "Western Properties Ii Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "9710877",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property4/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-5",
-                "propertyAddress": "3604 NW 119th St, Vancouver, WA 98685",
-                "salePrice": 2153984,
-                "saleDate": "2021-07-22",
-                "saleNotes": "Building 3 (Part of a 3 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 5.99,
-                "propertyName": "Building 3",
-                "ownerName": "Western Properties Ii Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "9742038",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property5/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-6",
-                "propertyAddress": "250 Northstar Dr, Rural Hall, NC 27045",
-                "salePrice": 4800000,
-                "saleDate": "2021-07-26",
-                "saleNotes": "American Tire",
+                "id": "prop-38",
+                "propertyAddress": "2020 NW Industrial Park Rd, Prineville, OR 97754",
+                "salePrice": 1125000,
+                "saleDate": "2024-09-20",
+                "saleNotes": "Literally Referral from Clayton Brown",
+                "commissionCalculation": "",
                 "propertyType": "Industrial",
-                "capRate": 7.14,
-                "propertyName": "American Tire",
-                "ownerName": "Countryside Enterprise Llc; Akb Ltd Liabilty Co",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "7533643",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property6/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "capRate": 8,
+                "propertyName": "Deschutes Labs",
+                "ownerName": "Deschutes Labs",
+                "ownerContact": "Anthony Vivolo",
+                "propertyId": "10094162",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/oozqqI4wF5dgB7C2GGnEI9YXlSJ36JchGwXIcSNr6gk/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/10094162/sale"
             },
             {
-                "id": "prop-7",
-                "propertyAddress": "6105 NE 114th Ave, Vancouver, WA 98662",
-                "salePrice": 6050000,
-                "saleDate": "2021-09-21",
-                "saleNotes": "Orchards Retail Center",
+                "id": "prop-37",
+                "propertyAddress": "4411 S Settler Dr, Ridgefield, WA 98642",
+                "salePrice": 1670000,
+                "saleDate": "2024-08-05",
+                "saleNotes": "Ridgefield Pioneer Village #14\n- Whitney Rhoades brought the Buyer",
+                "commissionCalculation": "",
                 "propertyType": "Commercial",
-                "capRate": 5.71,
-                "propertyName": "Orchards Retail Center",
-                "ownerName": "Triad Investment Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "1518725",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property7/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-8",
-                "propertyAddress": "930 SW Scotton Way, Battle Ground, WA 98604",
-                "salePrice": 2842105,
-                "saleDate": "2021-10-29",
-                "saleNotes": "Burger King",
-                "propertyType": "Commercial",
-                "capRate": 4.34,
-                "propertyName": "Burger King",
-                "ownerName": "Ambrosia QSR",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "12621462",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property8/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-9",
-                "propertyAddress": "23038 Twain Harte Dr, Twain Harte, CA 95383",
-                "salePrice": 267000,
-                "saleDate": "2021-11-30",
-                "saleNotes": "",
-                "propertyType": "Land",
-                "capRate": null,
-                "propertyName": "",
+                "capRate": 6.3,
+                "propertyName": "Ridgefield Pioneer Village #14",
                 "ownerName": "",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "12621365",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property9/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-10",
-                "propertyAddress": "3007 22nd Pl, Forest Grove, OR 97116",
-                "salePrice": 1700000,
-                "saleDate": "2021-12-23",
-                "saleNotes": "Kaylee Apartments",
-                "propertyType": "Residential",
-                "capRate": null,
-                "propertyName": "Kaylee Apartments",
-                "ownerName": "Kaylee Apartments Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "9058789",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property10/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-11",
-                "propertyAddress": "2800 NE 162nd Ave, Vancouver, WA 98682",
-                "salePrice": 6195000,
-                "saleDate": "2021-12-23",
-                "saleNotes": "Rite Aid",
-                "propertyType": "Commercial",
-                "capRate": 7.02,
-                "propertyName": "Rite Aid",
-                "ownerName": "Hummelt Development Co.; Tph Partners Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "5965451",
+                "propertyId": "19815074",
                 "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property11/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/opHI7gxoOFqvK4yM76be92m4ufKNgNahdENGlcehuKc/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/19815074/sale"
             },
             {
-                "id": "prop-12",
-                "propertyAddress": "305 NE 4th Ave, Camas, WA 98607",
-                "salePrice": 2750000,
-                "saleDate": "2022-05-24",
-                "saleNotes": "Farrell Building",
+                "id": "prop-36",
+                "propertyAddress": "1326 E Bypass 287, Alvord, TX 76225",
+                "salePrice": 1140000,
+                "saleDate": "2024-06-21",
+                "saleNotes": "Dollar General",
+                "commissionCalculation": "",
                 "propertyType": "Commercial",
-                "capRate": 6.01,
-                "propertyName": "Farrell Building",
-                "ownerName": "The Farrell Building LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "4489907",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property12/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "capRate": 8.26,
+                "propertyName": "Dollar General",
+                "ownerName": "Kjt Legacy Llc",
+                "ownerContact": "Linda Becher",
+                "propertyId": "9691561",
+                "representation": "Seller",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/OKCy-h_PZXM76D9lOEU4JtlTYwHiI5G3ThRPSC1KkXU/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/9691561/sale"
             },
             {
-                "id": "prop-13",
-                "propertyAddress": "6606 E McKellips Rd, Mesa, AZ 85215",
-                "salePrice": 1038291,
-                "saleDate": "2022-12-16",
-                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
+                "id": "prop-34",
+                "propertyAddress": "2095 S Santiam Hwy, Lebanon, OR 97355",
+                "salePrice": 1750000,
+                "saleDate": "2024-06-13",
+                "saleNotes": "Part of a 2 Property Portfolio",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 7.17,
+                "propertyName": "Burger King",
+                "ownerName": "Boss Aften Properties Llc",
+                "ownerContact": "Robert Boss",
+                "propertyId": "6485359",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/B6HJYIddhPEXMIpjPgMe-NZsQRfjp76cyVf0Mnh0syw/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/6485359/sale"
+            },
+            {
+                "id": "prop-35",
+                "propertyAddress": "1445 N Pacific Hwy, Woodburn, OR 97071",
+                "salePrice": 1750000,
+                "saleDate": "2024-06-13",
+                "saleNotes": "Part of a 2 Property Portfolio",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 7.17,
+                "propertyName": "Burger King",
+                "ownerName": "QSR West, Inc.",
+                "ownerContact": "Nasser Aliabadi",
+                "propertyId": "1409049",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/fuNGuAOs5OybDJ-ybwJBmBvZnvfcvoXtO89kvKlIeqY/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/1409049/sale"
+            },
+            {
+                "id": "prop-33",
+                "propertyAddress": "320 Pacific Ave S, Monmouth, OR 97361",
+                "salePrice": 2260000,
+                "saleDate": "2024-05-31",
+                "saleNotes": "Dairy Queen",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.98,
+                "propertyName": "Dairy Queen",
+                "ownerName": "Mallard Vi Llc",
+                "ownerContact": "Jeffrey Douglass",
+                "propertyId": "9659375",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/fsMYn1VbryEZ_umV9xHpSAM8DhjtfdCmCir2tnrphQw/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/9659375/sale"
+            },
+            {
+                "id": "prop-32",
+                "propertyAddress": "11808 NE Fourth Plain Blvd, Vancouver, WA 98682",
+                "salePrice": 21000000,
+                "saleDate": "2024-05-30",
+                "saleNotes": "Evergreen Station",
+                "commissionCalculation": "",
                 "propertyType": "Commercial",
                 "capRate": null,
-                "propertyName": "Red Mountain Plaza",
-                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "7102669",
+                "propertyName": "Evergreen Station",
+                "ownerName": "Nili Investments LLC",
+                "ownerContact": "Shawn Nili",
+                "propertyId": "715721",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property13/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/XuuQxZ-ZS1klsjxeenqWk3iLbgG2mQOeSkxO8850-xs/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/715721/sale"
             },
             {
-                "id": "prop-14",
-                "propertyAddress": "6626-6640 E McKellips Rd, Mesa, AZ 85215",
-                "salePrice": 5909692,
-                "saleDate": "2022-12-16",
-                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
+                "id": "prop-31",
+                "propertyAddress": "2221 NW Myhre Rd, Silverdale, WA 98383",
+                "salePrice": 12300000,
+                "saleDate": "2024-05-16",
+                "saleNotes": "Lowe's",
+                "commissionCalculation": "",
                 "propertyType": "Commercial",
-                "capRate": null,
-                "propertyName": "Red Mountain Plaza",
-                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "850131",
+                "capRate": 6,
+                "propertyName": "Lowe's",
+                "ownerName": "Tomchi Group NV, LLC",
+                "ownerContact": "Wallace Ching",
+                "propertyId": "7006688",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property14/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/8gCb4VKZ0956sbSX6pdjTGXGLxaZ9N6iuMrSQ6f84p0/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/7006688/sale"
             },
             {
-                "id": "prop-15",
-                "propertyAddress": "6620 E McKellips Rd, Mesa, AZ 85215",
-                "salePrice": 9452017,
-                "saleDate": "2022-12-16",
-                "saleNotes": "Red Mountain Plaza-Shops D (Part of a 3 Property Sale)",
+                "id": "prop-30",
+                "propertyAddress": "2609-2619 NW 9th St, Corvallis, OR 97330",
+                "salePrice": 1650000,
+                "saleDate": "2024-03-25",
+                "saleNotes": "Westview Plaza\nDan Whitaker",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 7.2,
+                "propertyName": "Westview Plaza",
+                "ownerName": "Whitakers Cambridge Court Llc",
+                "ownerContact": "Dan Whitaker",
+                "propertyId": "6576517",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/yp-EhPnb9T_vpOaXLuTvw74PPYyNbHpYJpZFLDswvps/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/6576517/sale"
+            },
+            {
+                "id": "prop-26",
+                "propertyAddress": "14231 E 40 Hwy, Kansas City, MO 64136",
+                "salePrice": 306471,
+                "saleDate": "2024-01-09",
+                "saleNotes": "Hawthorne 40 Shopping Center (Part of a 4 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 10,
+                "propertyName": "Hawthorne 40 Shopping Center",
+                "ownerName": "Djurdjura LLC",
+                "ownerContact": "Mike Toursal",
+                "propertyId": "6273868",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/6RuHOLAU3fBBoR7OEq6zK-DYkeZM-R_TzQbM7cTsic4/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/6273868/sale"
+            },
+            {
+                "id": "prop-27",
+                "propertyAddress": "14227 E US Hwy 40, Kansas City, MO 64136",
+                "salePrice": 342358,
+                "saleDate": "2024-01-09",
+                "saleNotes": "My Dentist (Part of a 4 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 10,
+                "propertyName": "My Dentist",
+                "ownerName": "Djurdjura LLC",
+                "ownerContact": "Mike Toursal",
+                "propertyId": "5619689",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/U_9_Y6_1lP4kNsPGvjwJMfi43z9jp4dL16x9olLvyu0/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/5619689/sale"
+            },
+            {
+                "id": "prop-28",
+                "propertyAddress": "14171 E Us-40 Hwy, Kansas City, MO 64136",
+                "salePrice": 515535,
+                "saleDate": "2024-01-09",
+                "saleNotes": "The Hawthrone 40 Shopping Center\n- Pizza Hut & Wing Street (Part of a 4 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 10,
+                "propertyName": "Pizza Hut & Wing Street",
+                "ownerName": "Djurdjura LLC",
+                "ownerContact": "Mike Toursal",
+                "propertyId": "581133",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/4XfNponh5Xn_YFvyjINyJijWVkjHkq8MN0KptNNtmUA/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/581133/sale"
+            },
+            {
+                "id": "prop-29",
+                "propertyAddress": "14121-14221 E Us Highway 40, Kansas City, MO 64136",
+                "salePrice": 7435636,
+                "saleDate": "2024-01-09",
+                "saleNotes": "Hawthorne 40 S/C (Part of a 4 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 10,
+                "propertyName": "Hawthorne 40 S/C",
+                "ownerName": "Djurdjura LLC",
+                "ownerContact": "Mike Toursal",
+                "propertyId": "597152",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/tpWw3d5Hvye7rPc63sOmaod1ALTM188OcWYKJYWMNMQ/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/597152/sale"
+            },
+            {
+                "id": "prop-25",
+                "propertyAddress": "1105 NW 9th St, Corvallis, OR 97330",
+                "salePrice": 1515000,
+                "saleDate": "2024-01-05",
+                "saleNotes": "",
+                "commissionCalculation": "",
                 "propertyType": "Commercial",
                 "capRate": null,
-                "propertyName": "Red Mountain Plaza-Shops D",
-                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6861142",
+                "propertyName": "",
+                "ownerName": "Dickerhoof Properties",
+                "ownerContact": "Darren Dickerhoof",
+                "propertyId": "6532056",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/W6udj-xRNcN0xsI4AoSvZyhiczs76d3TxzGgxxhddv8/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/6532056/sale"
+            },
+            {
+                "id": "prop-24",
+                "propertyAddress": "105 W 29th St, Vancouver, WA 98660",
+                "salePrice": 1750000,
+                "saleDate": "2023-12-18",
+                "saleNotes": "Courtyard Apartments",
+                "commissionCalculation": "",
+                "propertyType": "Residential",
+                "capRate": 4.19,
+                "propertyName": "Courtyard Apartments",
+                "ownerName": "105 W29th Llc",
+                "ownerContact": "David Campos",
+                "propertyId": "4283062",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property15/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/5PL5xeoMEdnjRo3c02bJWN3cTyyZ0XBLn4YGHlJO_cg/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/4283062/sale"
+            },
+            {
+                "id": "prop-22",
+                "propertyAddress": "14602-14612 NE Fourth Plain Blvd, Vancouver, WA 98682",
+                "salePrice": 3575000,
+                "saleDate": "2023-10-17",
+                "saleNotes": "Y Plaza (Part of a 2 Property Sale)\nAshton Summers",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 6,
+                "propertyName": "Y Plaza",
+                "ownerName": "Real Asset Management, Inc",
+                "ownerContact": "Brian Tucker; David Campos",
+                "propertyId": "5023349",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/3eWI9gaXhZLjnALOhMvORB83Eg4DRaqmS2rDLeHASDY/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/5023349/summary"
+            },
+            {
+                "id": "prop-23",
+                "propertyAddress": "14602 NE Fourth Plain Dr, Vancouver, WA 98682",
+                "salePrice": 3575000,
+                "saleDate": "2023-10-17",
+                "saleNotes": "Y Plaza (Part of a 2 Property Sale)\nBuyer Broker: Eric Garske & Ashton Summers",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 6,
+                "propertyName": "Y Plaza",
+                "ownerName": "Real Asset Management, Inc",
+                "ownerContact": "David Campos; Brian Tucker",
+                "propertyId": "4404779",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/H9s0iHA9CUsno15kKbfHsUjAFTvxF1wQS4M_IAunBl4/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/4404779/sale"
+            },
+            {
+                "id": "prop-21",
+                "propertyAddress": "340 NE Beacon Dr, Grants Pass, OR 97526",
+                "salePrice": 6400000,
+                "saleDate": "2023-08-31",
+                "saleNotes": "Nicholas Bushong",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 6.5,
+                "propertyName": "Grants Pass Shopping Center",
+                "ownerName": "Metro Partners LLC",
+                "ownerContact": "John Farkash; Rodney Freeman; Nathaniel Williams",
+                "propertyId": "5850186",
+                "representation": "Seller",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/V6vQG0i5M1ImrBlAh7xf_LHGf2VvnDH6XWr_ymMWrcg/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/5850186/sale"
+            },
+            {
+                "id": "prop-20",
+                "propertyAddress": "11621 Island Ave, La Grande, OR 97850",
+                "salePrice": 1600000,
+                "saleDate": "2023-08-01",
+                "saleNotes": "",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "The Carrington Company",
+                "ownerContact": "Greg Cutler",
+                "propertyId": "6818721",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/0y-Yipft5sZD-rGrOn1s2QCywV_sJL7jRU3_GFT1NGc/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/6818721/sale"
+            },
+            {
+                "id": "prop-19",
+                "propertyAddress": "2680 Coweeman Park Dr, Kelso, WA 98626",
+                "salePrice": 1030568,
+                "saleDate": "2023-05-31",
+                "saleNotes": "",
+                "commissionCalculation": "",
+                "propertyType": "Industrial",
+                "capRate": null,
+                "propertyName": "",
+                "ownerName": "Pacific NW Properties",
+                "ownerContact": "Mitch Page",
+                "propertyId": "7733798",
+                "representation": "Double-Ended",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/mWW7RKIavzkDEs4rTyNOSoB6MnsNO_U69wY-Lb8dchc/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/7733798/sale"
+            },
+            {
+                "id": "prop-18",
+                "propertyAddress": "201 Cascade Mall Dr, Burlington, WA 98233",
+                "salePrice": 12295000,
+                "saleDate": "2023-04-07",
+                "saleNotes": "Cross Court Plaza (Part of a 2 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 7.63,
+                "propertyName": "Cross Court Plaza",
+                "ownerName": "Transnational Investments",
+                "ownerContact": "Benjamin Cheng",
+                "propertyId": "1170876",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/usqcLFjOkC4nVjNbe8Ky3chjGxORWU8MIGdXtuHhm8c/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/1170876/sale"
             },
             {
                 "id": "prop-16",
@@ -1276,8 +1404,6 @@
                 "propertyName": "Multi-Property Sale",
                 "ownerName": "Joseph R Fox",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
                 "propertyId": "1237416",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property16/800/500.jpg",
@@ -1295,8 +1421,6 @@
                 "propertyName": "Multi-Property Sale",
                 "ownerName": "Joseph R Fox",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
                 "propertyId": "6637034",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property17/800/500.jpg",
@@ -1304,413 +1428,271 @@
                 "commissionCalculation": ""
             },
             {
-                "id": "prop-18",
-                "propertyAddress": "201 Cascade Mall Dr, Burlington, WA 98233",
-                "salePrice": 12295000,
-                "saleDate": "2023-04-07",
-                "saleNotes": "Cross Court Plaza (Part of a 2 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 7.63,
-                "propertyName": "Cross Court Plaza",
-                "ownerName": "Merlone Geier Management, Inc.; MGP XI Cascade LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "1170876",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property18/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-19",
-                "propertyAddress": "2680 Coweeman Park Dr, Kelso, WA 98626",
-                "salePrice": 1030568,
-                "saleDate": "2023-05-31",
-                "saleNotes": "",
-                "propertyType": "Industrial",
-                "capRate": null,
-                "propertyName": "",
-                "ownerName": "Janice I Lewis",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "7733798",
-                "representation": "Double-Ended",
-                "propertyImageUrl": "https://picsum.photos/seed/property19/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-20",
-                "propertyAddress": "11621 Island Ave, La Grande, OR 97850",
-                "salePrice": 1600000,
-                "saleDate": "2023-08-01",
-                "saleNotes": "",
+                "id": "prop-13",
+                "propertyAddress": "6606 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 1038291,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
                 "propertyType": "Commercial",
                 "capRate": null,
-                "propertyName": "",
-                "ownerName": "Mark E Handy",
+                "propertyName": "Red Mountain Plaza",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6818721",
+                "propertyId": "7102669",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property20/800/500.jpg",
+                "propertyImageUrl": "https://picsum.photos/seed/property13/800/500.jpg",
                 "costarUrl": "",
                 "commissionCalculation": ""
             },
             {
-                "id": "prop-21",
-                "propertyAddress": "340 NE Beacon Dr, Grants Pass, OR 97526",
-                "salePrice": 6400000,
-                "saleDate": "2023-08-31",
-                "saleNotes": "",
+                "id": "prop-14",
+                "propertyAddress": "6626-6640 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 5909692,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza (Part of a 3 Property Sale)",
                 "propertyType": "Commercial",
-                "capRate": 6.50,
-                "propertyName": "",
-                "ownerName": "Metro Partners LLC",
+                "capRate": null,
+                "propertyName": "Red Mountain Plaza",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "5850186",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property21/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-22",
-                "propertyAddress": "14602-14612 NE Fourth Plain Blvd, Vancouver, WA 98682",
-                "salePrice": 3575000,
-                "saleDate": "2023-10-17",
-                "saleNotes": "Y Plaza (Part of a 2 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 6.00,
-                "propertyName": "Y Plaza",
-                "ownerName": "Slosar Properties Inc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "5023349",
+                "propertyId": "850131",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property22/800/500.jpg",
+                "propertyImageUrl": "https://picsum.photos/seed/property14/800/500.jpg",
                 "costarUrl": "",
                 "commissionCalculation": ""
             },
             {
-                "id": "prop-23",
-                "propertyAddress": "14602 NE Fourth Plain Dr, Vancouver, WA 98682",
-                "salePrice": 3575000,
-                "saleDate": "2023-10-17",
-                "saleNotes": "Y Plaza (Part of a 2 Property Sale)",
+                "id": "prop-15",
+                "propertyAddress": "6620 E McKellips Rd, Mesa, AZ 85215",
+                "salePrice": 9452017,
+                "saleDate": "2022-12-16",
+                "saleNotes": "Red Mountain Plaza-Shops D (Part of a 3 Property Sale)",
                 "propertyType": "Commercial",
-                "capRate": 6.00,
-                "propertyName": "Y Plaza",
-                "ownerName": "Slosar Properties Inc",
+                "capRate": null,
+                "propertyName": "Red Mountain Plaza-Shops D",
+                "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "4404779",
+                "propertyId": "6861142",
                 "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property23/800/500.jpg",
+                "propertyImageUrl": "https://picsum.photos/seed/property15/800/500.jpg",
                 "costarUrl": "",
                 "commissionCalculation": ""
             },
             {
-                "id": "prop-24",
-                "propertyAddress": "105 W 29th St, Vancouver, WA 98660",
-                "salePrice": 1750000,
-                "saleDate": "2023-12-18",
-                "saleNotes": "Courtyard Apartments",
+                "id": "prop-12",
+                "propertyAddress": "305 NE 4th Ave, Camas, WA 98607",
+                "salePrice": 2750000,
+                "saleDate": "2022-05-24",
+                "saleNotes": "Farrell Building",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 6.01,
+                "propertyName": "Farrell Building",
+                "ownerName": "Stafford Family Trust",
+                "ownerContact": "Douglas Stafford",
+                "propertyId": "4489907",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/mgp6u_YQlABJkhDa4tchjWd17oVQB72mx0ObbO6xYSw/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/4489907/sale"
+            },
+            {
+                "id": "prop-10",
+                "propertyAddress": "3007 22nd Pl, Forest Grove, OR 97116",
+                "salePrice": 1700000,
+                "saleDate": "2021-12-23",
+                "saleNotes": "Kaylee Apartments\nNicholas Bushong",
+                "commissionCalculation": "",
                 "propertyType": "Residential",
-                "capRate": 4.19,
-                "propertyName": "Courtyard Apartments",
-                "ownerName": "Duane K Woodruff; Ruth M Woodruff",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "4283062",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property24/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "capRate": null,
+                "propertyName": "Kaylee Apartments",
+                "ownerName": "Manifaust Destiny Llc",
+                "ownerContact": "Nicole Capobianco Scott",
+                "propertyId": "9058789",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/8lmHm8cWpc0ho3sB79V2HX9xZnIv25aK7eRGR8n3_sM/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/9058789/sale"
             },
             {
-                "id": "prop-25",
-                "propertyAddress": "1105 NW 9th St, Corvallis, OR 97330",
-                "salePrice": 1515000,
-                "saleDate": "2024-01-05",
+                "id": "prop-11",
+                "propertyAddress": "2800 NE 162nd Ave, Vancouver, WA 98682",
+                "salePrice": 6195000,
+                "saleDate": "2021-12-23",
+                "saleNotes": "Rite Aid\nNicholas Bushong",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 7.02,
+                "propertyName": "Rite Aid",
+                "ownerName": "Watumull Properties Corporation",
+                "ownerContact": "Jaidev Watumull",
+                "propertyId": "5965451",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/OVp8cZBXhHy558qoIpcREnuEka0O09mcPAWCeOq2PgM/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/5965451/sale"
+            },
+            {
+                "id": "prop-9",
+                "propertyAddress": "23038 Twain Harte Dr, Twain Harte, CA 95383",
+                "salePrice": 267000,
+                "saleDate": "2021-11-30",
                 "saleNotes": "",
-                "propertyType": "Commercial",
+                "commissionCalculation": "",
+                "propertyType": "Land",
                 "capRate": null,
                 "propertyName": "",
-                "ownerName": "HDH Properties, LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6532056",
-                "representation": "Double-Ended",
-                "propertyImageUrl": "https://picsum.photos/seed/property25/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-26",
-                "propertyAddress": "14231 E 40 Hwy, Kansas City, MO 64136",
-                "salePrice": 306471,
-                "saleDate": "2024-01-09",
-                "saleNotes": "Hawthorne 40 Shopping Center (Part of a 4 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 10.00,
-                "propertyName": "Hawthorne 40 Shopping Center",
-                "ownerName": "K & H Hawthorne Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6273868",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property26/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-27",
-                "propertyAddress": "14227 E US Hwy 40, Kansas City, MO 64136",
-                "salePrice": 342358,
-                "saleDate": "2024-01-09",
-                "saleNotes": "My Dentist (Part of a 4 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 10.00,
-                "propertyName": "My Dentist",
-                "ownerName": "K & H Hawthorne Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "5619689",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property27/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-28",
-                "propertyAddress": "14171 E Us-40 Hwy, Kansas City, MO 64136",
-                "salePrice": 515535,
-                "saleDate": "2024-01-09",
-                "saleNotes": "Pizza Hut & Wing Street (Part of a 4 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 10.00,
-                "propertyName": "Pizza Hut & Wing Street",
-                "ownerName": "K & H Hawthorne Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "581133",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property28/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-29",
-                "propertyAddress": "14121-14221 E Us Highway 40, Kansas City, MO 64136",
-                "salePrice": 7435636,
-                "saleDate": "2024-01-09",
-                "saleNotes": "Hawthorne 40 S/C (Part of a 4 Property Sale)",
-                "propertyType": "Commercial",
-                "capRate": 10.00,
-                "propertyName": "Hawthorne 40 S/C",
-                "ownerName": "K & H Hawthorne Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "597152",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property29/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-30",
-                "propertyAddress": "2609-2619 NW 9th St, Corvallis, OR 97330",
-                "salePrice": 1650000,
-                "saleDate": "2024-03-25",
-                "saleNotes": "Westview Plaza",
-                "propertyType": "Commercial",
-                "capRate": 7.20,
-                "propertyName": "Westview Plaza",
-                "ownerName": "Armstrong Hann Living Trust",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6576517",
-                "representation": "Double-Ended",
-                "propertyImageUrl": "https://picsum.photos/seed/property30/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-31",
-                "propertyAddress": "2221 NW Myhre Rd, Silverdale, WA 98383",
-                "salePrice": 12300000,
-                "saleDate": "2024-05-16",
-                "saleNotes": "Lowe's",
-                "propertyType": "Commercial",
-                "capRate": 6.00,
-                "propertyName": "Lowe's",
-                "ownerName": "Rosenthal & Rosenthal; Broadway Tenth/Silverdale LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "7006688",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property31/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-32",
-                "propertyAddress": "11808 NE Fourth Plain Blvd, Vancouver, WA 98682",
-                "salePrice": 21000000,
-                "saleDate": "2024-05-30",
-                "saleNotes": "Evergreen Station",
-                "propertyType": "Commercial",
-                "capRate": null,
-                "propertyName": "Evergreen Station",
-                "ownerName": "Hurley Development; Ten Talents Investments 21 LLC",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "715721",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property32/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-33",
-                "propertyAddress": "320 Pacific Ave S, Monmouth, OR 97361",
-                "salePrice": 2260000,
-                "saleDate": "2024-05-31",
-                "saleNotes": "Dairy Queen",
-                "propertyType": "Commercial",
-                "capRate": 5.98,
-                "propertyName": "Dairy Queen",
-                "ownerName": "Mary Lee Revocable Trust",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "9659375",
-                "representation": "Buyer",
-                "propertyImageUrl": "https://picsum.photos/seed/property33/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-34",
-                "propertyAddress": "2095 S Santiam Hwy, Lebanon, OR 97355",
-                "salePrice": 1750000,
-                "saleDate": "2024-06-13",
-                "saleNotes": "Part of a 2 Property Portfolio",
-                "propertyType": "Commercial",
-                "capRate": 7.17,
-                "propertyName": "",
-                "ownerName": "Boss Aften Properties Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "6485359",
-                "representation": "Double-Ended",
-                "propertyImageUrl": "https://picsum.photos/seed/property34/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-35",
-                "propertyAddress": "1445 N Pacific Hwy, Woodburn, OR 97071",
-                "salePrice": 1750000,
-                "saleDate": "2024-06-13",
-                "saleNotes": "Part of a 2 Property Portfolio",
-                "propertyType": "Commercial",
-                "capRate": 7.17,
-                "propertyName": "",
-                "ownerName": "Boss Aften Properties Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "1409049",
-                "representation": "Double-Ended",
-                "propertyImageUrl": "https://picsum.photos/seed/property35/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-36",
-                "propertyAddress": "1326 E Bypass 287, Alvord, TX 76225",
-                "salePrice": 1140000,
-                "saleDate": "2024-06-21",
-                "saleNotes": "Dollar General",
-                "propertyType": "Commercial",
-                "capRate": 8.26,
-                "propertyName": "Dollar General",
-                "ownerName": "Kjt Legacy Llc",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "9691561",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property36/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
-            },
-            {
-                "id": "prop-37",
-                "propertyAddress": "4411 S Settler Dr, Ridgefield, WA 98642",
-                "salePrice": 1670000,
-                "saleDate": "2024-08-05",
-                "saleNotes": "Ridgefield Pioneer Village #14",
-                "propertyType": "Commercial",
-                "capRate": 6.30,
-                "propertyName": "Ridgefield Pioneer Village #14",
                 "ownerName": "",
                 "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "19815074",
-                "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property37/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyId": "12621365",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://photos.zillowstatic.com/fp/ead4f69d3b70ebc4470d5f526ad2df70-cc_ft_768.webp",
+                "costarUrl": "https://product.costar.com/detail/lookup/12621365/sale"
             },
             {
-                "id": "prop-38",
-                "propertyAddress": "2020 NW Industrial Park Rd, Prineville, OR 97754",
-                "salePrice": 1125000,
-                "saleDate": "",
-                "saleNotes": "",
+                "id": "prop-8",
+                "propertyAddress": "930 SW Scotton Way, Battle Ground, WA 98604",
+                "salePrice": 2842105,
+                "saleDate": "2021-10-29",
+                "saleNotes": "Burger King\nNicholas Bushong",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 4.34,
+                "propertyName": "Burger King",
+                "ownerName": "Paul Yang Property Llc; Yang & Yang Investors LLC",
+                "ownerContact": "Paul Yang",
+                "propertyId": "12621462",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqWZXf6Gknrah6Yfn3dKpXU5w7IniNjq87L6JgOddZJ60sHt_AtMLnx_YYDPG_vq_KniHVUurV8nm3aOvSERuu2cG-bmslKeEc5A4s-mXh4WyACLn4icinu1YEsrFW0lzUwYo1j=w408-h306-k-no",
+                "costarUrl": ""
+            },
+            {
+                "id": "prop-7",
+                "propertyAddress": "6105 NE 114th Ave, Vancouver, WA 98662",
+                "salePrice": 6050000,
+                "saleDate": "2021-09-21",
+                "saleNotes": "Orchards Retail Center\nNicholas Bushong and Eric Garske",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.71,
+                "propertyName": "Orchards Retail Center",
+                "ownerName": "Triad Investment Llc",
+                "ownerContact": "Mark Halloran",
+                "propertyId": "1518725",
+                "representation": "Seller",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/HSkHR9MjD4UeHzbd_5GAlKZkQtdzYx3CQPiutOS0gvo/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/1518725/sale"
+            },
+            {
+                "id": "prop-6",
+                "propertyAddress": "250 Northstar Dr, Rural Hall, NC 27045",
+                "salePrice": 4800000,
+                "saleDate": "2021-07-26",
+                "saleNotes": "American Tire\nNicholas Bushong",
+                "commissionCalculation": "",
                 "propertyType": "Industrial",
-                "capRate": 8.00,
-                "propertyName": "",
-                "ownerName": "",
-                "ownerContact": "",
-                "buyerName": "",
-                "buyerContact": "",
-                "propertyId": "10094162",
+                "capRate": 7.14,
+                "propertyName": "American Tire",
+                "ownerName": "Horowitz Group",
+                "ownerContact": "Adam Horowitz",
+                "propertyId": "7533643",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/buE8F2YWC_Fp0NhWKEG6eJz-6j5uTerPyIzdB9mwHXo/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/7533643/sale"
+            },
+            {
+                "id": "prop-3",
+                "propertyAddress": "3602 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 1636504,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 2 (Part of a 3 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Felida Village: Building 2",
+                "ownerName": "MAJ Development Corporation",
+                "ownerContact": "Mike Jenkins",
+                "propertyId": "7064945",
                 "representation": "Seller",
-                "propertyImageUrl": "https://picsum.photos/seed/property38/800/500.jpg",
-                "costarUrl": "",
-                "commissionCalculation": ""
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/g2-bPS6oFNCBBHrGxw0379tAnF8RSK8kH9S-g2nXDNE/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/7064945/sale"
+            },
+            {
+                "id": "prop-4",
+                "propertyAddress": "3600 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 1735312,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 1 (Part of a 3 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Felida Village: Building 1",
+                "ownerName": "MAJ Development Corporation",
+                "ownerContact": "Mike Jenkins",
+                "propertyId": "9710877",
+                "representation": "Seller",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/9o8DhR3aXYIbj2JKoTQPNEfbinY3hinkY1GFqtsO6Pg/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/9710877/sale"
+            },
+            {
+                "id": "prop-5",
+                "propertyAddress": "3604 NW 119th St, Vancouver, WA 98685",
+                "salePrice": 2153984,
+                "saleDate": "2021-07-22",
+                "saleNotes": "Building 3 (Part of a 3 Property Sale)",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.99,
+                "propertyName": "Felida Village: Building 3",
+                "ownerName": "MAJ Development Corporation",
+                "ownerContact": "Mike Jenkins",
+                "propertyId": "9742038",
+                "representation": "Seller",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/Nr73ZQYSDhubyam_jSnoZmTk3LHP8FhzgpxICWiSJe0/117/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/9742038/sale"
+            },
+            {
+                "id": "prop-2",
+                "propertyAddress": "12035 NE Halsey St, Portland, OR 97220",
+                "salePrice": 1460000,
+                "saleDate": "2021-04-05",
+                "saleNotes": "Listing Broker: Scott Logan",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 5.5,
+                "propertyName": "Arby's",
+                "ownerName": "Arctic Circle; Aca Properties Lc",
+                "ownerContact": "Mike Jenkins",
+                "propertyId": "5060036",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/ShVwRVqTxSuzDrX4EMDnhA6Q1oZkA9Qa_BdY95UcVkY/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/5060036/sale"
+            },
+            {
+                "id": "prop-1",
+                "propertyAddress": "11520 SE 82nd Ave, Clackamas, OR 97086",
+                "salePrice": 4050000,
+                "saleDate": "2020-12-14",
+                "saleNotes": "Nicholas Bushong and Eric Garske",
+                "commissionCalculation": "",
+                "propertyType": "Commercial",
+                "capRate": 6.81,
+                "propertyName": "Clackamas Service Center",
+                "ownerName": "Watumull Properties Corporation; Gulsons 82nd LLC",
+                "ownerContact": "Jaidev Watumull",
+                "propertyId": "1332101",
+                "representation": "Buyer",
+                "propertyImageUrl": "https://ahprd1cdn.csgpimgs.com/i2/EZgNuxloyzF0PlvgP-nNumxda8Uy4YjIpWNg9eIvTss/116/image.jpg",
+                "costarUrl": "https://product.costar.com/detail/lookup/1332101/sale"
             }
         ];
 
         // Data management
         let properties = [];
         let editingId = null;
-        let currentView = 'card'; // 'card' or 'table'
+        let currentView = 'card'; // 'card' | 'table' | 'insights'
         let sortField = 'saleDate';
         let sortDirection = 'desc';
         let currentModalPropertyId = null;
+        let representationChart = null;
+        let yearlyDealsChart = null;
 
         // DOM elements
         const formContainer = document.getElementById('formContainer');
@@ -1728,12 +1710,36 @@
         const importFile = document.getElementById('importFile');
         const cardViewBtn = document.getElementById('cardViewBtn');
         const tableViewBtn = document.getElementById('tableViewBtn');
+        const insightsView = document.getElementById('insightsView');
+        const insightsViewBtn = document.getElementById('insightsViewBtn');
         const imagePreview = document.getElementById('imagePreview');
         const propertyImageUrl = document.getElementById('propertyImageUrl');
         const saleDateInput = document.getElementById('saleDate');
         const sortSelect = document.getElementById('sortSelect');
         const propertyModal = new bootstrap.Modal(document.getElementById('propertyModal'));
         const modalEditBtn = document.getElementById('modalEditBtn');
+        const modalSaveBtn = document.getElementById('modalSaveBtn');
+        const modalCancelEditBtn = document.getElementById('modalCancelEditBtn');
+        let modalEditMode = false;
+        let modalOriginalValues = {};
+        let modalEditInputs = {};
+
+        const modalFieldMap = {
+            modalAddress: { key: 'propertyAddress', type: 'text' },
+            modalName: { key: 'propertyName', type: 'text' },
+            modalType: { key: 'propertyType', type: 'text' },
+            modalId: { key: 'propertyId', type: 'text' },
+            modalPrice: { key: 'salePrice', type: 'number', step: '0.01' },
+            modalDate: { key: 'saleDate', type: 'date' },
+            modalCapRate: { key: 'capRate', type: 'number', step: '0.01' },
+            modalRepresentation: { key: 'representation', type: 'select', options: ['Seller','Buyer','Double-Ended'] },
+            modalCommission: { key: 'commissionCalculation', type: 'text' },
+            modalNotes: { key: 'saleNotes', type: 'textarea', rows: 3 },
+            modalOwnerName: { key: 'ownerName', type: 'text' },
+            modalOwnerContact: { key: 'ownerContact', type: 'text' },
+            modalBuyerName: { key: 'buyerName', type: 'text' },
+            modalBuyerContact: { key: 'buyerContact', type: 'text' }
+        };
 
         // Initialize the app
         function init() {
@@ -1746,6 +1752,7 @@
             savePropertiesToStorage();
             renderProperties();
             updateStats();
+            renderInsights();
             setupEventListeners();
         }
 
@@ -1791,6 +1798,7 @@
             // View toggle buttons
             cardViewBtn.addEventListener('click', () => switchView('card'));
             tableViewBtn.addEventListener('click', () => switchView('table'));
+            insightsViewBtn.addEventListener('click', () => switchView('insights'));
             
             // Image URL input
             propertyImageUrl.addEventListener('input', handleImagePreview);
@@ -1801,11 +1809,10 @@
             // Sort select
             sortSelect.addEventListener('change', handleSortSelect);
             
-            // Modal edit button
-            modalEditBtn.addEventListener('click', () => {
-                propertyModal.hide();
-                showEditForm(currentModalPropertyId);
-            });
+            // Modal edit buttons
+            modalEditBtn.addEventListener('click', enterModalEditMode);
+            modalSaveBtn.addEventListener('click', saveModalEdits);
+            modalCancelEditBtn.addEventListener('click', cancelModalEdits);
             
             // Table headers for sorting
             document.querySelectorAll('th[data-sort]').forEach(th => {
@@ -2034,6 +2041,19 @@
             document.getElementById('totalSaleValue').textContent = formatCurrency(totalSaleValue);
             document.getElementById('buyerSideDeals').textContent = buyerSideDeals;
             document.getElementById('sellerSideDeals').textContent = sellerSideDeals;
+            // Update insights summary cards
+            const doubleEndedDeals = properties.filter(p => p.representation === 'Double-Ended').length;
+            const buyerOnly = properties.filter(p => p.representation === 'Buyer').length;
+            const sellerOnly = properties.filter(p => p.representation === 'Seller').length;
+            const buyerInclDouble = buyerOnly + doubleEndedDeals;
+            const sellerInclDouble = sellerOnly + doubleEndedDeals;
+            const buyerCountEl = document.getElementById('insightsBuyerCount');
+            const sellerCountEl = document.getElementById('insightsSellerCount');
+            const doubleCountEl = document.getElementById('insightsDoubleCount');
+            if (buyerCountEl) buyerCountEl.textContent = buyerInclDouble;
+            if (sellerCountEl) sellerCountEl.textContent = sellerInclDouble;
+            if (doubleCountEl) doubleCountEl.textContent = doubleEndedDeals;
+            renderInsights();
         }
 
         // Switch between card and table view
@@ -2043,16 +2063,105 @@
             if (view === 'card') {
                 cardView.classList.remove('d-none');
                 tableView.classList.add('d-none');
+                insightsView.classList.add('d-none');
                 cardViewBtn.classList.add('active');
                 tableViewBtn.classList.remove('active');
-            } else {
+                insightsViewBtn.classList.remove('active');
+            } else if (view === 'table') {
                 cardView.classList.add('d-none');
                 tableView.classList.remove('d-none');
+                insightsView.classList.add('d-none');
                 cardViewBtn.classList.remove('active');
                 tableViewBtn.classList.add('active');
+                insightsViewBtn.classList.remove('active');
+            } else if (view === 'insights') {
+                cardView.classList.add('d-none');
+                tableView.classList.add('d-none');
+                insightsView.classList.remove('d-none');
+                cardViewBtn.classList.remove('active');
+                tableViewBtn.classList.remove('active');
+                insightsViewBtn.classList.add('active');
+                renderInsights();
             }
             
             renderProperties();
+        }
+
+        // Render Insights charts
+        function renderInsights() {
+            const buyerOnly = properties.filter(p => p.representation === 'Buyer').length;
+            const sellerOnly = properties.filter(p => p.representation === 'Seller').length;
+            const doubleEndedDeals = properties.filter(p => p.representation === 'Double-Ended').length;
+
+            const repCanvas = document.getElementById('representationChartCanvas');
+            if (repCanvas) {
+                const ctx = repCanvas.getContext('2d');
+                if (representationChart) representationChart.destroy();
+                representationChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Buyer', 'Seller', 'Double-Ended'],
+                        datasets: [{
+                            data: [buyerOnly, sellerOnly, doubleEndedDeals],
+                            backgroundColor: ['#10B981', '#3B82F6', '#F59E0B']
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // Yearly breakdown
+            const yearMap = {};
+            properties.forEach(p => {
+                const y = extractYear(p.saleDate);
+                if (!yearMap[y]) yearMap[y] = { Buyer: 0, Seller: 0, 'Double-Ended': 0 };
+                const rep = p.representation || 'Unknown';
+                if (rep === 'Buyer' || rep === 'Seller' || rep === 'Double-Ended') {
+                    yearMap[y][rep] = (yearMap[y][rep] || 0) + 1;
+                }
+            });
+            const years = Object.keys(yearMap).sort();
+            const buyerSeries = years.map(y => yearMap[y]['Buyer'] || 0);
+            const sellerSeries = years.map(y => yearMap[y]['Seller'] || 0);
+            const doubleSeries = years.map(y => yearMap[y]['Double-Ended'] || 0);
+
+            const yearlyCanvas = document.getElementById('yearlyDealsChartCanvas');
+            if (yearlyCanvas) {
+                const ctx2 = yearlyCanvas.getContext('2d');
+                if (yearlyDealsChart) yearlyDealsChart.destroy();
+                yearlyDealsChart = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: years,
+                        datasets: [
+                            { label: 'Buyer', data: buyerSeries, backgroundColor: '#10B981' },
+                            { label: 'Seller', data: sellerSeries, backgroundColor: '#3B82F6' },
+                            { label: 'Double-Ended', data: doubleSeries, backgroundColor: '#F59E0B' }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: {
+                            x: { stacked: true },
+                            y: { stacked: true, beginAtZero: true, ticks: { stepSize: 1 } }
+                        }
+                    }
+                });
+            }
+        }
+
+        function extractYear(dateStr) {
+            if (!dateStr) return 'Unknown';
+            const isoMatch = String(dateStr).match(/^\d{4}/);
+            if (isoMatch) return isoMatch[0];
+            const d = new Date(dateStr);
+            if (!isNaN(d)) return String(d.getFullYear());
+            return 'Unknown';
         }
 
         // Handle image preview
@@ -2126,8 +2235,144 @@
                 costarUrlLink.style.display = 'none';
             }
             
+            // If returning to view mode after edit, ensure buttons are reset
+            exitModalEditUIState();
+
             // Show modal
             propertyModal.show();
+        }
+
+        function enterModalEditMode() {
+            if (!currentModalPropertyId) return;
+            const property = properties.find(p => p.id === currentModalPropertyId);
+            if (!property) return;
+            modalEditMode = true;
+            modalEditBtn.style.display = 'none';
+            modalSaveBtn.style.display = 'inline-block';
+            modalCancelEditBtn.style.display = 'inline-block';
+            modalOriginalValues = {};
+            modalEditInputs = {};
+
+            // Create editable inputs for mapped fields
+            Object.keys(modalFieldMap).forEach(id => {
+                const cfg = modalFieldMap[id];
+                const el = document.getElementById(id);
+                if (!el) return;
+                modalOriginalValues[id] = el.innerHTML;
+                const currentValue = property[cfg.key] ?? '';
+
+                let input;
+                if (cfg.type === 'textarea') {
+                    input = document.createElement('textarea');
+                    input.className = 'form-control';
+                    input.rows = cfg.rows || 3;
+                    input.value = currentValue;
+                } else if (cfg.type === 'select') {
+                    input = document.createElement('select');
+                    input.className = 'form-select';
+                    (cfg.options || []).forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt; o.textContent = opt;
+                        if (opt === currentValue) o.selected = true;
+                        input.appendChild(o);
+                    });
+                } else {
+                    input = document.createElement('input');
+                    input.type = cfg.type || 'text';
+                    input.className = 'form-control';
+                    if (cfg.step) input.step = cfg.step;
+                    input.value = (cfg.type === 'date' && currentValue) ? currentValue : currentValue;
+                }
+
+                // Replace display value with input
+                el.innerHTML = '';
+                el.appendChild(input);
+                modalEditInputs[id] = input;
+            });
+
+            // Special link fields: add inputs after anchors
+            const imageUrlContainer = document.getElementById('modalImageUrl')?.parentElement;
+            if (imageUrlContainer) {
+                const imgInput = document.createElement('input');
+                imgInput.type = 'url';
+                imgInput.className = 'form-control mt-2';
+                imgInput.value = property.propertyImageUrl || '';
+                imageUrlContainer.appendChild(imgInput);
+                modalEditInputs['modalImageUrlInput'] = imgInput;
+            }
+            const costarUrlContainer = document.getElementById('modalCostarUrl')?.parentElement;
+            if (costarUrlContainer) {
+                const costarInput = document.createElement('input');
+                costarInput.type = 'url';
+                costarInput.className = 'form-control mt-2';
+                costarInput.value = property.costarUrl || '';
+                costarUrlContainer.appendChild(costarInput);
+                modalEditInputs['modalCostarUrlInput'] = costarInput;
+            }
+        }
+
+        function saveModalEdits() {
+            if (!currentModalPropertyId) return;
+            const property = properties.find(p => p.id === currentModalPropertyId);
+            if (!property) return;
+
+            // Persist values from inputs
+            Object.keys(modalFieldMap).forEach(id => {
+                const cfg = modalFieldMap[id];
+                const input = modalEditInputs[id];
+                if (!input) return;
+                let val = input.value;
+                if (cfg.type === 'number') {
+                    val = val ? parseFloat(val) : '';
+                }
+                property[cfg.key] = val;
+            });
+            // Links
+            if (modalEditInputs['modalImageUrlInput']) {
+                property.propertyImageUrl = modalEditInputs['modalImageUrlInput'].value.trim();
+            }
+            if (modalEditInputs['modalCostarUrlInput']) {
+                property.costarUrl = modalEditInputs['modalCostarUrlInput'].value.trim();
+            }
+
+            savePropertiesToStorage();
+            showToast('Property updated successfully', 'success');
+
+            // Refresh modal view with updated values
+            exitModalEditUIState();
+            showPropertyDetails(currentModalPropertyId);
+            // Also re-render lists to reflect updates
+            renderProperties();
+            updateStats();
+        }
+
+        function cancelModalEdits() {
+            // Restore original display values
+            Object.keys(modalOriginalValues).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = modalOriginalValues[id];
+            });
+            // Remove link inputs if present
+            const imageUrlContainer = document.getElementById('modalImageUrl')?.parentElement;
+            if (imageUrlContainer) {
+                const inp = modalEditInputs['modalImageUrlInput'];
+                if (inp) imageUrlContainer.removeChild(inp);
+            }
+            const costarUrlContainer = document.getElementById('modalCostarUrl')?.parentElement;
+            if (costarUrlContainer) {
+                const inp2 = modalEditInputs['modalCostarUrlInput'];
+                if (inp2) costarUrlContainer.removeChild(inp2);
+            }
+            exitModalEditUIState();
+        }
+
+        function exitModalEditUIState() {
+            modalEditMode = false;
+            modalEditBtn.style.display = 'inline-block';
+            modalSaveBtn.style.display = 'none';
+            modalCancelEditBtn.style.display = 'none';
+            modalOriginalValues = {};
+            modalEditInputs = {};
         }
 
         // Render properties
@@ -2183,11 +2428,19 @@
                 if (currentView === 'card') {
                     cardView.classList.remove('d-none');
                     tableView.classList.add('d-none');
+                    insightsView.classList.add('d-none');
                     renderCardView(filteredProperties);
-                } else {
+                } else if (currentView === 'table') {
                     cardView.classList.add('d-none');
                     tableView.classList.remove('d-none');
+                    insightsView.classList.add('d-none');
                     renderTableView(filteredProperties);
+                } else if (currentView === 'insights') {
+                    // When viewing insights, hide both card and table containers
+                    cardView.classList.add('d-none');
+                    tableView.classList.add('d-none');
+                    insightsView.classList.remove('d-none');
+                    // Charts are rendered via switchView/updateStats -> renderInsights
                 }
             }
         }
