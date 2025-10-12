@@ -441,16 +441,27 @@
             border-bottom-color: var(--primary);
         }
 
+        .modal-dialog.modal-xl {
+            max-width: 960px;
+        }
+
+        .modal-body {
+            padding: 1rem 1.25rem;
+        }
+
         .modal-property-image {
             width: 100%;
-            max-height: 300px;
+            max-height: 220px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .detail-item {
-            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
         }
         /* Compact modal tweaks */
         #compactDetails h6.text-muted {
@@ -464,13 +475,15 @@
         }
 
         .detail-label {
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 0.25rem;
+            min-width: 180px;
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-bottom: 0;
         }
 
         .detail-value {
-            color: var(--gray-800);
+            flex: 1;
+            color: var(--gray-900);
         }
 
         .parties-section h6 {
@@ -878,7 +891,7 @@
                     
                     <!-- Compact consolidated details view -->
                     <div class="mt-3" id="compactDetails">
-                        <div class="mb-3">
+                        <div class="mb-2" id="overviewSection">
                             <h6 class="text-muted">Overview</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -908,7 +921,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2" id="transactionSection">
                             <h6 class="text-muted">Transaction</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -950,7 +963,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2" id="partiesSection">
                             <h6 class="text-muted">Parties</h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -980,7 +993,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-1">
+                        <div class="mb-1" id="linksSection">
                             <h6 class="text-muted">Links</h6>
                             <div class="row g-3">
                                 <div class="col-md-12">
@@ -2181,6 +2194,24 @@
             }
         }
 
+        // Helper to set detail value and hide item when empty
+        function setDetailValue(id, rawVal, formatter) {
+            const el = document.getElementById(id);
+            if (!el) return false;
+            const has = rawVal !== undefined && rawVal !== null && rawVal !== '';
+            el.textContent = has ? (formatter ? formatter(rawVal) : rawVal) : '';
+            const item = el.closest('.detail-item');
+            if (item) item.classList.toggle('d-none', !has);
+            return has;
+        }
+
+        function sectionHasVisibleItems(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return false;
+            const items = Array.from(section.querySelectorAll('.detail-item'));
+            return items.some(it => !it.classList.contains('d-none'));
+        }
+
         // Show property details in modal
         function showPropertyDetails(id) {
             const property = properties.find(p => p.id === id);
@@ -2191,49 +2222,54 @@
             // Set modal title
             document.getElementById('propertyModalLabel').textContent = property.propertyName || 'Property Details';
             
-            // Set modal image
+            // Set modal image (hide if no image URL)
             const modalImage = document.getElementById('modalPropertyImage');
-            modalImage.src = property.propertyImageUrl || 'https://via.placeholder.com/800x500/E5E7EB/6B7280?text=No+Image+Available';
-            modalImage.onerror = function() {
-                this.src = 'https://via.placeholder.com/800x500/E5E7EB/6B7280?text=Invalid+Image+URL';
-            };
-            
-            // Populate overview tab
-            document.getElementById('modalAddress').textContent = property.propertyAddress || 'Not specified';
-            document.getElementById('modalName').textContent = property.propertyName || 'Not specified';
-            document.getElementById('modalType').textContent = property.propertyType || 'Not specified';
-            document.getElementById('modalId').textContent = property.propertyId || 'Not specified';
-            
-            // Populate transaction tab
-            document.getElementById('modalPrice').textContent = property.salePrice ? formatCurrency(property.salePrice) : 'Not specified';
-            document.getElementById('modalDate').textContent = property.saleDate ? formatDate(property.saleDate) : 'Not specified';
-            document.getElementById('modalCapRate').textContent = property.capRate ? `${property.capRate}%` : 'N/A';
-            document.getElementById('modalRepresentation').textContent = property.representation || 'Not specified';
-            document.getElementById('modalCommission').textContent = property.commissionCalculation || 'Not specified';
-            document.getElementById('modalNotes').textContent = property.saleNotes || 'No notes available';
-            
-            // Populate parties tab
-            document.getElementById('modalOwnerName').textContent = property.ownerName || 'Not specified';
-            document.getElementById('modalOwnerContact').textContent = property.ownerContact || 'Not specified';
-            document.getElementById('modalBuyerName').textContent = property.buyerName || 'Not specified';
-            document.getElementById('modalBuyerContact').textContent = property.buyerContact || 'Not specified';
-            
-            // Populate links tab
-            const imageUrlLink = document.getElementById('modalImageUrl');
             if (property.propertyImageUrl) {
-                imageUrlLink.href = property.propertyImageUrl;
-                imageUrlLink.style.display = 'inline-block';
+                modalImage.src = property.propertyImageUrl;
+                modalImage.classList.remove('d-none');
+                modalImage.onerror = function() {
+                    this.src = 'https://via.placeholder.com/800x500/E5E7EB/6B7280?text=Invalid+Image+URL';
+                };
             } else {
-                imageUrlLink.style.display = 'none';
+                modalImage.classList.add('d-none');
             }
+            
+            // Populate overview section (hide empty items)
+            setDetailValue('modalAddress', property.propertyAddress);
+            setDetailValue('modalName', property.propertyName);
+            setDetailValue('modalType', property.propertyType);
+            setDetailValue('modalId', property.propertyId);
+            document.getElementById('overviewSection').style.display = sectionHasVisibleItems('overviewSection') ? 'block' : 'none';
+            
+            // Populate transaction section
+            setDetailValue('modalPrice', property.salePrice, formatCurrency);
+            setDetailValue('modalDate', property.saleDate, formatDate);
+            setDetailValue('modalCapRate', property.capRate, v => `${v}%`);
+            setDetailValue('modalRepresentation', property.representation);
+            setDetailValue('modalCommission', property.commissionCalculation);
+            setDetailValue('modalNotes', property.saleNotes);
+            document.getElementById('transactionSection').style.display = sectionHasVisibleItems('transactionSection') ? 'block' : 'none';
+            
+            // Populate parties section
+            setDetailValue('modalOwnerName', property.ownerName);
+            setDetailValue('modalOwnerContact', property.ownerContact);
+            setDetailValue('modalBuyerName', property.buyerName);
+            setDetailValue('modalBuyerContact', property.buyerContact);
+            document.getElementById('partiesSection').style.display = sectionHasVisibleItems('partiesSection') ? 'block' : 'none';
+            
+            // Populate links section (hide section when no links)
+            const imageUrlLink = document.getElementById('modalImageUrl');
+            const hasImageLink = !!property.propertyImageUrl;
+            if (hasImageLink) { imageUrlLink.href = property.propertyImageUrl; imageUrlLink.style.display = 'inline-block'; }
+            else { imageUrlLink.style.display = 'none'; }
             
             const costarUrlLink = document.getElementById('modalCostarUrl');
-            if (property.costarUrl) {
-                costarUrlLink.href = property.costarUrl;
-                costarUrlLink.style.display = 'inline-block';
-            } else {
-                costarUrlLink.style.display = 'none';
-            }
+            const hasCostarLink = !!property.costarUrl;
+            if (hasCostarLink) { costarUrlLink.href = property.costarUrl; costarUrlLink.style.display = 'inline-block'; }
+            else { costarUrlLink.style.display = 'none'; }
+
+            const linksSection = document.getElementById('linksSection');
+            if (linksSection) linksSection.style.display = (hasImageLink || hasCostarLink) ? 'block' : 'none';
             
             // If returning to view mode after edit, ensure buttons are reset
             exitModalEditUIState();
@@ -2288,6 +2324,8 @@
                 el.innerHTML = '';
                 el.appendChild(input);
                 modalEditInputs[id] = input;
+                // Ensure hidden items become visible in edit mode
+                el.closest('.detail-item')?.classList.remove('d-none');
             });
 
             // Special link fields: add inputs after anchors
@@ -2309,6 +2347,12 @@
                 costarUrlContainer.appendChild(costarInput);
                 modalEditInputs['modalCostarUrlInput'] = costarInput;
             }
+
+            // Reveal sections if they were hidden
+            ['overviewSection','transactionSection','partiesSection','linksSection'].forEach(secId => {
+                const sec = document.getElementById(secId);
+                if (sec) sec.style.display = 'block';
+            });
         }
 
         function saveModalEdits() {
@@ -2364,6 +2408,10 @@
                 if (inp2) costarUrlContainer.removeChild(inp2);
             }
             exitModalEditUIState();
+            // Re-apply compact view hiding
+            if (currentModalPropertyId) {
+                showPropertyDetails(currentModalPropertyId);
+            }
         }
 
         function exitModalEditUIState() {
