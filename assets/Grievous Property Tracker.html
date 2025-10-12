@@ -1,17 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grievous Property Tracker</title>
-<style>
-
-</style>
-</head>
-<body>
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Property Tracker - Real Estate Portfolio Management</title>
@@ -299,11 +288,17 @@
         .property-address {
             font-size: 0.875rem;
             color: var(--gray-600);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+        }
+
+        .property-parties {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
         }
 
         .property-stats {
@@ -361,6 +356,14 @@
 
         .properties-table th:hover {
             background-color: var(--gray-200);
+        }
+
+        .properties-table th.sorted-asc::after {
+            content: " ↑";
+        }
+
+        .properties-table th.sorted-desc::after {
+            content: " ↓";
         }
 
         .properties-table td {
@@ -458,6 +461,15 @@
 
         .detail-value {
             color: var(--gray-800);
+        }
+
+        .parties-section h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 0.25rem;
         }
 
         /* Empty State */
@@ -559,6 +571,15 @@
             .form-container {
                 padding: 1rem;
             }
+
+            .properties-table {
+                font-size: 0.875rem;
+            }
+
+            .properties-table th,
+            .properties-table td {
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -624,13 +645,24 @@
         <!-- Controls Section -->
         <div class="controls-container fade-in">
             <div class="row align-items-center g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="position-relative">
                         <i class="bi bi-search search-icon"></i>
                         <input type="text" class="form-control search-input ps-4" id="searchInput" placeholder="Search by address, name, or owner...">
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
+                    <label for="sortSelect" class="form-label mb-1 d-none d-md-block">Sort by:</label>
+                    <select class="form-select" id="sortSelect">
+                        <option value="saleDate-desc">Most Recent Sale Date</option>
+                        <option value="saleDate-asc">Oldest Sale Date</option>
+                        <option value="salePrice-desc">Highest Sale Price</option>
+                        <option value="salePrice-asc">Lowest Sale Price</option>
+                        <option value="propertyType-asc">Property Type (A-Z)</option>
+                        <option value="representation-asc">Representation (A-Z)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <div class="d-flex justify-content-md-end gap-2">
                         <div class="view-toggle">
                             <button class="view-btn active" id="cardViewBtn">
@@ -640,9 +672,6 @@
                                 <i class="bi bi-table me-1"></i> Table
                             </button>
                         </div>
-                        <button class="btn btn-primary" id="addPropertyBtn">
-                            <i class="bi bi-plus-circle me-2"></i>Add Property
-                        </button>
                     </div>
                 </div>
             </div>
@@ -668,7 +697,7 @@
                     </div>
                     <div class="col-md-4">
                         <label for="saleDate" class="form-label">Sale Date</label>
-                        <input type="date" class="form-control" id="saleDate">
+                        <input type="text" class="form-control" id="saleDate" placeholder="e.g., Sep 20, 2024">
                     </div>
                     <div class="col-md-4">
                         <label for="capRate" class="form-label">Cap Rate (%)</label>
@@ -700,12 +729,20 @@
                         <input type="text" class="form-control" id="propertyId">
                     </div>
                     <div class="col-md-6">
-                        <label for="ownerName" class="form-label">Owner Name</label>
+                        <label for="ownerName" class="form-label">Owner/Seller Name</label>
                         <input type="text" class="form-control" id="ownerName">
                     </div>
                     <div class="col-md-6">
-                        <label for="ownerContact" class="form-label">Owner Contact</label>
+                        <label for="ownerContact" class="form-label">Owner/Seller Contact</label>
                         <input type="text" class="form-control" id="ownerContact" placeholder="Email or phone">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="buyerName" class="form-label">Buyer Name</label>
+                        <input type="text" class="form-control" id="buyerName">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="buyerContact" class="form-label">Buyer Contact</label>
+                        <input type="text" class="form-control" id="buyerContact" placeholder="Email or phone">
                     </div>
                     <div class="col-md-6">
                         <label for="propertyImageUrl" class="form-label">Property Image URL</label>
@@ -746,9 +783,11 @@
                         <th data-sort="salePrice">Sale Price <i class="bi bi-arrow-down-up"></i></th>
                         <th>Image</th>
                         <th>Property Address</th>
-                        <th>Property Name</th>
-                        <th>Owner Name</th>
-                        <th>Representation</th>
+                        <th data-sort="propertyName">Property Name <i class="bi bi-arrow-down-up"></i></th>
+                        <th data-sort="propertyType">Property Type <i class="bi bi-arrow-down-up"></i></th>
+                        <th data-sort="representation">Representation <i class="bi bi-arrow-down-up"></i></th>
+                        <th>Owner/Seller</th>
+                        <th>Buyer</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -770,7 +809,7 @@
 
     <!-- Property Detail Modal -->
     <div class="modal fade" id="propertyModal" tabindex="-1" aria-labelledby="propertyModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="propertyModalLabel">Property Details</h5>
@@ -787,7 +826,7 @@
                             <button class="nav-link" id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab" aria-controls="transaction" aria-selected="false">Transaction</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="owner-tab" data-bs-toggle="tab" data-bs-target="#owner" type="button" role="tab" aria-controls="owner" aria-selected="false">Owner</button>
+                            <button class="nav-link" id="parties-tab" data-bs-toggle="tab" data-bs-target="#parties" type="button" role="tab" aria-controls="parties" aria-selected="false">Parties</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="links-tab" data-bs-toggle="tab" data-bs-target="#links" type="button" role="tab" aria-controls="links" aria-selected="false">Links</button>
@@ -863,18 +902,32 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="tab-pane fade" id="owner" role="tabpanel" aria-labelledby="owner-tab">
+                        <div class="tab-pane fade" id="parties" role="tabpanel" aria-labelledby="parties-tab">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Owner Name</div>
-                                        <div class="detail-value" id="modalOwnerName"></div>
+                                    <div class="parties-section">
+                                        <h6>Seller/Owner</h6>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Name</div>
+                                            <div class="detail-value" id="modalOwnerName"></div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Contact</div>
+                                            <div class="detail-value" id="modalOwnerContact"></div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Owner Contact</div>
-                                        <div class="detail-value" id="modalOwnerContact"></div>
+                                    <div class="parties-section">
+                                        <h6>Buyer</h6>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Name</div>
+                                            <div class="detail-value" id="modalBuyerName"></div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="detail-label">Contact</div>
+                                            <div class="detail-value" id="modalBuyerContact"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -935,6 +988,8 @@
                 "propertyName": "Clackamas Service Center",
                 "ownerName": "Watumull Properties Corporation; Gulsons 82nd LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "1332101",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property1/800/500.jpg",
@@ -952,6 +1007,8 @@
                 "propertyName": "Arby's",
                 "ownerName": "Arctic Circle; Aca Properties Lc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "5060036",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property2/800/500.jpg",
@@ -969,6 +1026,8 @@
                 "propertyName": "Building 2",
                 "ownerName": "Western Properties Ii Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "7064945",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property3/800/500.jpg",
@@ -986,6 +1045,8 @@
                 "propertyName": "Building 1",
                 "ownerName": "Western Properties Ii Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "9710877",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property4/800/500.jpg",
@@ -1003,6 +1064,8 @@
                 "propertyName": "Building 3",
                 "ownerName": "Western Properties Ii Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "9742038",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property5/800/500.jpg",
@@ -1020,6 +1083,8 @@
                 "propertyName": "American Tire",
                 "ownerName": "Countryside Enterprise Llc; Akb Ltd Liabilty Co",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "7533643",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property6/800/500.jpg",
@@ -1037,6 +1102,8 @@
                 "propertyName": "Orchards Retail Center",
                 "ownerName": "Triad Investment Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "1518725",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property7/800/500.jpg",
@@ -1054,6 +1121,8 @@
                 "propertyName": "Burger King",
                 "ownerName": "Ambrosia QSR",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "12621462",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property8/800/500.jpg",
@@ -1071,6 +1140,8 @@
                 "propertyName": "",
                 "ownerName": "",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "12621365",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property9/800/500.jpg",
@@ -1088,6 +1159,8 @@
                 "propertyName": "Kaylee Apartments",
                 "ownerName": "Kaylee Apartments Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "9058789",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property10/800/500.jpg",
@@ -1105,6 +1178,8 @@
                 "propertyName": "Rite Aid",
                 "ownerName": "Hummelt Development Co.; Tph Partners Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "5965451",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property11/800/500.jpg",
@@ -1122,6 +1197,8 @@
                 "propertyName": "Farrell Building",
                 "ownerName": "The Farrell Building LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "4489907",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property12/800/500.jpg",
@@ -1139,6 +1216,8 @@
                 "propertyName": "Red Mountain Plaza",
                 "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "7102669",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property13/800/500.jpg",
@@ -1156,6 +1235,8 @@
                 "propertyName": "Red Mountain Plaza",
                 "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "850131",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property14/800/500.jpg",
@@ -1173,6 +1254,8 @@
                 "propertyName": "Red Mountain Plaza-Shops D",
                 "ownerName": "Jakosky Properties; Rielly Red Mountain Llc & H J Red Mounta",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6861142",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property15/800/500.jpg",
@@ -1190,6 +1273,8 @@
                 "propertyName": "Multi-Property Sale",
                 "ownerName": "Joseph R Fox",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "1237416",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property16/800/500.jpg",
@@ -1207,6 +1292,8 @@
                 "propertyName": "Multi-Property Sale",
                 "ownerName": "Joseph R Fox",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6637034",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property17/800/500.jpg",
@@ -1224,6 +1311,8 @@
                 "propertyName": "Cross Court Plaza",
                 "ownerName": "Merlone Geier Management, Inc.; MGP XI Cascade LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "1170876",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property18/800/500.jpg",
@@ -1241,6 +1330,8 @@
                 "propertyName": "",
                 "ownerName": "Janice I Lewis",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "7733798",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property19/800/500.jpg",
@@ -1258,6 +1349,8 @@
                 "propertyName": "",
                 "ownerName": "Mark E Handy",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6818721",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property20/800/500.jpg",
@@ -1275,6 +1368,8 @@
                 "propertyName": "",
                 "ownerName": "Metro Partners LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "5850186",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property21/800/500.jpg",
@@ -1292,6 +1387,8 @@
                 "propertyName": "Y Plaza",
                 "ownerName": "Slosar Properties Inc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "5023349",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property22/800/500.jpg",
@@ -1309,6 +1406,8 @@
                 "propertyName": "Y Plaza",
                 "ownerName": "Slosar Properties Inc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "4404779",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property23/800/500.jpg",
@@ -1326,6 +1425,8 @@
                 "propertyName": "Courtyard Apartments",
                 "ownerName": "Duane K Woodruff; Ruth M Woodruff",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "4283062",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property24/800/500.jpg",
@@ -1343,6 +1444,8 @@
                 "propertyName": "",
                 "ownerName": "HDH Properties, LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6532056",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property25/800/500.jpg",
@@ -1360,6 +1463,8 @@
                 "propertyName": "Hawthorne 40 Shopping Center",
                 "ownerName": "K & H Hawthorne Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6273868",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property26/800/500.jpg",
@@ -1377,6 +1482,8 @@
                 "propertyName": "My Dentist",
                 "ownerName": "K & H Hawthorne Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "5619689",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property27/800/500.jpg",
@@ -1394,6 +1501,8 @@
                 "propertyName": "Pizza Hut & Wing Street",
                 "ownerName": "K & H Hawthorne Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "581133",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property28/800/500.jpg",
@@ -1411,6 +1520,8 @@
                 "propertyName": "Hawthorne 40 S/C",
                 "ownerName": "K & H Hawthorne Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "597152",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property29/800/500.jpg",
@@ -1428,6 +1539,8 @@
                 "propertyName": "Westview Plaza",
                 "ownerName": "Armstrong Hann Living Trust",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6576517",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property30/800/500.jpg",
@@ -1445,6 +1558,8 @@
                 "propertyName": "Lowe's",
                 "ownerName": "Rosenthal & Rosenthal; Broadway Tenth/Silverdale LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "7006688",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property31/800/500.jpg",
@@ -1462,6 +1577,8 @@
                 "propertyName": "Evergreen Station",
                 "ownerName": "Hurley Development; Ten Talents Investments 21 LLC",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "715721",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property32/800/500.jpg",
@@ -1479,6 +1596,8 @@
                 "propertyName": "Dairy Queen",
                 "ownerName": "Mary Lee Revocable Trust",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "9659375",
                 "representation": "Buyer",
                 "propertyImageUrl": "https://picsum.photos/seed/property33/800/500.jpg",
@@ -1496,6 +1615,8 @@
                 "propertyName": "",
                 "ownerName": "Boss Aften Properties Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "6485359",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property34/800/500.jpg",
@@ -1513,6 +1634,8 @@
                 "propertyName": "",
                 "ownerName": "Boss Aften Properties Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "1409049",
                 "representation": "Double-Ended",
                 "propertyImageUrl": "https://picsum.photos/seed/property35/800/500.jpg",
@@ -1530,6 +1653,8 @@
                 "propertyName": "Dollar General",
                 "ownerName": "Kjt Legacy Llc",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "9691561",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property36/800/500.jpg",
@@ -1547,6 +1672,8 @@
                 "propertyName": "Ridgefield Pioneer Village #14",
                 "ownerName": "",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "19815074",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property37/800/500.jpg",
@@ -1564,6 +1691,8 @@
                 "propertyName": "",
                 "ownerName": "",
                 "ownerContact": "",
+                "buyerName": "",
+                "buyerContact": "",
                 "propertyId": "10094162",
                 "representation": "Seller",
                 "propertyImageUrl": "https://picsum.photos/seed/property38/800/500.jpg",
@@ -1598,12 +1727,20 @@
         const tableViewBtn = document.getElementById('tableViewBtn');
         const imagePreview = document.getElementById('imagePreview');
         const propertyImageUrl = document.getElementById('propertyImageUrl');
+        const saleDateInput = document.getElementById('saleDate');
+        const sortSelect = document.getElementById('sortSelect');
         const propertyModal = new bootstrap.Modal(document.getElementById('propertyModal'));
         const modalEditBtn = document.getElementById('modalEditBtn');
 
         // Initialize the app
         function init() {
             loadPropertiesFromStorage();
+            // Ensure buyer fields exist for legacy data
+            properties.forEach(p => {
+                if (!p.buyerName) p.buyerName = '';
+                if (!p.buyerContact) p.buyerContact = '';
+            });
+            savePropertiesToStorage();
             renderProperties();
             updateStats();
             setupEventListeners();
@@ -1653,6 +1790,12 @@
             // Image URL input
             propertyImageUrl.addEventListener('input', handleImagePreview);
             
+            // Sale date input parsing
+            saleDateInput.addEventListener('blur', parseSaleDateInput);
+            
+            // Sort select
+            sortSelect.addEventListener('change', handleSortSelect);
+            
             // Modal edit button
             modalEditBtn.addEventListener('click', () => {
                 propertyModal.hide();
@@ -1662,11 +1805,47 @@
             // Table headers for sorting
             document.querySelectorAll('th[data-sort]').forEach(th => {
                 th.addEventListener('click', () => {
-                    sortField = th.getAttribute('data-sort');
+                    const field = th.getAttribute('data-sort');
+                    sortField = field;
                     sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+                    updateSortIcons();
                     renderProperties();
                 });
             });
+        }
+
+        // Parse and validate sale date input
+        function parseSaleDateInput() {
+            const value = saleDateInput.value.trim();
+            if (value) {
+                const date = new Date(value);
+                if (isNaN(date.getTime())) {
+                    showToast('Invalid date format. Please use e.g., "Sep 20, 2024"', 'error');
+                    saleDateInput.classList.add('is-invalid');
+                } else {
+                    saleDateInput.classList.remove('is-invalid');
+                }
+            }
+        }
+
+        // Handle sort select change
+        function handleSortSelect() {
+            const [field, dir] = sortSelect.value.split('-');
+            sortField = field;
+            sortDirection = dir;
+            updateSortIcons();
+            renderProperties();
+        }
+
+        // Update table sort icons
+        function updateSortIcons() {
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+            });
+            const activeTh = document.querySelector(`th[data-sort="${sortField}"]`);
+            if (activeTh) {
+                activeTh.classList.add(`sorted-${sortDirection}`);
+            }
         }
 
         // Handle form submission
@@ -1693,14 +1872,30 @@
                 document.getElementById('representation').classList.remove('is-invalid');
             }
             
+            // Validate date
+            parseSaleDateInput();
+            if (saleDateInput.classList.contains('is-invalid')) {
+                isValid = false;
+            }
+            
             if (!isValid) return;
+            
+            // Parse sale date
+            let saleDate = null;
+            const saleDateValue = document.getElementById('saleDate').value.trim();
+            if (saleDateValue) {
+                const date = new Date(saleDateValue);
+                if (!isNaN(date.getTime())) {
+                    saleDate = date.toISOString().split('T')[0];
+                }
+            }
             
             // Get form values
             const propertyData = {
                 id: editingId || generateId(),
                 propertyAddress,
                 salePrice: parseFloat(document.getElementById('salePrice').value) || null,
-                saleDate: document.getElementById('saleDate').value || null,
+                saleDate,
                 saleNotes: document.getElementById('saleNotes').value.trim(),
                 commissionCalculation: document.getElementById('commissionCalculation').value.trim(),
                 propertyType: document.getElementById('propertyType').value,
@@ -1708,6 +1903,8 @@
                 propertyName: document.getElementById('propertyName').value.trim(),
                 ownerName: document.getElementById('ownerName').value.trim(),
                 ownerContact: document.getElementById('ownerContact').value.trim(),
+                buyerName: document.getElementById('buyerName').value.trim(),
+                buyerContact: document.getElementById('buyerContact').value.trim(),
                 propertyId: document.getElementById('propertyId').value.trim(),
                 representation,
                 propertyImageUrl: document.getElementById('propertyImageUrl').value.trim(),
@@ -1739,6 +1936,7 @@
             formTitle.textContent = 'Add New Property';
             propertyForm.reset();
             imagePreview.classList.add('d-none');
+            saleDateInput.classList.remove('is-invalid');
             formContainer.classList.add('active');
         }
 
@@ -1754,7 +1952,12 @@
             // Populate form with property data
             document.getElementById('propertyAddress').value = property.propertyAddress || '';
             document.getElementById('salePrice').value = property.salePrice || '';
-            document.getElementById('saleDate').value = property.saleDate || '';
+            if (property.saleDate) {
+                const date = new Date(property.saleDate);
+                document.getElementById('saleDate').value = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            } else {
+                document.getElementById('saleDate').value = '';
+            }
             document.getElementById('saleNotes').value = property.saleNotes || '';
             document.getElementById('commissionCalculation').value = property.commissionCalculation || '';
             document.getElementById('propertyType').value = property.propertyType || '';
@@ -1762,6 +1965,8 @@
             document.getElementById('propertyName').value = property.propertyName || '';
             document.getElementById('ownerName').value = property.ownerName || '';
             document.getElementById('ownerContact').value = property.ownerContact || '';
+            document.getElementById('buyerName').value = property.buyerName || '';
+            document.getElementById('buyerContact').value = property.buyerContact || '';
             document.getElementById('propertyId').value = property.propertyId || '';
             document.getElementById('representation').value = property.representation || '';
             document.getElementById('propertyImageUrl').value = property.propertyImageUrl || '';
@@ -1775,6 +1980,7 @@
                 imagePreview.classList.add('d-none');
             }
             
+            saleDateInput.classList.remove('is-invalid');
             formContainer.classList.add('active');
         }
 
@@ -1783,6 +1989,7 @@
             formContainer.classList.remove('active');
             propertyForm.reset();
             imagePreview.classList.add('d-none');
+            saleDateInput.classList.remove('is-invalid');
             editingId = null;
             
             // Remove validation classes
@@ -1887,9 +2094,11 @@
             document.getElementById('modalCommission').textContent = property.commissionCalculation || 'Not specified';
             document.getElementById('modalNotes').textContent = property.saleNotes || 'No notes available';
             
-            // Populate owner tab
+            // Populate parties tab
             document.getElementById('modalOwnerName').textContent = property.ownerName || 'Not specified';
             document.getElementById('modalOwnerContact').textContent = property.ownerContact || 'Not specified';
+            document.getElementById('modalBuyerName').textContent = property.buyerName || 'Not specified';
+            document.getElementById('modalBuyerContact').textContent = property.buyerContact || 'Not specified';
             
             // Populate links tab
             const imageUrlLink = document.getElementById('modalImageUrl');
@@ -1922,6 +2131,7 @@
                     return (
                         (property.propertyAddress && property.propertyAddress.toLowerCase().includes(searchTerm)) ||
                         (property.ownerName && property.ownerName.toLowerCase().includes(searchTerm)) ||
+                        (property.buyerName && property.buyerName.toLowerCase().includes(searchTerm)) ||
                         (property.propertyName && property.propertyName.toLowerCase().includes(searchTerm))
                     );
                 });
@@ -1933,10 +2143,13 @@
                 let bValue = b[sortField];
                 
                 // Handle null values
-                if (aValue === null) aValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
-                if (bValue === null) bValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
+                if (aValue === null || aValue === '') aValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
+                if (bValue === null || bValue === '') bValue = sortDirection === 'asc' ? '' : 'ZZZZZZ';
                 
-                if (sortField === 'salePrice' || sortField === 'capRate') {
+                if (sortField === 'saleDate') {
+                    aValue = aValue ? new Date(aValue).getTime() : (sortDirection === 'asc' ? -Infinity : Infinity);
+                    bValue = bValue ? new Date(bValue).getTime() : (sortDirection === 'asc' ? -Infinity : Infinity);
+                } else if (sortField === 'salePrice' || sortField === 'capRate') {
                     aValue = parseFloat(aValue) || 0;
                     bValue = parseFloat(bValue) || 0;
                 }
@@ -1945,6 +2158,9 @@
                 if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
                 return 0;
             });
+            
+            // Update sort select
+            sortSelect.value = `${sortField}-${sortDirection}`;
             
             // Show empty state if no properties
             if (filteredProperties.length === 0) {
@@ -1974,6 +2190,10 @@
             filteredProperties.forEach(property => {
                 const card = document.createElement('div');
                 card.className = 'property-card';
+                card.onclick = (e) => {
+                    if (e.target.closest('.property-actions')) return;
+                    showPropertyDetails(property.id);
+                };
                 
                 // Determine badge class based on representation
                 let badgeClass = '';
@@ -2003,6 +2223,10 @@
                     <div class="property-details">
                         <h3 class="property-name">${property.propertyName || 'Property'}</h3>
                         <p class="property-address">${property.propertyAddress || 'No address specified'}</p>
+                        <div class="property-parties">
+                            <div><strong>Owner:</strong> ${property.ownerName || 'N/A'}</div>
+                            <div><strong>Buyer:</strong> ${property.buyerName || 'N/A'}</div>
+                        </div>
                         <div class="property-stats">
                             <div class="property-stat">
                                 <div class="property-stat-value">${salePrice}</div>
@@ -2018,13 +2242,10 @@
                             </div>
                         </div>
                         <div class="property-actions">
-                            <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('${property.id}')">
-                                <i class="bi bi-eye me-1"></i>View
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="showEditForm('${property.id}')">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); showEditForm('${property.id}')">
                                 <i class="bi bi-pencil me-1"></i>Edit
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProperty('${property.id}')">
+                            <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteProperty('${property.id}')">
                                 <i class="bi bi-trash me-1"></i>Delete
                             </button>
                         </div>
@@ -2041,6 +2262,10 @@
             
             filteredProperties.forEach(property => {
                 const row = document.createElement('tr');
+                row.onclick = (e) => {
+                    if (e.target.closest('.btn-group')) return;
+                    showPropertyDetails(property.id);
+                };
                 
                 // Format sale date
                 const saleDate = property.saleDate ? formatDate(property.saleDate) : '';
@@ -2060,17 +2285,16 @@
                     </td>
                     <td>${property.propertyAddress || ''}</td>
                     <td>${property.propertyName || ''}</td>
-                    <td>${property.ownerName || ''}</td>
+                    <td>${property.propertyType || ''}</td>
                     <td>${property.representation || ''}</td>
+                    <td>${property.ownerName || ''}</td>
+                    <td>${property.buyerName || ''}</td>
                     <td>
                         <div class="btn-group" role="group">
-                            <button class="btn btn-sm btn-outline-primary" onclick="showPropertyDetails('${property.id}')">
-                                <i class="bi bi-eye"></i>
-                            </button>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="showEditForm('${property.id}')">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="event.stopPropagation(); showEditForm('${property.id}')">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteProperty('${property.id}')">
+                            <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); deleteProperty('${property.id}')">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -2079,6 +2303,8 @@
                 
                 propertiesTableBody.appendChild(row);
             });
+            
+            updateSortIcons();
         }
 
         // Export data
@@ -2107,7 +2333,11 @@
                     const importedProperties = JSON.parse(event.target.result);
                     
                     if (Array.isArray(importedProperties)) {
-                        properties = importedProperties;
+                        properties = importedProperties.map(p => ({
+                            ...p,
+                            buyerName: p.buyerName || '',
+                            buyerContact: p.buyerContact || ''
+                        }));
                         savePropertiesToStorage();
                         renderProperties();
                         updateStats();
@@ -2193,10 +2423,5 @@
         // Initialize the app when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
     </script>
-</body>
-</html>
-<script>
-
-</script>
 </body>
 </html>
