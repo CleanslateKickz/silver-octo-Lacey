@@ -1,0 +1,44 @@
+{
+    "symbol": "TSLA",
+    "price": {
+        "current": 284.82,
+        "target": {
+            "low": 115.0,
+            "high": 465.0,
+            "mean": 289.4419,
+            "median": 301.5
+        }
+    },
+    "recommendation": {
+        "mean": 2.60417,
+        "key": "hold",
+        "analysts_count": 42
+    },
+    "financial_metrics": {
+        "total_cash": 36996001792.0,
+        "cash_per_share": 11.486,
+        "total_debt": 13127999488.0,
+        "debt_to_equity": 17.407,
+        "current_ratio": 1.996,
+        "quick_ratio": 1.376
+    },
+    "profitability": {
+        "gross_margin": 0.17662,
+        "operating_margin": 0.0255,
+        "profit_margin": 0.063829996,
+        "ebitda_margin": 0.13111
+    },
+    "growth": {
+        "revenue_growth": -0.092,
+        "earnings_growth": -0.707
+    },
+    "returns": {
+        "return_on_assets": 0.03724,
+        "return_on_equity": 0.087740004
+    },
+    "cash_flow": {
+        "operating": 16837000192.0,
+        "free": 3360000000.0
+    },
+    "currency": "USD"
+}

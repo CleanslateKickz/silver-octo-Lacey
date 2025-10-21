@@ -1,0 +1,135 @@
+{
+    "symbol": "TSLA",
+    "simple_news": [
+        {
+            "title": "Tesla, Inc. (TSLA): Among Nicholas J. Pritzker\u2019s Stock Picks with Huge Upside Potential",
+            "publisher": "Insider Monkey",
+            "publish_date": "2025-05-09T03:24:32Z",
+            "link": "https://finance.yahoo.com/news/tesla-inc-tsla-among-nicholas-032432063.html",
+            "uuid": "5dc06aba-ffb3-3bdf-8533-b29f597c082b",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/EkxYwM8q9K2Yn7hOukra6A--~B/aD04MTY7dz0xNDU2O2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/insidermonkey.com/1277c6032fd09b727a10249a170024cf",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Elon Musk Said Bill Gates 'Has No Clue' After Gates Claimed Electric Trucks May 'Never Be Practical' Because They Can't Cover Long Distances",
+            "publisher": "Benzinga",
+            "publish_date": "2025-05-08T23:24:20Z",
+            "link": "https://finance.yahoo.com/news/elon-musk-said-bill-gates-232420253.html",
+            "uuid": "b7ac70e5-d71b-30cf-b0d6-0d58f7ce76ae",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/wE2GPu9AF7wVENbvqg_4DA--~B/aD01NjM7dz0xMDAwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/Benzinga/ca393226ca07dd37c628dcb8c7aadd07",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Tesla Vs. BYD: EV Giants Near Buy Points For Very Different Reasons",
+            "publisher": "Investor's Business Daily",
+            "publish_date": "2025-05-08T23:17:58Z",
+            "link": "",
+            "uuid": "29c92e28-b5ab-392e-8f22-ae525864f9e8",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/YK5nDR_agRzWDDFVEbyJvA--~B/aD01OTk7dz0xMDYwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/ibd.com/9dd87b0c8f792b437072eddd15df09fc",
+            "tickers": [
+                "TSLA",
+                "BYDDY"
+            ]
+        },
+        {
+            "title": "One of the Largest Teacher Pension Funds in the U.S. Sold Nvidia, Tesla, and Apple and Piled Into a Popular Pharmaceutical Stock Up 395% Over the Last 5 Years",
+            "publisher": "Motley Fool",
+            "publish_date": "2025-05-08T22:05:00Z",
+            "link": "https://finance.yahoo.com/news/one-largest-teacher-pension-funds-220500957.html",
+            "uuid": "ad3415a1-e64f-3346-8b05-c3be85fcf19b",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/4QfbjRSoMIVqbSx0ZdLVlg--~B/aD00NzM7dz03MjA7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/motleyfool.com/d0072208dbde66c8938f89d04ae6af7b",
+            "tickers": [
+                "NVDA",
+                "TSLA",
+                "AAPL",
+                "LLY"
+            ]
+        },
+        {
+            "title": "Elon Musk Says 'We Didn't Come Up With The Name Tesla'\u2014Bought It For $75K After Sending 'The Nicest Guy' To Camp Out At The Owner's Doorstep",
+            "publisher": "Benzinga",
+            "publish_date": "2025-05-08T20:36:43Z",
+            "link": "https://finance.yahoo.com/news/elon-musk-says-didnt-come-203643378.html",
+            "uuid": "b2d8ab88-9427-372e-847a-6918815b0914",
+            "content_type": "STORY",
+            "thumbnail": "",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Tesla Stock Got a Lift From Trump\u2019s Trade Deal",
+            "publisher": "Barrons.com",
+            "publish_date": "2025-05-08T20:23:00Z",
+            "link": "",
+            "uuid": "7d997dcc-0fa4-3d16-ba2c-0d7f4c36783d",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/BG1BIzvSxwlppbDVs68Bhw--~B/aD02NDA7dz0xMjgwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/Barrons.com/d0e643f89cb3523ea704f7d95b713200",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Is Tesla Stock A Buy Or A Sell With Elon Musk Stepping Back From The Trump White House?",
+            "publisher": "Investor's Business Daily",
+            "publish_date": "2025-05-08T20:16:12Z",
+            "link": "",
+            "uuid": "7ba4c6e9-e00c-3c14-a4f5-caaf8dfbc5b9",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/5pXPwCUihtSSH1o04CAGWA--~B/aD01NjM7dz0xMDAwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/ibd.com/5b754475b0418d83332511041a32bfe0",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Why Tesla Stock Is Surging Today",
+            "publisher": "Motley Fool",
+            "publish_date": "2025-05-08T19:55:32Z",
+            "link": "https://finance.yahoo.com/news/why-tesla-stock-surging-today-195532192.html",
+            "uuid": "a0dc6059-9fee-33be-aaf9-4b91c5ef6493",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/rjJuKP_gNUM_zfgmC0_NiA--~B/aD04MDA7dz0xMjAwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/motleyfool.com/bd766b9d019d4caaae798dda457a84d8",
+            "tickers": [
+                "TSLA"
+            ]
+        },
+        {
+            "title": "Magnificent Seven Stocks: Nvidia Slides, Tesla Rallies",
+            "publisher": "Investor's Business Daily",
+            "publish_date": "2025-05-08T15:11:42Z",
+            "link": "",
+            "uuid": "4205eaa9-f620-3a0b-a81a-0e82c7c9fd0b",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/dH2T4UlHg7A40njz2aVZLw--~B/aD01NjM7dz0xMDAwO2FwcGlkPXl0YWNoeW9u/https://media.zenfs.com/en/ibd.com/0682fdd5dad13df00d702863d79378a1",
+            "tickers": [
+                "NVDA",
+                "AAPL",
+                "TSLA",
+                "META",
+                "MSFT"
+            ]
+        },
+        {
+            "title": "Tesla keeps hitting robotaxi roadblocks",
+            "publisher": "Quartz",
+            "publish_date": "2025-05-08T15:06:05Z",
+            "link": "https://finance.yahoo.com/news/tesla-keeps-hitting-robotaxi-roadblocks-150605726.html",
+            "uuid": "60f0021c-c167-333c-b8f8-98893765205a",
+            "content_type": "STORY",
+            "thumbnail": "https://s.yimg.com/uu/api/res/1.2/6fFIiferi5RRwPearCumsg--~B/aD00MjQ7dz02MzY7YXBwaWQ9eXRhY2h5b24-/https://media.zenfs.com/en/quartz.com/3034a312e63615fe0e32c3eae6db8e39",
+            "tickers": [
+                "TSLA",
+                "MBLY",
+                "GOOG"
+            ]
+        }
+    ]
+}

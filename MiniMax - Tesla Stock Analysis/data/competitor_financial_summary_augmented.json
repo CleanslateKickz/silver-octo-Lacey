@@ -1,0 +1,227 @@
+{
+    "BYD": {
+        "symbol": "1211.HK",
+        "price": {
+            "current": 386.6,
+            "target": {
+                "low": 273.5895,
+                "high": 689.15375,
+                "mean": 471.1354,
+                "median": 474.283
+            }
+        },
+        "recommendation": {
+            "mean": 1.37931,
+            "key": "strong_buy",
+            "analysts_count": 29
+        },
+        "financial_metrics": {
+            "total_cash": 153390956544.0,
+            "cash_per_share": 52.275,
+            "total_debt": 41127972864.0,
+            "debt_to_equity": 16.708,
+            "current_ratio": 0.811,
+            "quick_ratio": 0.43
+        },
+        "profitability": {
+            "gross_margin": 0.19023001,
+            "operating_margin": 0.04946,
+            "profit_margin": 0.05452,
+            "ebitda_margin": 0.14169
+        },
+        "growth": {
+            "revenue_growth": 0.363,
+            "earnings_growth": 0.987
+        },
+        "returns": {
+            "return_on_assets": 0.04032,
+            "return_on_equity": 0.23066
+        },
+        "cash_flow": {
+            "operating": 131806846976.0,
+            "free": -13380067328.0
+        },
+        "currency": "CNY",
+        "market_cap": 1176123998208.0
+    },
+    "Volkswagen Group": {
+        "symbol": "VOW3.DE",
+        "price": {
+            "current": 99.1,
+            "target": {
+                "low": 83.7,
+                "high": 180.5,
+                "mean": 118.00952,
+                "median": 120.0
+            }
+        },
+        "recommendation": {
+            "mean": 1.95238,
+            "key": "buy",
+            "analysts_count": 21
+        },
+        "financial_metrics": {
+            "total_cash": 49986998272.0,
+            "cash_per_share": 99.716,
+            "total_debt": 252053995520.0,
+            "debt_to_equity": 125.315,
+            "current_ratio": 1.096,
+            "quick_ratio": 0.716
+        },
+        "profitability": {
+            "gross_margin": 0.16935,
+            "operating_margin": 0.03586,
+            "profit_margin": 0.03041,
+            "ebitda_margin": 0.09038
+        },
+        "growth": {
+            "revenue_growth": 0.028,
+            "earnings_growth": -0.434
+        },
+        "returns": {
+            "return_on_assets": 0.02102,
+            "return_on_equity": 0.05511
+        },
+        "cash_flow": {
+            "operating": 18360999936.0,
+            "free": 30082781184.0
+        },
+        "currency": "EUR",
+        "market_cap": 50467368960.0
+    },
+    "Ford": {
+        "symbol": "F",
+        "price": {
+            "current": 10.28,
+            "target": {
+                "low": 7.0,
+                "high": 17.0,
+                "mean": 10.17,
+                "median": 9.795
+            }
+        },
+        "recommendation": {
+            "mean": 2.96154,
+            "key": "hold",
+            "analysts_count": 24
+        },
+        "financial_metrics": {
+            "total_cash": 26993999872.0,
+            "cash_per_share": 6.788,
+            "total_debt": 157782999040.0,
+            "debt_to_equity": 353.298,
+            "current_ratio": 1.132,
+            "quick_ratio": 0.924
+        },
+        "profitability": {
+            "gross_margin": 0.08067001,
+            "operating_margin": 0.00969,
+            "profit_margin": 0.02744,
+            "ebitda_margin": 0.0554
+        },
+        "growth": {
+            "revenue_growth": -0.05,
+            "earnings_growth": -0.64
+        },
+        "returns": {
+            "return_on_assets": 0.00981,
+            "return_on_equity": 0.11497
+        },
+        "cash_flow": {
+            "operating": 17717000192.0,
+            "free": 1385500032.0
+        },
+        "currency": "USD",
+        "market_cap": 40878931968.0
+    },
+    "NIO": {
+        "symbol": "NIO",
+        "price": {
+            "current": 3.96,
+            "target": {
+                "low": 3.7030797,
+                "high": 8.106768,
+                "mean": 5.1105285,
+                "median": 4.9055037
+            }
+        },
+        "recommendation": {
+            "mean": 2.22222,
+            "key": "buy",
+            "analysts_count": 22
+        },
+        "financial_metrics": {
+            "total_cash": 33842616320.0,
+            "cash_per_share": 15.091,
+            "total_debt": 33823303680.0,
+            "debt_to_equity": 250.422,
+            "current_ratio": 0.993,
+            "quick_ratio": 0.696
+        },
+        "profitability": {
+            "gross_margin": 0.098780006,
+            "operating_margin": -0.30618998,
+            "profit_margin": -0.3447,
+            "ebitda_margin": -0.24339001
+        },
+        "growth": {
+            "revenue_growth": 0.152,
+            "earnings_growth": 0.0
+        },
+        "returns": {
+            "return_on_assets": -0.12153,
+            "return_on_equity": -1.03946
+        },
+        "cash_flow": {
+            "operating": -7849167872.0,
+            "free": -16316348416.0
+        },
+        "currency": "CNY",
+        "market_cap": 8713109504.0
+    },
+    "Tesla": {
+        "symbol": "TSLA",
+        "price": {
+            "current": 284.82,
+            "target": {
+                "low": 115.0,
+                "high": 465.0,
+                "mean": 289.4419,
+                "median": 301.5
+            }
+        },
+        "recommendation": {
+            "mean": 2.60417,
+            "key": "hold",
+            "analysts_count": 42
+        },
+        "financial_metrics": {
+            "total_cash": 36996001792.0,
+            "cash_per_share": 11.486,
+            "total_debt": 13127999488.0,
+            "debt_to_equity": 17.407,
+            "current_ratio": 1.996,
+            "quick_ratio": 1.376
+        },
+        "profitability": {
+            "gross_margin": 0.17662,
+            "operating_margin": 0.0255,
+            "profit_margin": 0.063829996,
+            "ebitda_margin": 0.13111
+        },
+        "growth": {
+            "revenue_growth": -0.092,
+            "earnings_growth": -0.707
+        },
+        "returns": {
+            "return_on_assets": 0.03724,
+            "return_on_equity": 0.087740004
+        },
+        "cash_flow": {
+            "operating": 16837000192.0,
+            "free": 3360000000.0
+        },
+        "currency": "USD",
+        "market_cap": 917393833984.0
+    }
+}
