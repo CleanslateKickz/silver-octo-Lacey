@@ -6,6 +6,10 @@ _This repository contains three distinct webpages. Click through the tabs below 
 
 ---
 
+![Lacey](./Lacey Retail Center.png)
+
+---
+
 <!--
 GitHub's markdown renderer does not support custom HTML, JavaScript, or CSS for advanced components like tabs.
 Instead, we use simple headings and links below for the screenshots.
