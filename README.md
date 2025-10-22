@@ -6,7 +6,7 @@ _This repository contains three distinct webpages. Click through the tabs below 
 
 ---
 
-![Lacey](./Lacey Retail Center.png)
+![Lacey](./Lacey%20Retail%20Center.png)
 
 ---
 
