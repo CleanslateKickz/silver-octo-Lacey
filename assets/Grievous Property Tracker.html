@@ -628,6 +628,9 @@
                             <i class="bi bi-upload me-2"></i>Import Data
                         </button>
                     </div>
+                    <button class="btn btn-outline-secondary ms-2" id="resetDataBtn">
+                        <i class="bi bi-arrow-counterclockwise me-2"></i>Reset Data
+                    </button>
                 </div>
             </div>
         </div>
@@ -884,13 +887,21 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="propertyModalLabel">Property Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="viewToggle" checked>
+                            <label class="form-check-label" for="viewToggle">
+                                <small>Tabbed View</small>
+                            </label>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
                 <div class="modal-body">
                     <img id="modalPropertyImage" class="modal-property-image" src="" alt="Property Image">
                     
-                    <!-- Compact consolidated details view -->
-                    <div class="mt-3" id="compactDetails">
+                    <!-- Single Page View -->
+                    <div id="singlePageView" style="display: none;">
                         <div class="mb-2" id="overviewSection">
                             <h6 class="text-muted">Overview</h6>
                             <div class="row g-3">
@@ -1015,6 +1026,149 @@
                                                 <i class="bi bi-link-45deg me-1"></i>View on CoStar
                                             </a>
                                             <!-- Editable input will appear in edit mode -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabbed View -->
+                    <div id="tabbedView">
+                        <ul class="nav nav-tabs" id="propertyTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transaction-tab" data-bs-toggle="tab" data-bs-target="#transaction" type="button" role="tab" aria-controls="transaction" aria-selected="false">Transaction</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="parties-tab" data-bs-toggle="tab" data-bs-target="#parties" type="button" role="tab" aria-controls="parties" aria-selected="false">Parties</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="links-tab" data-bs-toggle="tab" data-bs-target="#links" type="button" role="tab" aria-controls="links" aria-selected="false">Links</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content mt-3" id="propertyTabContent">
+                            <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Property Address</div>
+                                            <div class="detail-value" id="modalAddressTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Property Name</div>
+                                            <div class="detail-value" id="modalNameTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Property Type</div>
+                                            <div class="detail-value" id="modalTypeTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Property ID</div>
+                                            <div class="detail-value" id="modalIdTab"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="transaction" role="tabpanel" aria-labelledby="transaction-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Sale Price</div>
+                                            <div class="detail-value" id="modalPriceTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Sale Date</div>
+                                            <div class="detail-value" id="modalDateTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Cap Rate</div>
+                                            <div class="detail-value" id="modalCapRateTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Representation</div>
+                                            <div class="detail-value" id="modalRepresentationTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Commission Calculation</div>
+                                            <div class="detail-value" id="modalCommissionTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Sale Notes</div>
+                                            <div class="detail-value" id="modalNotesTab"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="parties" role="tabpanel" aria-labelledby="parties-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Seller/Owner Name</div>
+                                            <div class="detail-value" id="modalOwnerNameTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Seller/Owner Contact</div>
+                                            <div class="detail-value" id="modalOwnerContactTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Buyer Name</div>
+                                            <div class="detail-value" id="modalBuyerNameTab"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Buyer Contact</div>
+                                            <div class="detail-value" id="modalBuyerContactTab"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="links" role="tabpanel" aria-labelledby="links-tab">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <div class="detail-item">
+                                            <div class="detail-label">Property Image URL</div>
+                                            <div class="detail-value">
+                                                <a id="modalImageUrlTab" href="" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-image me-1"></i>View Image
+                                                </a>
+                                                <!-- Editable input will appear in edit mode -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="detail-item">
+                                            <div class="detail-label">CoStar URL</div>
+                                            <div class="detail-value">
+                                                <a id="modalCostarUrlTab" href="" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-link-45deg me-1"></i>View on CoStar
+                                                </a>
+                                                <!-- Editable input will appear in edit mode -->
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -1782,6 +1936,7 @@
         let currentModalPropertyId = null;
         let representationChart = null;
         let yearlyDealsChart = null;
+        const STORAGE_KEY = 'gpt_properties_v3';
 
         // DOM elements
         const formContainer = document.getElementById('formContainer');
@@ -1797,6 +1952,7 @@
         const saveBtn = document.getElementById('saveBtn');
         const exportBtn = document.getElementById('exportBtn');
         const importFile = document.getElementById('importFile');
+        const resetDataBtn = document.getElementById('resetDataBtn');
         const cardViewBtn = document.getElementById('cardViewBtn');
         const tableViewBtn = document.getElementById('tableViewBtn');
         const insightsView = document.getElementById('insightsView');
@@ -1847,9 +2003,38 @@
 
         // Load properties from localStorage or use base data
         function loadPropertiesFromStorage() {
-            const storedProperties = localStorage.getItem('properties');
-            if (storedProperties) {
-                properties = JSON.parse(storedProperties);
+            // Prefer versioned storage key to avoid cross-file conflicts
+            const storedV3 = localStorage.getItem(STORAGE_KEY);
+            if (storedV3) {
+                try {
+                    const raw = JSON.parse(storedV3);
+                    properties = Array.isArray(raw) ? normalizePropertiesSchema(raw) : [...baseData];
+                } catch (err) {
+                    properties = [...baseData];
+                }
+                // Ensure buyer fields exist after normalization
+                properties.forEach(p => {
+                    if (!p.buyerName) p.buyerName = '';
+                    if (!p.buyerContact) p.buyerContact = '';
+                });
+                savePropertiesToStorage();
+                return;
+            }
+
+            // Migration: fall back to legacy key 'properties' if present
+            const legacy = localStorage.getItem('properties');
+            if (legacy) {
+                try {
+                    const raw = JSON.parse(legacy);
+                    properties = Array.isArray(raw) ? normalizePropertiesSchema(raw) : [...baseData];
+                } catch (err) {
+                    properties = [...baseData];
+                }
+                properties.forEach(p => {
+                    if (!p.buyerName) p.buyerName = '';
+                    if (!p.buyerContact) p.buyerContact = '';
+                });
+                savePropertiesToStorage();
             } else {
                 // First time loading - use base data
                 properties = [...baseData];
@@ -1859,7 +2044,83 @@
 
         // Save properties to localStorage
         function savePropertiesToStorage() {
-            localStorage.setItem('properties', JSON.stringify(properties));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(properties));
+        }
+
+        // Normalize legacy/variant schemas to current shape
+        function normalizePropertiesSchema(list) {
+            if (!Array.isArray(list)) return [];
+            const pick = (obj, ...keys) => {
+                for (const k of keys) {
+                    if (obj && obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
+                }
+                return undefined;
+            };
+            return list.map(p => {
+                const normalizeRep = (rep) => {
+                    if (!rep) return '';
+                    const s = String(rep).toLowerCase().trim();
+                    if (s.startsWith('buyer')) return 'Buyer';
+                    if (s.startsWith('seller')) return 'Seller';
+                    if (s.includes('double')) return 'Double-Ended';
+                    if (s === 'both' || s === 'doubleended' || s === 'double ended' || s === 'double_end') return 'Double-Ended';
+                    return '';
+                };
+                const parsePrice = (v) => {
+                    if (v === undefined || v === null || v === '') return null;
+                    if (typeof v === 'number') return v;
+                    const s = String(v).replace(/[$,\s]/g,'').trim();
+                    if (!s) return null;
+                    const m = s.match(/^(\d+(?:\.\d+)?)m$/i);
+                    if (m) return Math.round(parseFloat(m[1]) * 1000000);
+                    const num = parseFloat(s);
+                    return isNaN(num) ? null : Math.round(num);
+                };
+                const parseCap = (v) => {
+                    if (v === undefined || v === null || v === '') return null;
+                    if (typeof v === 'number') return v;
+                    const s = String(v).replace('%','').trim();
+                    const num = parseFloat(s);
+                    return isNaN(num) ? null : num;
+                };
+                const normalizeDate = (v) => {
+                    if (!v) return null;
+                    if (Object.prototype.toString.call(v) === '[object Date]') {
+                        const d = v;
+                        return isNaN(d) ? null : d.toISOString().split('T')[0];
+                    }
+                    const d = new Date(v);
+                    if (!isNaN(d)) return d.toISOString().split('T')[0];
+                    const m = String(v).match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
+                    if (m) {
+                        const mm = m[1].padStart(2,'0');
+                        const dd = m[2].padStart(2,'0');
+                        const yyyy = m[3].length === 2 ? String(2000 + parseInt(m[3])) : m[3];
+                        const d2 = new Date(`${yyyy}-${mm}-${dd}`);
+                        return isNaN(d2) ? null : d2.toISOString().split('T')[0];
+                    }
+                    return null;
+                };
+                const q = { ...p };
+                q.id = (typeof p.id === 'string' && p.id.trim()) ? p.id : generateId();
+                q.propertyAddress = pick(p,'propertyAddress','address','Address','addr','location') || '';
+                q.propertyName = pick(p,'propertyName','name','Name','title','Property') || '';
+                q.salePrice = parsePrice(p.salePrice ?? pick(p,'price','Price','SalePrice','sale_price'));
+                q.saleDate = normalizeDate(p.saleDate ?? pick(p,'date','Date','SaleDate','sale_date'));
+                q.saleNotes = pick(p,'saleNotes','notes','Notes','remarks','SaleNotes') || '';
+                q.commissionCalculation = pick(p,'commissionCalculation','commission','Commission','commissionCalc','CommissionCalc') || '';
+                q.propertyType = pick(p,'propertyType','type','Type') || '';
+                q.capRate = parseCap(p.capRate ?? pick(p,'cap_rate','CapRate','capRatePercent','cap'));
+                q.ownerName = pick(p,'ownerName','owner','Owner','seller','Seller') || '';
+                q.ownerContact = pick(p,'ownerContact','ownerEmail','OwnerContact','owner_contact','sellerContact','SellerContact') || '';
+                q.buyerName = pick(p,'buyerName','buyer','Buyer') || '';
+                q.buyerContact = pick(p,'buyerContact','buyerEmail','BuyerContact','buyer_contact') || '';
+                q.propertyId = pick(p,'propertyId','propertyID','costarId','CoStarID','CoStar Id','CoStarId') || '';
+                q.representation = normalizeRep(p.representation ?? pick(p,'role','Role','side','Side'));
+                q.propertyImageUrl = pick(p,'propertyImageUrl','imageUrl','ImageURL','image_url','image','img','thumbnail') || '';
+                q.costarUrl = pick(p,'costarUrl','coStarUrl','CostarURL','costar','link','URL') || '';
+                return q;
+            });
         }
 
         // Setup event listeners
@@ -1883,6 +2144,11 @@
             
             // Import file
             importFile.addEventListener('change', importData);
+
+            // Reset data
+            if (resetDataBtn) {
+                resetDataBtn.addEventListener('click', handleResetData);
+            }
             
             // View toggle buttons
             cardViewBtn.addEventListener('click', () => switchView('card'));
@@ -1894,6 +2160,8 @@
             
             // Sale date input parsing
             saleDateInput.addEventListener('blur', parseSaleDateInput);
+            // Allow pasting multiple formats into sale date input
+            saleDateInput.addEventListener('paste', handleSaleDatePaste);
             
             // Sort select
             sortSelect.addEventListener('change', handleSortSelect);
@@ -1902,6 +2170,12 @@
             modalEditBtn.addEventListener('click', enterModalEditMode);
             modalSaveBtn.addEventListener('click', saveModalEdits);
             modalCancelEditBtn.addEventListener('click', cancelModalEdits);
+            
+            // View toggle for modal
+            const viewToggle = document.getElementById('viewToggle');
+            if (viewToggle) {
+                viewToggle.addEventListener('change', toggleModalView);
+            }
             
             // Table headers for sorting
             document.querySelectorAll('th[data-sort]').forEach(th => {
@@ -1915,18 +2189,85 @@
             });
         }
 
-        // Parse and validate sale date input
-        function parseSaleDateInput() {
-            const value = saleDateInput.value.trim();
-            if (value) {
-                const date = new Date(value);
-                if (isNaN(date.getTime())) {
-                    showToast('Invalid date format. Please use e.g., "Sep 20, 2024"', 'error');
-                    saleDateInput.classList.add('is-invalid');
-                } else {
-                    saleDateInput.classList.remove('is-invalid');
+        // Flexible parser for pasted/typed sale date values
+        function parseFlexibleDate(str) {
+            if (!str) return null;
+            const s = String(str).trim();
+            // ISO yyyy-mm-dd
+            const iso = s.match(/^\d{4}-\d{1,2}-\d{1,2}$/);
+            if (iso) {
+                const d = new Date(s);
+                return isNaN(d) ? null : d;
+            }
+            // US numeric M/D/YYYY or MM-DD-YYYY or with 2-digit year
+            const num = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
+            if (num) {
+                let mm = parseInt(num[1], 10);
+                let dd = parseInt(num[2], 10);
+                let yyyy = parseInt(num[3], 10);
+                if (yyyy < 100) yyyy = 2000 + yyyy; // assume 21st century for 2-digit years
+                if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) {
+                    const d2 = new Date(yyyy, mm - 1, dd);
+                    return isNaN(d2) ? null : d2;
                 }
             }
+            // Month name, e.g., Sep 19, 2024 or September 19 2024
+            const months = {
+                january: 1, february: 2, march: 3, april: 4, may: 5, june: 6,
+                july: 7, august: 8, september: 9, october: 10, november: 11, december: 12,
+                jan: 1, feb: 2, mar: 3, apr: 4, jun: 6, jul: 7, aug: 8, sep: 9, sept: 9, oct: 10, nov: 11, dec: 12
+            };
+            const name = s.match(/^([A-Za-z]+)\s+(\d{1,2})(?:,|\s)\s*(\d{2,4})$/);
+            if (name) {
+                const monthKey = name[1].toLowerCase();
+                const mmIdx = months[monthKey];
+                if (mmIdx) {
+                    let dd = parseInt(name[2], 10);
+                    let yyyy = parseInt(name[3], 10);
+                    if (yyyy < 100) yyyy = 2000 + yyyy;
+                    const d3 = new Date(yyyy, mmIdx - 1, dd);
+                    return isNaN(d3) ? null : d3;
+                }
+            }
+            // Fallback: try native Date
+            const d = new Date(s);
+            return isNaN(d) ? null : d;
+        }
+
+        // Parse and validate sale date input (on blur)
+        function parseSaleDateInput() {
+            const value = saleDateInput.value.trim();
+            if (!value) {
+                saleDateInput.classList.remove('is-invalid');
+                return;
+            }
+            const date = parseFlexibleDate(value);
+            if (!date) {
+                showToast('Invalid date. Use "Sep 20, 2024" or MM/DD/YYYY', 'error');
+                saleDateInput.classList.add('is-invalid');
+                return;
+            }
+            saleDateInput.classList.remove('is-invalid');
+            // Normalize display to consistent format
+            const iso = date.toISOString().split('T')[0];
+            saleDateInput.value = formatDate(iso);
+        }
+
+        // Handle paste into sale date input to normalize immediately
+        function handleSaleDatePaste(e) {
+            const text = (e.clipboardData || window.clipboardData)?.getData('text');
+            if (!text) return; // let default if nothing
+            e.preventDefault();
+            const date = parseFlexibleDate(text);
+            if (!date) {
+                saleDateInput.value = text.trim();
+                saleDateInput.classList.add('is-invalid');
+                showToast('Invalid date. Use "Sep 20, 2024" or MM/DD/YYYY', 'error');
+                return;
+            }
+            saleDateInput.classList.remove('is-invalid');
+            const iso = date.toISOString().split('T')[0];
+            saleDateInput.value = formatDate(iso);
         }
 
         // Handle sort select change
@@ -1985,8 +2326,8 @@
             let saleDate = null;
             const saleDateValue = document.getElementById('saleDate').value.trim();
             if (saleDateValue) {
-                const date = new Date(saleDateValue);
-                if (!isNaN(date.getTime())) {
+                const date = parseFlexibleDate(saleDateValue);
+                if (date && !isNaN(date.getTime())) {
                     saleDate = date.toISOString().split('T')[0];
                 }
             }
@@ -2178,6 +2519,10 @@
 
         // Render Insights charts
         function renderInsights() {
+            // If Chart.js failed to load (blocked extension/CDN), skip gracefully
+            if (typeof Chart === 'undefined') {
+                return;
+            }
             const buyerOnly = properties.filter(p => p.representation === 'Buyer').length;
             const sellerOnly = properties.filter(p => p.representation === 'Seller').length;
             const doubleEndedDeals = properties.filter(p => p.representation === 'Double-Ended').length;
@@ -2288,6 +2633,92 @@
             return items.some(it => !it.classList.contains('d-none'));
         }
 
+        // Toggle between single page and tabbed view
+        function toggleModalView() {
+            const viewToggle = document.getElementById('viewToggle');
+            const singlePageView = document.getElementById('singlePageView');
+            const tabbedView = document.getElementById('tabbedView');
+            
+            if (viewToggle.checked) {
+                // Show tabbed view
+                singlePageView.style.display = 'none';
+                tabbedView.style.display = 'block';
+            } else {
+                // Show single page view
+                singlePageView.style.display = 'block';
+                tabbedView.style.display = 'none';
+            }
+        }
+
+        // Populate both single page and tabbed views with property data
+        function populateModalViews(property) {
+            // Populate single page view
+            setDetailValue('modalAddress', property.propertyAddress);
+            setDetailValue('modalName', property.propertyName);
+            setDetailValue('modalType', property.propertyType);
+            setDetailValue('modalId', property.propertyId);
+            setDetailValue('modalPrice', property.salePrice, formatCurrency);
+            setDetailValue('modalDate', property.saleDate, formatDate);
+            setDetailValue('modalCapRate', property.capRate, v => `${v}%`);
+            setDetailValue('modalRepresentation', property.representation);
+            setDetailValue('modalCommission', property.commissionCalculation);
+            setDetailValue('modalNotes', property.saleNotes);
+            setDetailValue('modalOwnerName', property.ownerName);
+            setDetailValue('modalOwnerContact', property.ownerContact);
+            setDetailValue('modalBuyerName', property.buyerName);
+            setDetailValue('modalBuyerContact', property.buyerContact);
+
+            // Populate tabbed view with same data
+            setDetailValue('modalAddressTab', property.propertyAddress);
+            setDetailValue('modalNameTab', property.propertyName);
+            setDetailValue('modalTypeTab', property.propertyType);
+            setDetailValue('modalIdTab', property.propertyId);
+            setDetailValue('modalPriceTab', property.salePrice, formatCurrency);
+            setDetailValue('modalDateTab', property.saleDate, formatDate);
+            setDetailValue('modalCapRateTab', property.capRate, v => `${v}%`);
+            setDetailValue('modalRepresentationTab', property.representation);
+            setDetailValue('modalCommissionTab', property.commissionCalculation);
+            setDetailValue('modalNotesTab', property.saleNotes);
+            setDetailValue('modalOwnerNameTab', property.ownerName);
+            setDetailValue('modalOwnerContactTab', property.ownerContact);
+            setDetailValue('modalBuyerNameTab', property.buyerName);
+            setDetailValue('modalBuyerContactTab', property.buyerContact);
+
+            // Handle links for both views
+            const imageUrlLink = document.getElementById('modalImageUrl');
+            const imageUrlLinkTab = document.getElementById('modalImageUrlTab');
+            const hasImageLink = !!property.propertyImageUrl;
+            if (hasImageLink) {
+                imageUrlLink.href = property.propertyImageUrl;
+                imageUrlLink.style.display = 'inline-block';
+                imageUrlLinkTab.href = property.propertyImageUrl;
+                imageUrlLinkTab.style.display = 'inline-block';
+            } else {
+                imageUrlLink.style.display = 'none';
+                imageUrlLinkTab.style.display = 'none';
+            }
+
+            const costarUrlLink = document.getElementById('modalCostarUrl');
+            const costarUrlLinkTab = document.getElementById('modalCostarUrlTab');
+            const hasCostarLink = !!property.costarUrl;
+            if (hasCostarLink) {
+                costarUrlLink.href = property.costarUrl;
+                costarUrlLink.style.display = 'inline-block';
+                costarUrlLinkTab.href = property.costarUrl;
+                costarUrlLinkTab.style.display = 'inline-block';
+            } else {
+                costarUrlLink.style.display = 'none';
+                costarUrlLinkTab.style.display = 'none';
+            }
+
+            // Show/hide sections in single page view based on content
+            document.getElementById('overviewSection').style.display = sectionHasVisibleItems('overviewSection') ? 'block' : 'none';
+            document.getElementById('transactionSection').style.display = sectionHasVisibleItems('transactionSection') ? 'block' : 'none';
+            document.getElementById('partiesSection').style.display = sectionHasVisibleItems('partiesSection') ? 'block' : 'none';
+            const linksSection = document.getElementById('linksSection');
+            if (linksSection) linksSection.style.display = (hasImageLink || hasCostarLink) ? 'block' : 'none';
+        }
+
         // Show property details in modal
         function showPropertyDetails(id) {
             const property = properties.find(p => p.id === id);
@@ -2310,42 +2741,13 @@
                 modalImage.classList.add('d-none');
             }
             
-            // Populate overview section (hide empty items)
-            setDetailValue('modalAddress', property.propertyAddress);
-            setDetailValue('modalName', property.propertyName);
-            setDetailValue('modalType', property.propertyType);
-            setDetailValue('modalId', property.propertyId);
-            document.getElementById('overviewSection').style.display = sectionHasVisibleItems('overviewSection') ? 'block' : 'none';
+            // Populate both views with property data
+            populateModalViews(property);
             
-            // Populate transaction section
-            setDetailValue('modalPrice', property.salePrice, formatCurrency);
-            setDetailValue('modalDate', property.saleDate, formatDate);
-            setDetailValue('modalCapRate', property.capRate, v => `${v}%`);
-            setDetailValue('modalRepresentation', property.representation);
-            setDetailValue('modalCommission', property.commissionCalculation);
-            setDetailValue('modalNotes', property.saleNotes);
-            document.getElementById('transactionSection').style.display = sectionHasVisibleItems('transactionSection') ? 'block' : 'none';
-            
-            // Populate parties section
-            setDetailValue('modalOwnerName', property.ownerName);
-            setDetailValue('modalOwnerContact', property.ownerContact);
-            setDetailValue('modalBuyerName', property.buyerName);
-            setDetailValue('modalBuyerContact', property.buyerContact);
-            document.getElementById('partiesSection').style.display = sectionHasVisibleItems('partiesSection') ? 'block' : 'none';
-            
-            // Populate links section (hide section when no links)
-            const imageUrlLink = document.getElementById('modalImageUrl');
-            const hasImageLink = !!property.propertyImageUrl;
-            if (hasImageLink) { imageUrlLink.href = property.propertyImageUrl; imageUrlLink.style.display = 'inline-block'; }
-            else { imageUrlLink.style.display = 'none'; }
-            
-            const costarUrlLink = document.getElementById('modalCostarUrl');
-            const hasCostarLink = !!property.costarUrl;
-            if (hasCostarLink) { costarUrlLink.href = property.costarUrl; costarUrlLink.style.display = 'inline-block'; }
-            else { costarUrlLink.style.display = 'none'; }
-
-            const linksSection = document.getElementById('linksSection');
-            if (linksSection) linksSection.style.display = (hasImageLink || hasCostarLink) ? 'block' : 'none';
+            // Initialize view toggle (default to single page view)
+            const viewToggle = document.getElementById('viewToggle');
+            viewToggle.checked = false;
+            toggleModalView();
             
             // If returning to view mode after edit, ensure buttons are reset
             exitModalEditUIState();
@@ -2719,14 +3121,11 @@
                     const importedProperties = JSON.parse(event.target.result);
                     
                     if (Array.isArray(importedProperties)) {
-                        properties = importedProperties.map(p => ({
-                            ...p,
-                            buyerName: p.buyerName || '',
-                            buyerContact: p.buyerContact || ''
-                        }));
+                        properties = normalizePropertiesSchema(importedProperties);
                         savePropertiesToStorage();
                         renderProperties();
                         updateStats();
+                        renderInsights();
                         showToast('Data imported successfully', 'success');
                     } else {
                         showToast('Invalid file format', 'error');
@@ -2740,6 +3139,26 @@
             
             // Reset file input
             e.target.value = '';
+        }
+
+        // Reset data to demo dataset
+        function handleResetData() {
+            const confirmed = confirm('This will clear saved properties and restore the demo dataset. Continue?');
+            if (!confirmed) return;
+            try {
+                // Remove stored properties for current origin (both legacy and versioned keys)
+                localStorage.removeItem('properties');
+                localStorage.removeItem(STORAGE_KEY);
+                // Restore demo data
+                properties = normalizePropertiesSchema(baseData);
+                savePropertiesToStorage();
+                renderProperties();
+                updateStats();
+                renderInsights();
+                showToast('Data reset. Demo dataset restored.', 'success');
+            } catch (err) {
+                showToast('Failed to reset data', 'error');
+            }
         }
 
         // Show toast notification
