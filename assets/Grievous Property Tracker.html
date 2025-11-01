@@ -2654,9 +2654,7 @@
                 const ctx3 = topClientsCanvas.getContext('2d');
                 if (topClientsChart) topClientsChart.destroy();
                 
-                const clientNames = ownerInsights.topClients.map(client => 
-                    client.name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-                );
+                const clientNames = ownerInsights.topClients.map(client => client.name);
                 const clientDeals = ownerInsights.topClients.map(client => client.totalDeals);
                 
                 topClientsChart = new Chart(ctx3, {
@@ -2725,19 +2723,24 @@
         function parseOwnerNames(ownerName, ownerContact) {
             const names = new Set();
             
-            // Add primary owner name if exists
-            if (ownerName && ownerName.trim()) {
-                names.add(ownerName.trim().toLowerCase());
-            }
-            
-            // Parse semicolon-separated names from contact field
+            // Prioritize contact names (actual people) over business entities
             if (ownerContact && ownerContact.trim()) {
+                // Parse semicolon-separated names from contact field (actual people)
                 const contactNames = ownerContact.split(';')
                     .map(name => name.trim())
                     .filter(name => name.length > 0)
                     .filter(name => !name.includes('@') && !name.match(/^\d+/)); // Filter out emails and phone numbers
                 
-                contactNames.forEach(name => names.add(name.toLowerCase()));
+                contactNames.forEach(name => {
+                    // Normalize name formatting (Title Case)
+                    const normalizedName = name.split(' ')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                        .join(' ');
+                    names.add(normalizedName);
+                });
+            } else if (ownerName && ownerName.trim()) {
+                // Only use business entity name if no contact names are available
+                names.add(ownerName.trim());
             }
             
             return Array.from(names);
@@ -3262,8 +3265,8 @@
                         <h3 class="property-name">${property.propertyName || 'Property'}</h3>
                         <p class="property-address">${property.propertyAddress || 'No address specified'}</p>
                         <div class="property-parties">
-                            <div><strong>Owner:</strong> ${property.ownerName || 'N/A'}</div>
-                            <div><strong>Buyer:</strong> ${property.buyerName || 'N/A'}</div>
+                            <div><strong>Seller:</strong> ${property.ownerContact || property.ownerName || 'N/A'}</div>
+                            <div><strong>Buyer:</strong> ${property.buyerContact || property.buyerName || 'N/A'}</div>
                         </div>
                         <div class="property-stats">
                             <div class="property-stat">
