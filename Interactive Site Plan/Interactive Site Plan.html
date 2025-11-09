@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3000 Market Street Plaza - Interactive Site Plan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+        
+        .legend-icon {
+            width: 16px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 8px;
+            position: relative;
+        }
+        
+        .legend-icon::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid currentColor;
+        }
+        
+        .edit-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 4px;
+            margin-right: 10px;
+        }
+        
+        .view-option {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6c757d;
+        }
+        
+        .view-option.active {
+            background: white;
+            color: #2c3e50;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .edit-btn, .export-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .edit-btn.inactive {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .edit-btn.active {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .export-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .edit-btn:hover, .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .map-container {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            background-image: url('https://ahprd1cdn.csgpimgs.com/i2/pGj8PCl0UzUWicO24dyZbySlOAWrGhfwKQ_HFZ2zDMc/116/image.jpg');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: background-image 0.5s ease;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 20px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.3s;
+            transform: translate(-50%, -100%);
+            z-index: 10;
+            border-radius: 10px 10px 10px 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        
+        .hotspot::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid currentColor;
+        }
+        
+        .hotspot.retail {
+            background: #e74c3c;
+        }
+        
+        .hotspot.retail::after {
+            border-top-color: #e74c3c;
+        }
+        
+        .hotspot.office {
+            background: #3498db;
+        }
+        
+        .hotspot.office::after {
+            border-top-color: #3498db;
+        }
+        
+        .hotspot:hover {
+            transform: translate(-50%, -100%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            z-index: 15;
+        }
+        
+        .hotspot.draggable {
+            cursor: grab;
+            background: #ff9800 !important;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.8);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .hotspot.draggable::after {
+            border-top-color: #ff9800 !important;
+        }
+        
+        .hotspot.draggable:active {
+            cursor: grabbing;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 152, 0, 0.8); }
+            50% { box-shadow: 0 0 20px rgba(255, 152, 0, 1); }
+        }
+        
+        .sidebar {
+            width: 380px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+        
+        .sidebar.hidden {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        
+        .sidebar-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .close-btn:hover {
+            transform: scale(1.2) rotate(90deg);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+        }
+        
+        .image-carousel {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            height: 200px;
+            flex-shrink: 0;
+        }
+        
+        .carousel-container {
+            position: relative;
+            height: 100%;
+            background: #f8f9fa;
+        }
+        
+        .carousel-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+        
+        .carousel-image.active {
+            display: block;
+        }
+        
+        .carousel-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        
+        .carousel-btn {
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        .carousel-btn:hover {
+            background: rgba(0,0,0,0.85);
+            transform: scale(1.1);
+        }
+        
+        .carousel-indicators {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active,
+        .indicator:hover {
+            background: white;
+            transform: scale(1.2);
+        }
+        
+        .image-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .property-details {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        
+        .property-details h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: #6c757d;
+            font-size: 12px;
+        }
+        
+        .detail-value {
+            color: #495057;
+            text-align: right;
+            font-size: 12px;
+        }
+        
+        .focus-btn {
+            width: 100%;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            margin-top: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .focus-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+        
+        .tenant-section {
+            flex-shrink: 0;
+        }
+        
+        .tenant-list {
+            list-style: none;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .tenant-item {
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .tenant-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tenant-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .tenant-website {
+            font-size: 12px;
+            color: #3498db;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tenant-website:hover {
+            text-decoration: underline;
+        }
+        
+        .coord-display {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 400px;
+            display: none;
+        }
+        
+        .coord-display.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .coord-display h4 {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .coord-display code {
+            display: block;
+            background: rgba(0,0,0,0.2);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            user-select: all;
+        }
+        
+        .coord-close {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .coord-close:hover {
+            opacity: 1;
+        }
+        
+        .export-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .export-notification.show {
+            display: flex;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 500px;
+            }
+            
+            .sidebar.hidden {
+                transform: translateY(100%);
+            }
+            
+            .map-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1>3000 Market Street Plaza</h1>
+                <p>13-Building Mixed-Use Complex • Salem, Oregon</p>
+            </div>
+            
+            <div class="controls">
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-icon" style="background: #e74c3c;">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <span>Retail</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-icon" style="background: #3498db;">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <span>Office</span>
+                    </div>
+                </div>
+                
+                <div class="edit-controls">
+                    <div class="view-toggle">
+                        <div class="view-option active" id="view1" onclick="switchView(1)">
+                            <i class="fas fa-map"></i> Top View
+                        </div>
+                        <div class="view-option" id="view2" onclick="switchView(2)">
+                            <i class="fas fa-mountain"></i> Side View
+                        </div>
+                    </div>
+                    
+                    <button class="export-btn" id="exportBtn" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        <span>Export JSON</span>
+                    </button>
+                    <button class="edit-btn inactive" id="editBtn" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i>
+                        <span>Edit Mode: OFF</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+        
+        <div class="sidebar hidden" id="sidebar">
+            <div class="sidebar-header">
+                <h2 id="sidebarTitle">Property Details</h2>
+                <button class="close-btn" onclick="closeSidebar()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-content" id="sidebarContent">
+                <div class="empty-state">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <p>Click on a numbered marker to view detailed property information</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="coord-display" id="coordDisplay">
+        <button class="coord-close" onclick="closeCoordDisplay()">&times;</button>
+        <h4>New Position for Building <span id="coordName"></span>:</h4>
+        <code id="coordValues"></code>
+    </div>
+    
+    <div class="export-notification" id="exportNotification">
+        <i class="fas fa-check-circle"></i>
+        <span>JSON data exported successfully!</span>
+    </div>
+
+    <script>
+        const properties = [
+  {
+    "id": 1,
+    "address": "3000 Market St NE",
+    "name": "100-108, 201-205",
+    "type": "Retail",
+    "rba": 8840,
+    "land": 3.57,
+    "lat": 44.9494735695947,
+    "lng": -122.99759245946757,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/QeAJOWu1vwQBNMgUvRUuXo04ZVPlQrKerC9ZTBCDblE/116/image.jpg"
+    ],
+    "topPercent": 70.8186,
+    "leftPercent": 80.4404,
+    "topPercent2": 67.1102,
+    "leftPercent2": 69.6333,
+    "tenants": [
+      {
+        "name": "Don Satter & Co",
+        "website": ""
+      },
+      {
+        "name": "Lana's Tailor",
+        "website": ""
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "address": "3000 Market St NE",
+    "name": "214-218",
+    "type": "Office",
+    "rba": 4310,
+    "land": 2.76,
+    "lat": 44.94943648588605,
+    "lng": -122.99791725765368,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/gA94-C0NrWQTQ9foPc4pZ_AF7c59teGpDCzGprn1-BI/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/4jOlgq02-ww64zvnDz-QR_JP6YGP9NCERgjlH2Hwu2g/116/image.jpg"
+    ],
+    "topPercent": 76.5321,
+    "leftPercent": 56.089,
+    "topPercent2": 57.4893,
+    "leftPercent2": 45.2833,
+    "tenants": [
+      {
+        "name": "Reliable Deliveries",
+        "website": ""
+      },
+      {
+        "name": "Beltone Hearing Center",
+        "website": ""
+      },
+      {
+        "name": "Copiers Northwest",
+        "website": ""
+      },
+      {
+        "name": "Heidi Lord- REALTOR",
+        "website": ""
+      },
+      {
+        "name": "Kang Law Group",
+        "website": "https://kanglaw.net/"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "address": "3000 Market St NE",
+    "name": "222-228",
+    "type": "Office",
+    "rba": 4264,
+    "land": 2.76,
+    "lat": 44.949425349415,
+    "lng": -122.99808595493508,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/txG8iUSPNzA6u23gYKK7bE4I-FT_BDJerYopcyQnCVo/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/tGz7JUhX3o2yuWZ4Fs-TvQ7uSmPzf-5Th8DaeQsYOis/116/image.jpg"
+    ],
+    "topPercent": 78.2479,
+    "leftPercent": 43.4411,
+    "topPercent2": 53.7706,
+    "leftPercent2": 36.4167,
+    "tenants": [
+      {
+        "name": "Atlas Labs",
+        "website": "https://www.atlaslabsinc.com/?utm_source=google&utm_medium=gbp&utm_campaign=salem"
+      },
+      {
+        "name": "Park Newberry Condominium Association",
+        "website": ""
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "address": "3000 Market St NE",
+    "name": "252-264",
+    "type": "Office",
+    "rba": 3715,
+    "land": 2.78,
+    "lat": 44.94939782664458,
+    "lng": -122.99838859342168,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/KXbQuH7JNxDjQbqe4sw--KqXnQhauZDHPpZuenGZbHs/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/BvN479F5k-Dl3vXohRCeMPWFfhOeM-NToPPTaSV-W3M/116/image.jpg"
+    ],
+    "topPercent": 84.863,
+    "leftPercent": 20.7511,
+    "topPercent2": 50.0819,
+    "leftPercent2": 23.3167,
+    "tenants": []
+  },
+  {
+    "id": 5,
+    "address": "3000 Market St NE",
+    "name": "268",
+    "type": "Office",
+    "rba": 2653,
+    "land": 2.78,
+    "lat": 44.949472471552035,
+    "lng": -122.99829961522718,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/MaGbStO_r3-xJOZ2aOznwUryv8imFdAiWIWZHQEZbWQ/116/image.jpg"
+    ],
+    "topPercent": 82.0143,
+    "leftPercent": 10.1185,
+    "topPercent2": 45.7322,
+    "leftPercent2": 20.0167,
+    "tenants": [
+      {
+        "name": "Solterra Hospice",
+        "website": "https://www.solterrahospice.com/"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "address": "3000 Market St NE",
+    "name": "353",
+    "type": "Office",
+    "rba": 2267,
+    "land": 0.5,
+    "lat": 44.94954795077692,
+    "lng": -122.9981773363768,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/vfa1Au79x6qMW7VlFIHO4oZ7jlEXvdy0NWT_nMVbro0/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/YIvv7viA4dbkotSC9bWc-E5t9QffTTjvojc3O8SvxtE/116/image.jpg"
+    ],
+    "topPercent": 51.7529,
+    "leftPercent": 23.4142,
+    "topPercent2": 45.1644,
+    "leftPercent2": 36.8667,
+    "tenants": []
+  },
+  {
+    "id": 7,
+    "address": "3000 Market St NE",
+    "name": "416-426, 327",
+    "type": "Office",
+    "rba": 3588,
+    "land": 2.78,
+    "lat": 44.949581723416664,
+    "lng": -122.99797729392668,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/FfXehlvG1icgfbImjINrjOA5JieBHYuOczrycoyKGnU/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/X3UtYnXTmVrTiUasKn07YE-_Dvkvc0Lv_3eDxDnCjek/116/image.jpg"
+    ],
+    "topPercent": 42.175,
+    "leftPercent": 43.668,
+    "topPercent2": 47.4034,
+    "leftPercent2": 48.9667,
+    "tenants": [
+      {
+        "name": "Law Offices of Maria Cobarrubias",
+        "website": "http://www.cobarrubiaslaw.com/"
+      },
+      {
+        "name": "Sana Sana Curandera and Massage",
+        "website": "https://www.sanaspiritual.com/"
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "address": "3000 Market St NE",
+    "name": "407-414",
+    "type": "Office",
+    "rba": 3799,
+    "land": 2.78,
+    "lat": 44.949571711879464,
+    "lng": -122.99793423874297,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/j3Kzn7m8CZNTAmAy4H4sopz6Tg6s-rNQIcIEttV0RCs/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/bcVAWfgZKCz9FXAJeRiSCwq5qELn9QU-oPhzeqHSEGw/116/image.jpg"
+    ],
+    "topPercent": 42.3303,
+    "leftPercent": 56.7319,
+    "topPercent2": 50.1333,
+    "leftPercent2": 57.05,
+    "tenants": [
+      {
+        "name": "Alices Crafty Creations",
+        "website": "https://alicescraftycreations.com/"
+      },
+      {
+        "name": "Timothy Miner American Family Insurance",
+        "website": "https://www.amfam.com/agents/oregon/salem/timothy-miner"
+      },
+      {
+        "name": "Northwest Debt Relief Law Firm",
+        "website": "https://nwdrlf.com/home/salem-oregon-bankruptcy-law-office/?utm_campaign=gmbsalem"
+      },
+      {
+        "name": "Green Valley Workforce",
+        "website": ""
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "address": "3000 Market St NE",
+    "name": "541",
+    "type": "Office",
+    "rba": 1596,
+    "land": 2.76,
+    "lat": 44.9496901714641,
+    "lng": -122.99812247280542,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/Y37S-n9tW1O5LZUZiNmVuWTSPIV49dlyE1HRwVa6BcQ/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/n2itmAQfQOF72ugNiaUcvGyWgVpg0stQPSfqW5vfJrI/116/image.jpg"
+    ],
+    "topPercent": 11.4192,
+    "leftPercent": 28.969,
+    "topPercent2": 40.5718,
+    "leftPercent2": 48.8667,
+    "tenants": []
+  },
+  {
+    "id": 10,
+    "address": "3000 Market St NE",
+    "name": "532-539",
+    "type": "Office",
+    "rba": 3634,
+    "land": 2.78,
+    "lat": 44.94969200272202,
+    "lng": -122.99808374451077,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/kGA5jweHypL8H-a1e75KyqdvYNVQsavqc1nRuiWPgYM/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/Vd4T0Fk_pbR2FoiVIP_AECnZmI1AlPyHVxd9Fjex8ns/116/image.jpg"
+    ],
+    "topPercent": 8.68529,
+    "leftPercent": 38.8513,
+    "topPercent2": 42.2305,
+    "leftPercent2": 54.4333,
+    "tenants": [
+      {
+        "name": "MORE Realty - Autumn Bliege",
+        "website": ""
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "address": "3000 Market St NE",
+    "name": "521-528",
+    "type": "Office",
+    "rba": 3731,
+    "land": 2.78,
+    "lat": 44.949694026130416,
+    "lng": -122.99795818143875,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/736SzhgNgOc8IBaew2_yhtEK48dNdWT_6gH5PbMQ1rA/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/ItPaNlwVb43KD2ok8ceS7H2heStI2hyN1nYDm7_m7Ck/116/image.jpg"
+    ],
+    "topPercent": 8.09719,
+    "leftPercent": 53.8684,
+    "topPercent2": 45.0079,
+    "leftPercent2": 62,
+    "tenants": [
+      {
+        "name": "Ductless By Design",
+        "website": "https://ductlessbydesign.net/"
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "address": "3000 Market St NE",
+    "name": "510-517",
+    "type": "Retail",
+    "rba": 3705,
+    "land": 2.78,
+    "lat": 44.94969206675132,
+    "lng": -122.9978022430076,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/8CnGC9xzI1E6JOHbgFZRipn-150SjDY8v16kTciV2go/116/image.jpg"
+    ],
+    "topPercent": 8.66668,
+    "leftPercent": 68.7295,
+    "topPercent2": 47.3203,
+    "leftPercent2": 71.8,
+    "tenants": [
+      {
+        "name": "Aspire Caregiving",
+        "website": "https://aspirecaregiving.com/"
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "address": "3000 Market St N",
+    "name": "502-509",
+    "type": "Office",
+    "rba": 3916,
+    "land": 2.78,
+    "lat": 44.94968840510808,
+    "lng": -122.99771628955808,
+    "images": [
+      "https://ahprd1cdn.csgpimgs.com/i2/G-Ae2hXGYl1rJI6BDenIy-OzqIgaWKLbqBiVvIctrTE/116/image.jpg",
+      "https://ahprd1cdn.csgpimgs.com/i2/9YaGXaumg5AZ7T067eMQ2NNVYFiqSZI2yLeeeUKkiOo/116/image.jpg"
+    ],
+    "topPercent": 9.73093,
+    "leftPercent": 82.7982,
+    "topPercent2": 51.7689,
+    "leftPercent2": 82.8667,
+    "tenants": [
+      {
+        "name": "Garage Door Repair Gurus",
+        "website": ""
+      },
+      {
+        "name": "Integrity In Home Care Salem",
+        "website": "https://integrityinhome.com/"
+      }
+    ]
+  }
+];
+
+        let isEditMode = false;
+        let activeHotspot = null;
+        let mapRect = null;
+        let offsetX, offsetY;
+        let currentView = 1; // 1 for top view, 2 for side view
+
+        // Initialize coordinate bounds if not already present
+        if (!properties[0].hasOwnProperty('topPercent')) {
+            const lats = properties.map(p => p.lat);
+            const lngs = properties.map(p => p.lng);
+            const padding = 0.00002;
+            const minLat = Math.min(...lats) - padding;
+            const maxLat = Math.max(...lats) + padding;
+            const minLng = Math.min(...lngs) - padding;
+            const maxLng = Math.max(...lngs) + padding;
+            const latRange = maxLat - minLat;
+            const lngRange = maxLng - minLng;
+
+            properties.forEach(property => {
+                const percentTop = ((maxLat - property.lat) / latRange) * 100;
+                const percentLeft = ((property.lng - minLng) / lngRange) * 100;
+                property.topPercent = percentTop;
+                property.leftPercent = percentLeft;
+                
+                // Initialize second view coordinates if not present
+                if (!property.hasOwnProperty('topPercent2')) {
+                    // Estimate positions for the second view based on the first view
+                    // This is a rough approximation and should be manually adjusted
+                    property.topPercent2 = 50 + (property.topPercent - 50) * 0.5;
+                    property.leftPercent2 = 50 + (property.leftPercent - 50) * 0.8;
+                }
+            });
+        }
+
+        function mapCoordinates(lat, lng) {
+            const lats = properties.map(p => p.lat);
+            const lngs = properties.map(p => p.lng);
+            const padding = 0.00002;
+            const minLat = Math.min(...lats) - padding;
+            const maxLat = Math.max(...lats) + padding;
+            const minLng = Math.min(...lngs) - padding;
+            const maxLng = Math.max(...lngs) + padding;
+            const latRange = maxLat - minLat;
+            const lngRange = maxLng - minLng;
+            
+            const percentTop = ((maxLat - lat) / latRange) * 100;
+            const percentLeft = ((lng - minLng) / lngRange) * 100;
+            return { top: `${percentTop}%`, left: `${percentLeft}%` };
+        }
+
+        function reverseMapCoordinates(topPercent, leftPercent) {
+            const lats = properties.map(p => p.lat);
+            const lngs = properties.map(p => p.lng);
+            const padding = 0.00002;
+            const minLat = Math.min(...lats) - padding;
+            const maxLat = Math.max(...lats) + padding;
+            const minLng = Math.min(...lngs) - padding;
+            const maxLng = Math.max(...lngs) + padding;
+            const latRange = maxLat - minLat;
+            const lngRange = maxLng - minLng;
+            
+            const lat = maxLat - (topPercent / 100) * latRange;
+            const lng = minLng + (leftPercent / 100) * lngRange;
+            return { lat, lng };
+        }
+
+        function switchView(viewNumber) {
+            currentView = viewNumber;
+            
+            // Update UI
+            document.getElementById('view1').classList.toggle('active', viewNumber === 1);
+            document.getElementById('view2').classList.toggle('active', viewNumber === 2);
+            
+            // Update map background
+            const map = document.getElementById('map');
+            if (viewNumber === 1) {
+                map.style.backgroundImage = "url('https://ahprd1cdn.csgpimgs.com/i2/pGj8PCl0UzUWicO24dyZbySlOAWrGhfwKQ_HFZ2zDMc/116/image.jpg')";
+            } else {
+                map.style.backgroundImage = "url('https://ahprd1cdn.csgpimgs.com/i2/4ZCZ5_3pGNoKHON936nAWR-ToiEvrVmdynclzBSyzlM/116/image.jpg')";
+            }
+            
+            // Update hotspot positions
+            const hotspots = document.querySelectorAll('.hotspot');
+            hotspots.forEach((hotspot, index) => {
+                const property = properties[index];
+                if (viewNumber === 1) {
+                    hotspot.style.top = `${property.topPercent}%`;
+                    hotspot.style.left = `${property.leftPercent}%`;
+                } else {
+                    hotspot.style.top = `${property.topPercent2}%`;
+                    hotspot.style.left = `${property.leftPercent2}%`;
+                }
+            });
+        }
+
+        function initMap() {
+            const map = document.getElementById('map');
+            
+            properties.forEach((property, index) => {
+                // Use stored percentage positions based on current view
+                let top, left;
+                if (currentView === 1) {
+                    top = `${property.topPercent}%`;
+                    left = `${property.leftPercent}%`;
+                } else {
+                    top = `${property.topPercent2}%`;
+                    left = `${property.leftPercent2}%`;
+                }
+                
+                const hotspot = document.createElement('div');
+                hotspot.className = `hotspot ${property.type.toLowerCase()}`;
+                hotspot.style.top = top;
+                hotspot.style.left = left;
+                hotspot.textContent = index + 1;
+                hotspot.dataset.index = index;
+                
+                hotspot.addEventListener('click', () => {
+                    if (!isEditMode) showPropertyDetails(property);
+                });
+                
+                hotspot.addEventListener('mousedown', startDrag);
+                hotspot.addEventListener('touchstart', startDrag);
+                
+                map.appendChild(hotspot);
+            });
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('editBtn');
+            const hotspots = document.querySelectorAll('.hotspot');
+            
+            if (isEditMode) {
+                btn.className = 'edit-btn active';
+                btn.innerHTML = '<i class="fas fa-edit"></i><span>Edit Mode: ON</span>';
+                hotspots.forEach(h => h.classList.add('draggable'));
+                closeSidebar();
+                mapRect = document.getElementById('map').getBoundingClientRect();
+            } else {
+                btn.className = 'edit-btn inactive';
+                btn.innerHTML = '<i class="fas fa-edit"></i><span>Edit Mode: OFF</span>';
+                hotspots.forEach(h => h.classList.remove('draggable'));
+            }
+        }
+
+        function startDrag(e) {
+            if (!isEditMode) return;
+            e.preventDefault();
+            
+            activeHotspot = e.target.closest('.hotspot');
+            if (!activeHotspot) return;
+            
+            mapRect = document.getElementById('map').getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            // Get current position as percentage
+            const currentLeft = parseFloat(activeHotspot.style.left) / 100 * mapRect.width;
+            const currentTop = parseFloat(activeHotspot.style.top) / 100 * mapRect.height;
+            
+            offsetX = clientX - (currentLeft + mapRect.left);
+            offsetY = clientY - (currentTop + mapRect.top);
+            
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', onDrag, { passive: false });
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function onDrag(e) {
+            if (!activeHotspot) return;
+            if (e.type.startsWith('touch')) e.preventDefault();
+            
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            let newLeft = clientX - mapRect.left - offsetX;
+            let newTop = clientY - mapRect.top - offsetY;
+            
+            newLeft = Math.max(0, Math.min(newLeft, mapRect.width));
+            newTop = Math.max(0, Math.min(newTop, mapRect.height));
+            
+            // Convert to percentage and apply
+            const leftPercent = (newLeft / mapRect.width) * 100;
+            const topPercent = (newTop / mapRect.height) * 100;
+            
+            activeHotspot.style.left = `${leftPercent}%`;
+            activeHotspot.style.top = `${topPercent}%`;
+        }
+
+        function endDrag() {
+            if (!activeHotspot) return;
+            
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('touchend', endDrag);
+            
+            // Get final position as percentage
+            const leftPercent = parseFloat(activeHotspot.style.left);
+            const topPercent = parseFloat(activeHotspot.style.top);
+            
+            const buildingIndex = activeHotspot.dataset.index;
+            const buildingName = properties[buildingIndex].name;
+            
+            // Update the property coordinates based on current view
+            if (currentView === 1) {
+                properties[buildingIndex].topPercent = topPercent;
+                properties[buildingIndex].leftPercent = leftPercent;
+            } else {
+                properties[buildingIndex].topPercent2 = topPercent;
+                properties[buildingIndex].leftPercent2 = leftPercent;
+            }
+            
+            // Update lat/lng based on the first view coordinates
+            if (currentView === 1) {
+                const { lat, lng } = reverseMapCoordinates(topPercent, leftPercent);
+                properties[buildingIndex].lat = lat;
+                properties[buildingIndex].lng = lng;
+            }
+            
+            document.getElementById('coordName').textContent = buildingName;
+            document.getElementById('coordValues').textContent = `View ${currentView}: top: ${topPercent.toFixed(2)}%, left: ${leftPercent.toFixed(2)}%`;
+            document.getElementById('coordDisplay').className = 'coord-display show';
+            
+            activeHotspot = null;
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(properties, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = 'market_street_plaza_data.json';
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            // Show notification
+            const notification = document.getElementById('exportNotification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function showPropertyDetails(property) {
+            const sidebar = document.getElementById('sidebar');
+            const title = document.getElementById('sidebarTitle');
+            const content = document.getElementById('sidebarContent');
+            
+            title.textContent = property.name;
+            
+            let carouselHtml = '';
+            if (property.images.length > 1) {
+                carouselHtml = `
+                    <div class="image-carousel">
+                        <div class="carousel-container">
+                            ${property.images.map((img, idx) => 
+                                `<img src="${img}" alt="${property.name} - Image ${idx + 1}" 
+                                     class="carousel-image ${idx === 0 ? 'active' : ''}">`
+                            ).join('')}
+                            <div class="carousel-controls">
+                                <button class="carousel-btn" onclick="changeCarouselImage(-1)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="carousel-btn" onclick="changeCarouselImage(1)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                            <div class="carousel-indicators">
+                                ${property.images.map((_, idx) => 
+                                    `<div class="indicator ${idx === 0 ? 'active' : ''}" onclick="goToCarouselImage(${idx})"></div>`
+                                ).join('')}
+                            </div>
+                            <div class="image-counter">1 / ${property.images.length}</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                carouselHtml = `
+                    <div class="image-carousel">
+                        <img src="${property.images[0]}" alt="${property.name}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                `;
+            }
+            
+            // Generate tenant list HTML
+            let tenantHtml = '';
+            if (property.tenants && property.tenants.length > 0) {
+                tenantHtml = `
+                    <div class="property-details tenant-section">
+                        <h3><i class="fas fa-store"></i> Tenants</h3>
+                        <ul class="tenant-list">
+                            ${property.tenants.map(tenant => `
+                                <li class="tenant-item">
+                                    <div class="tenant-name">${tenant.name}</div>
+                                    ${tenant.website ? 
+                                        `<a href="${tenant.website}" target="_blank" class="tenant-website">
+                                            <i class="fas fa-external-link-alt"></i> Visit Website
+                                        </a>` : ''}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            } else {
+                tenantHtml = `
+                    <div class="property-details tenant-section">
+                        <h3><i class="fas fa-store"></i> Tenants</h3>
+                        <p style="font-size: 12px; color: #6c757d; padding: 8px 0;">No tenant information available</p>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = `
+                ${carouselHtml}
+                
+                <div class="property-details">
+                    <h3><i class="fas fa-info-circle"></i> Property Information</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Property Name:</span>
+                        <span class="detail-value">${property.name}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Property Type:</span>
+                        <span class="detail-value">${property.type}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Address:</span>
+                        <span class="detail-value">${property.address}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Rentable Area:</span>
+                        <span class="detail-value">${property.rba.toLocaleString()} SF</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Land Area:</span>
+                        <span class="detail-value">${property.land} Acres</span>
+                    </div>
+                </div>
+                
+                ${tenantHtml}
+                
+                <div class="property-details">
+                    <h3><i class="fas fa-map-marker-alt"></i> Location</h3>
+                    <div class="detail-row">
+                        <span class="detail-label">Coordinates:</span>
+                        <span class="detail-value">${property.lat.toFixed(6)}, ${property.lng.toFixed(6)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Position (Top View):</span>
+                        <span class="detail-value">T: ${property.topPercent?.toFixed(2) || 'N/A'}%, L: ${property.leftPercent?.toFixed(2) || 'N/A'}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Position (Side View):</span>
+                        <span class="detail-value">T: ${property.topPercent2?.toFixed(2) || 'N/A'}%, L: ${property.leftPercent2?.toFixed(2) || 'N/A'}%</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">City:</span>
+                        <span class="detail-value">Salem, OR 97301</span>
+                    </div>
+                    <button class="focus-btn" onclick="highlightProperty(${property.id - 1})">
+                        <i class="fas fa-crosshairs"></i> Highlight on Map
+                    </button>
+                </div>
+            `;
+            
+            sidebar.classList.remove('hidden');
+            
+            if (property.images.length > 1) {
+                window.currentCarouselIndex = 0;
+                window.currentCarouselImages = property.images.length;
+            }
+        }
+
+        function changeCarouselImage(direction) {
+            const images = document.querySelectorAll('.carousel-image');
+            const indicators = document.querySelectorAll('.indicator');
+            const counter = document.querySelector('.image-counter');
+            
+            window.currentCarouselIndex = (window.currentCarouselIndex + direction + window.currentCarouselImages) % window.currentCarouselImages;
+            
+            images.forEach((img, idx) => {
+                img.classList.toggle('active', idx === window.currentCarouselIndex);
+            });
+            
+            indicators.forEach((ind, idx) => {
+                ind.classList.toggle('active', idx === window.currentCarouselIndex);
+            });
+            
+            counter.textContent = `${window.currentCarouselIndex + 1} / ${window.currentCarouselImages}`;
+        }
+
+        function goToCarouselImage(index) {
+            const images = document.querySelectorAll('.carousel-image');
+            const indicators = document.querySelectorAll('.indicator');
+            const counter = document.querySelector('.image-counter');
+            
+            window.currentCarouselIndex = index;
+            
+            images.forEach((img, idx) => {
+                img.classList.toggle('active', idx === index);
+            });
+            
+            indicators.forEach((ind, idx) => {
+                ind.classList.toggle('active', idx === index);
+            });
+            
+            counter.textContent = `${index + 1} / ${window.currentCarouselImages}`;
+        }
+
+        function highlightProperty(index) {
+            const hotspot = document.querySelector(`.hotspot[data-index="${index}"]`);
+            if (hotspot) {
+                hotspot.style.animation = 'none';
+                setTimeout(() => {
+                    hotspot.style.animation = 'pulse 0.5s ease 3';
+                }, 10);
+                
+                hotspot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.add('hidden');
+        }
+
+        function closeCoordDisplay() {
+            document.getElementById('coordDisplay').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeSidebar();
+                closeCoordDisplay();
+            }
+        });
+
+        initMap();
+    </script>
+</body>
+</html>
