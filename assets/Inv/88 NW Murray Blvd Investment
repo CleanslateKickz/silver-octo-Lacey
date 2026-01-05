@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analyzer: 88 NW Murray Blvd</title>
+    
+    <!-- LIBRARIES -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --radius: 12px;
+            
+            /* Dark Theme (Default) */
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --bg-elevated: #334155;
+            --text-main: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --secondary: #ec4899;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --input-bg: #0f172a;
+            --tooltip-bg: #000;
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg-body: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #f8fafc;
+            --text-main: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --input-bg: #f1f5f9;
+            --tooltip-bg: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container { display: flex; width: 100%; height: 100%; }
+
+        /* SIDEBAR */
+        aside {
+            width: 320px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 20;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; font-weight: 700; font-size: 1.2rem; }
+        .logo-icon { width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+
+        .section-title { font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); margin: 2rem 0 1rem 0; letter-spacing: 1px; font-weight: 600; }
+
+        /* CONTROLS */
+        .control-group { margin-bottom: 1.5rem; }
+        .control-label { display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.9rem; font-weight: 600; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--bg-elevated); border-radius: 3px; }
+        
+        .mat-select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 6px; font-weight: 600; outline: none; }
+
+        /* MAIN CONTENT */
+        main { flex: 1; padding: 2rem; overflow-y: auto; position: relative; }
+        
+        .header-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+        .prop-title h1 { font-size: 1.8rem; margin-bottom: 5px; }
+        .prop-title p { color: var(--text-secondary); }
+        .theme-switch { cursor: pointer; font-size: 1.2rem; color: var(--text-secondary); }
+
+        /* COMPONENTS */
+        .card { background: var(--bg-card); border-radius: var(--radius); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow); height: 100%; display: flex; flex-direction: column; }
+        
+        .grid-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-box { text-align: center; padding: 1.5rem; background: var(--bg-elevated); border-radius: var(--radius); border: 1px solid var(--border); }
+        .stat-val { font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin: 5px 0; }
+        .stat-lbl { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        .grid-main { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; height: 400px; }
+        
+        .chart-container { position: relative; height: 100%; width: 100%; }
+
+        /* TIMELINE TABLE */
+        .timeline-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .timeline-table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--border); color: var(--text-secondary); font-size: 0.8rem; }
+        .timeline-table td { padding: 12px; border-bottom: 1px solid var(--border); }
+        .timeline-row-highlight { background: rgba(16, 185, 129, 0.1); }
+
+        /* TOOLTIPS */
+        .info-icon { 
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 16px; height: 16px; background: var(--bg-elevated); 
+            border: 1px solid var(--border); border-radius: 50%; 
+            font-size: 10px; color: var(--text-secondary); margin-left: 5px; cursor: help;
+        }
+        .info-icon:hover {
+            position: relative;
+            color: white;
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .info-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            padding: 8px;
+            background: var(--tooltip-bg);
+            color: #fff;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            text-align: left;
+            line-height: 1.3;
+            pointer-events: none;
+            margin-bottom: 8px;
+            z-index: 100;
+        }
+
+        /* FLOW DIAGRAM */
+        .flow-row { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; background: var(--bg-elevated); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .flow-step { text-align: center; flex: 1; }
+        .flow-val { font-weight: 700; font-size: 1.1rem; }
+        .flow-lbl { font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase; }
+
+        @media (max-width: 1024px) {
+            .grid-main { grid-template-columns: 1fr; height: auto; }
+            .grid-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- SIDEBAR -->
+    <aside>
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fa-solid fa-building"></i></div>
+            <span>Murray Blvd Analysis</span>
+        </div>
+
+        <!-- Property Inputs -->
+        <div class="section-title">Acquisition</div>
+        <div class="control-group">
+            <div class="control-label">Asking Price <i class="fa-solid fa-circle-info info-icon" data-tooltip="Total cost to purchase the asset."></i></div>
+            <input type="number" id="askingPrice" value="995000" class="mat-select" readonly style="opacity: 0.7;">
+        </div>
+
+        <div class="section-title">Lease Structure</div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Retail Rent (1st Floor) <i class="fa-solid fa-circle-info info-icon" data-tooltip="Base rent for retail tenant."></i></span>
+                <span id="lblRetail">$2,835</span>
+            </div>
+            <!-- Simplified as per prompt request -->
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Office Rent (2nd Floor) <i class="fa-solid fa-circle-info info-icon" data-tooltip="Base rent for office tenant."></i></span>
+                <span id="lblOffice">$2,100</span>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Annual Escalation <i class="fa-solid fa-circle-info info-icon" data-tooltip="5% is extremely high and aggressive. Most commercial leases are 2-3%. This significantly boosts your ROI over time."></i></span>
+                <span id="lblEscalation" style="color:var(--primary);">5%</span>
+            </div>
+            <input type="range" id="escInput" min="0" max="10" step="0.5" value="5" oninput="updateAnalysis()">
+        </div>
+
+        <!-- Financing Inputs -->
+        <div class="section-title">Financing</div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Down Payment</span>
+                <span id="lblDP">25%</span>
+            </div>
+            <input type="range" id="dpInput" min="10" max="90" step="5" value="25" oninput="updateAnalysis()">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Interest Rate</span>
+                <span id="lblRate">7.5%</span>
+            </div>
+            <input type="range" id="rateInput" min="4.0" max="15.0" step="0.1" value="7.5" oninput="updateAnalysis()">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label"><span>Loan Term</span></div>
+            <select id="termInput" class="mat-select" onchange="updateAnalysis()">
+                <option value="15">15 Years</option>
+                <option value="20">20 Years</option>
+                <option value="25" selected>25 Years</option>
+                <option value="30">30 Years</option>
+            </select>
+        </div>
+
+        <div style="margin-top:auto; padding-top:2rem; border-top:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span style="font-size:0.8rem; color:var(--text-secondary);">Loan Payoff Date</span>
+            </div>
+            <div id="resPayoffDate" style="font-size:1.1rem; font-weight:700;">October 2048</div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <div class="header-bar">
+            <div class="prop-title">
+                <h1>88 NW Murray Blvd Investment</h1>
+                <p>Retail/Office Mixed-Use • 5-Year Lease Agreements</p>
+            </div>
+            <div class="theme-switch" onclick="toggleTheme()">
+                <i class="fa-solid fa-circle-half-stroke"></i>
+            </div>
+        </div>
+
+        <!-- KEY METRICS -->
+        <div class="grid-stats">
+            <div class="stat-box">
+                <div class="stat-lbl">Year 1 Cashflow</div>
+                <div class="stat-val" id="valYr1CF">-$245</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">After Loan Payment</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-lbl">Year 5 Cashflow</div>
+                <div class="stat-val" style="color:var(--success);" id="valYr5CF">$1,095</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">After 5% Escalations</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-lbl">5-Year Net Income</div>
+                <div class="stat-val" id="valTotal5yr">$23,688</div>
+                <div style="font-size:0.8rem; color:var(--text-secondary);">Total Profit over Lease Term</div>
+            </div>
+        </div>
+
+        <!-- CHART SECTION -->
+        <div class="grid-main">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                    <h3>Rent Growth vs. Debt</h3>
+                    <span style="font-size:0.8rem; color:var(--text-secondary);">5-Year Projection</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:1rem;">Monthly Breakdown (Year 1)</h3>
+                <div style="margin-top:1rem; text-align:center;">
+                    <canvas id="pieChart" height="200"></canvas>
+                </div>
+                <div class="flow-row">
+                    <div class="flow-step">
+                        <div class="flow-lbl">Total Income</div>
+                        <div class="flow-val" style="color:var(--success);" id="flowIncome">$4,935</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-lbl">Loan Pmt</div>
+                        <div class="flow-val" style="color:var(--danger);" id="flowDebt">$5,180</div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="flow-lbl">Net (Yr 1)</div>
+                        <div class="flow-val" id="flowNet">-$245</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TIMELINE TABLE -->
+        <div class="card">
+            <h3 style="margin-bottom:1rem;">Escalation Impact Timeline</h3>
+            <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1rem;">
+                This table shows the powerful impact of the 5% annual increases on your bottom line, compared to the fixed debt service.
+            </p>
+            <div style="overflow-x:auto;">
+                <table class="timeline-table">
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Retail Rent</th>
+                            <th>Office Rent</th>
+                            <th>Total Monthly Income</th>
+                            <th>Annual Income</th>
+                            <th>Debt Service (Fixed)</th>
+                            <th>Annual Net Profit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="timelineBody">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- SCRIPT -->
+<script>
+    // --- CONSTANTS ---
+    const BASE_RETAIL = 2835;
+    const BASE_OFFICE = 2100;
+    
+    // State
+    let growthChart, pieChart;
+
+    // --- INIT ---
+    window.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        updateAnalysis();
+    });
+
+    function toggleTheme() {
+        const body = document.body;
+        const current = body.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', next);
+        updateChartColors(next);
+    }
+
+    // --- CALCULATOR ENGINE ---
+    function updateAnalysis() {
+        // Inputs
+        const price = parseFloat(document.getElementById('askingPrice').value);
+        const escPercent = parseFloat(document.getElementById('escInput').value) / 100;
+        const dpPercent = parseFloat(document.getElementById('dpInput').value) / 100;
+        const rate = parseFloat(document.getElementById('rateInput').value) / 100;
+        const years = parseInt(document.getElementById('termInput').value);
+
+        // Labels
+        document.getElementById('lblEscalation').innerText = (escPercent * 100).toFixed(1) + '%';
+        document.getElementById('lblDP').innerText = (dpPercent * 100) + '%';
+        document.getElementById('lblRate').innerText = (rate * 100).toFixed(1) + '%';
+
+        // Loan Calcs
+        const downPayment = price * dpPercent;
+        const loanAmount = price - downPayment;
+        const monthlyRate = rate / 12;
+        const numPayments = years * 12;
+
+        let monthlyDebt = 0;
+        if(rate === 0) {
+            monthlyDebt = loanAmount / numPayments;
+        } else {
+            monthlyDebt = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        // Update Payoff Date
+        const today = new Date();
+        const payoffDate = new Date(today.setFullYear(today.getFullYear() + years));
+        const options = { year: 'numeric', month: 'long' };
+        document.getElementById('resPayoffDate').innerText = payoffDate.toLocaleDateString('en-US', options);
+
+        // Timeline & Escalation Loop (5 Years)
+        const tbody = document.getElementById('timelineBody');
+        tbody.innerHTML = '';
+
+        const chartLabels = [];
+        const chartIncomeData = [];
+        const chartNetData = [];
+        
+        let total5YrNet = 0;
+
+        for(let i = 0; i < 5; i++) {
+            const yearNum = i + 1;
+            
+            // Calc Rent for this year
+            const retailRent = BASE_RETAIL * Math.pow(1 + escPercent, i);
+            const officeRent = BASE_OFFICE * Math.pow(1 + escPercent, i);
+            const totalMonthly = retailRent + officeRent;
+            const totalAnnual = totalMonthly * 12;
+            const annualDebt = monthlyDebt * 12;
+            const annualNet = totalAnnual - annualDebt;
+
+            total5YrNet += annualNet;
+
+            // Build Table Row
+            const isLast = i === 4;
+            const row = `
+                <tr class="${isLast ? 'timeline-row-highlight' : ''}">
+                    <td><strong>Year ${yearNum}</strong></td>
+                    <td>$${Math.round(retailRent).toLocaleString()}</td>
+                    <td>$${Math.round(officeRent).toLocaleString()}</td>
+                    <td style="color:var(--success); font-weight:600;">$${Math.round(totalMonthly).toLocaleString()}</td>
+                    <td>$${Math.round(totalAnnual).toLocaleString()}</td>
+                    <td>$${Math.round(annualDebt).toLocaleString()}</td>
+                    <td style="color:${annualNet >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight:700;">$${Math.round(annualNet).toLocaleString()}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+
+            // Prepare Chart Data
+            chartLabels.push(`Year ${yearNum}`);
+            chartIncomeData.push(Math.round(totalAnnual));
+            chartNetData.push(Math.round(annualNet));
+
+            // Update Top Cards (Year 1 vs Year 5)
+            if(i === 0) {
+                const moNet = totalMonthly - monthlyDebt;
+                document.getElementById('valYr1CF').innerText = formatMoney(moNet);
+                document.getElementById('valYr1CF').style.color = moNet >= 0 ? 'var(--success)' : 'var(--danger)';
+                
+                // Year 1 Breakdown Pie
+                document.getElementById('flowIncome').innerText = formatMoney(totalMonthly);
+                document.getElementById('flowDebt').innerText = formatMoney(monthlyDebt);
+                document.getElementById('flowNet').innerText = formatMoney(moNet);
+                document.getElementById('flowNet').style.color = moNet >= 0 ? 'var(--success)' : 'var(--danger)';
+
+                if(pieChart) {
+                    pieChart.data.datasets[0].data = [totalMonthly, monthlyDebt];
+                    pieChart.update();
+                }
+            }
+            if(i === 4) {
+                const moNet5 = totalMonthly - monthlyDebt;
+                document.getElementById('valYr5CF').innerText = formatMoney(moNet5);
+            }
+        }
+
+        document.getElementById('valTotal5yr').innerText = formatMoney(total5YrNet);
+
+        // Update Line Chart
+        if(growthChart) {
+            growthChart.data.labels = chartLabels;
+            growthChart.data.datasets[0].data = chartIncomeData;
+            growthChart.data.datasets[1].data = chartNetData;
+            growthChart.update();
+        }
+    }
+
+    // --- CHARTS ---
+    function initCharts() {
+        // Pie Chart (Breakdown)
+        const ctxPie = document.getElementById('pieChart').getContext('2d');
+        pieChart = new Chart(ctxPie, {
+            type: 'doughnut',
+            data: {
+                labels: ['Rent', 'Debt'],
+                datasets: [{
+                    data: [4935, 5180],
+                    backgroundColor: ['#10b981', '#334155'],
+                    borderWidth: 0
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        });
+
+        // Growth Chart (Line/Bar)
+        const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+        growthChart = new Chart(ctxGrowth, {
+            type: 'bar',
+            data: {
+                labels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Net Profit',
+                        data: [],
+                        borderColor: '#10b981',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Total Income',
+                        data: [],
+                        backgroundColor: 'rgba(99, 102, 241, 0.5)',
+                        borderRadius: 4,
+                        yAxisID: 'y'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { labels: { color: '#94a3b8' } } }
+            }
+        });
+    }
+
+    function updateChartColors(theme) {
+        // Basic update to handle theme text color if needed
+        Chart.defaults.color = theme === 'dark' ? '#94a3b8' : '#64748b';
+        Chart.defaults.borderColor = theme === 'dark' ? '#334155' : '#e2e8f0';
+        if(growthChart) growthChart.update();
+    }
+
+    function formatMoney(num) {
+        return '$' + Math.round(num).toLocaleString();
+    }
+
+</script>
+</body>
+</html>
