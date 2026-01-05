@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Dashboard: Complete Analysis</title>
+    
+    <!-- LIBRARIES -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- THEME VARIABLES --- */
+        :root {
+            --font-main: 'Inter', sans-serif;
+            --radius: 12px;
+
+            /* Dark Theme (Default) */
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
+            --bg-card: #1e293b;
+            --bg-elevated: #334155;
+            --text-main: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --secondary: #ec4899;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --input-bg: #0f172a;
+            --tooltip-bg: #000;
+        }
+
+        [data-theme="light"] {
+            /* Light Theme */
+            --bg-body: #f1f5f9;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --bg-elevated: #f8fafc;
+            --text-main: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --input-bg: #f1f5f9;
+            --tooltip-bg: #333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- LAYOUT --- */
+        .app-container { display: flex; width: 100%; height: 100%; }
+
+        /* SIDEBAR */
+        aside {
+            width: 280px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1.5rem;
+            z-index: 20;
+            flex-shrink: 0;
+        }
+
+        .logo-area { display: flex; align-items: center; gap: 12px; margin-bottom: 2.5rem; font-weight: 700; font-size: 1.4rem; }
+        .logo-icon { width: 36px; height: 36px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; }
+
+        .nav-item { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: var(--radius); color: var(--text-secondary); cursor: pointer; margin-bottom: 0.5rem; font-weight: 500; user-select: none; }
+        .nav-item:hover { background: var(--bg-elevated); color: var(--text-main); }
+        .nav-item.active { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+
+        .theme-toggle-container { margin-top: auto; padding-top: 2rem; border-top: 1px solid var(--border); }
+        .theme-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--bg-elevated); transition: .4s; border-radius: 34px; border: 1px solid var(--border); }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 2px; bottom: 2px; background-color: var(--text-secondary); transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); border-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(24px); background-color: white; }
+
+        /* MAIN CONTENT */
+        main { flex: 1; padding: 2rem; overflow-y: auto; position: relative; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .page-title h2 { font-size: 1.8rem; font-weight: 700; }
+        .page-title p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px; }
+        .tab-view { display: none; animation: fadeIn 0.3s ease; }
+        .tab-view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- COMPONENTS --- */
+        .card { background: var(--bg-card); border-radius: var(--radius); padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow); height: 100%; display: flex; flex-direction: column; }
+
+        /* GRID SYSTEMS */
+        .grid-dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .grid-financials { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start; }
+        .grid-split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .grid-docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.5rem; }
+
+        /* --- OVERVIEW STYLES --- */
+        .stat-value { font-size: 2rem; font-weight: 700; margin-top: 0.5rem; color: var(--text-main); }
+        .stat-label { font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .trend { font-size: 0.85rem; display: flex; align-items: center; gap: 4px; margin-top: 8px; }
+        .trend.up { color: var(--success); }
+
+        .easement-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid var(--primary);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        /* --- FINANCIALS STYLES --- */
+        .scenario-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; background: linear-gradient(90deg, rgba(99,102,241,0.1) 0%, transparent 100%); padding:1rem; border-radius:8px; border:1px solid var(--border); }
+        .scenario-title { font-weight:700; color:var(--primary); }
+        .preset-btn { background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:6px; font-size:0.8rem; cursor:pointer; font-weight:600; }
+
+        .flow-container {
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 10px;
+            position: relative;
+        }
+        .flow-step {
+            flex: 1;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            transition: transform 0.2s;
+        }
+        .flow-step:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .flow-icon { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--text-secondary); }
+        .flow-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 5px; }
+        .flow-value { font-size: 1.25rem; font-weight: 700; }
+        .flow-arrow { display: flex; align-items: center; color: var(--text-secondary); font-size: 1.2rem; }
+
+        .step-1 .flow-value { color: #8b5cf6; } /* Pulaski */
+        .step-2 .flow-value { color: #3b82f6; } /* Rogersville */
+        .step-3 .flow-value { color: #6366f1; } /* Total */
+        .step-4 .flow-value { color: #ef4444; } /* Debt */
+        .step-5 .flow-value { color: #10b981; } /* Profit */
+
+        .payoff-bar { height: 8px; background: var(--bg-elevated); border-radius: 4px; overflow: hidden; margin: 10px 0; }
+        .payoff-progress { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); width: 0%; transition: width 1s ease; }
+
+        .control-group { margin-bottom: 1.5rem; }
+        .control-label { display: flex; justify-content: space-between; margin-bottom: 0.8rem; font-size: 0.9rem; font-weight: 600; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--primary); cursor: pointer; margin-top: -6px; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: var(--bg-elevated); border-radius: 3px; }
+        .mat-select { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 6px; font-weight: 600; outline: none; }
+
+        /* TOOLTIPS */
+        .info-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 16px; height: 16px; background: var(--bg-elevated);
+            border: 1px solid var(--border); border-radius: 50%;
+            font-size: 10px; color: var(--text-secondary); margin-left: 5px; cursor: help;
+        }
+        .info-icon:hover {
+            position: relative;
+            color: white;
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        .info-icon:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            padding: 8px;
+            background: var(--tooltip-bg);
+            color: #fff;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            text-align: left;
+            line-height: 1.3;
+            pointer-events: none;
+            margin-bottom: 8px;
+            z-index: 100;
+        }
+
+        /* --- DOCUMENTS STYLES --- */
+        .link-card {
+            display: block;
+            background: var(--bg-card);
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: 0.2s;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+        .link-card:hover { border-color: var(--primary); transform: translateY(-5px); background: rgba(99, 130, 246, 0.05); }
+        .link-icon { font-size: 2rem; margin-bottom: 1rem; display: block; color: var(--primary); }
+
+        /* --- MAP --- */
+        #map-container { width: 100%; height: calc(100vh - 180px); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); position: relative; }
+        #map { width: 100%; height: 100%; z-index: 1; }
+        .leaflet-popup-content-wrapper { background: var(--bg-card); color: var(--text-main); border-radius: 8px; box-shadow: var(--shadow); }
+        .leaflet-popup-tip { background: var(--bg-card); }
+        .popup-img { width: 100%; height: 140px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
+
+        @media (max-width: 1024px) {
+            .grid-financials { grid-template-columns: 1fr; }
+            .flow-container { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); height: 20px; }
+            .grid-dashboard { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            aside { width: 100%; height: auto; flex-direction: row; justify-content: space-between; padding: 10px 20px; border-right: none; border-bottom: 1px solid var(--border); }
+            .nav-item { flex-direction: column; gap: 5px; font-size: 0.7rem; text-align: center; }
+            .theme-toggle-container { margin-top: 0; padding-top: 0; border-top: none; }
+            .grid-dashboard { grid-template-columns: 1fr; }
+        }
+    </style>
+    </head>
+    <body>
+
+        <div class="app-container">
+            <!-- SIDEBAR -->
+            <aside>
+                <div class="logo-area">
+                    <div class="logo-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <span>InvestPro</span>
+                </div>
+                <nav>
+                    <div class="nav-item active" onclick="switchTab('overview', this)">
+                        <i class="fa-solid fa-table-columns"></i> <span>Overview</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('financials', this)">
+                        <i class="fa-solid fa-calculator"></i> <span>Financials</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('map', this)">
+                        <i class="fa-solid fa-map"></i> <span>Asset Map</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('docs', this)">
+                        <i class="fa-solid fa-folder"></i> <span>Documents</span>
+                    </div>
+                </nav>
+
+                <div class="theme-toggle-container">
+                    <div class="theme-label">Appearance</div>
+                    <label class="switch">
+                        <input type="checkbox" id="themeSwitch" onchange="toggleTheme()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main>
+
+                <!-- TAB 1: OVERVIEW -->
+                <div id="overview" class="tab-view active">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Investment Summary</h2>
+                            <p>High-level breakdown of the Pulaski & Rogersville Billboard Package</p>
+                        </div>
+                        <button class="nav-item" style="background: var(--primary); color: white;" onclick="switchTab('financials', document.querySelectorAll('.nav-item')[1])">
+                            Analyze Finances <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid-dashboard">
+                        <div class="card">
+                            <div class="stat-label">Asking Price</div>
+                            <div class="stat-value">$340,000</div>
+                            <div class="trend"><i class="fa-solid fa-tag"></i> Fixed Asset</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-label">Projected NOI (2025)</div>
+                            <div class="stat-value">$48,400</div>
+                            <div class="trend up"><i class="fa-solid fa-arrow-trend-up"></i> 14.2% Cap Rate</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-label">Daily Traffic</div>
+                            <div class="stat-value">68k+</div>
+                            <div class="trend"><i class="fa-solid fa-car"></i> High Visibility</div>
+                        </div>
+                        <div class="card">
+                            <div class="stat-label">Term Structure</div>
+                            <div class="stat-value">Mixed</div>
+                            <div class="trend"><i class="fa-solid fa-file-contract"></i> Easement & Lease</div>
+                        </div>
+                    </div>
+
+                    <div class="grid-split">
+                        <div class="card">
+                            <h3 style="margin-bottom:1rem;">Key Highlights</h3>
+                            <ul style="padding-left: 1rem; line-height: 2; color: var(--text-secondary);">
+                                <li><strong>Zero Rent Risk:</strong> Pulaski site operates on a lifetime easement. No monthly land lease.</li>
+                                <li><strong>Modern Assets:</strong> Digital faces installed in 2022 (Rogersville) and 2025 (Pulaski).</li>
+                                <li><strong>Immediate Cashflow:</strong> Advertisers and permits are fully in place.</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <h3 style="margin-bottom:1rem;">Ownership Notes</h3>
+                            <p style="color:var(--text-secondary); margin-bottom:1rem;">
+                                <strong>Easement vs. Lease:</strong> You may not find the billboard as a separate parcel in GIS.
+                                Pulaski is an improvement on the underlying land. Rogersville is a ground lease agreement.
+                            </p>
+                            <div class="easement-box">
+                                <small><strong>Owner Financing Available?</strong> Contact seller. SBA 504/7A eligible due to real estate component.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: FINANCIALS -->
+                <div id="financials" class="tab-view">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Financial Analysis</h2>
+                            <p>Cashflow modeling and amortization breakdown</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-financials">
+
+                        <!-- CONTROLS -->
+                        <div class="card" style="min-height: auto;">
+                            <h3 style="margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:1rem;">Parameters</h3>
+
+                            <div class="control-group">
+                                <div class="control-label"><span>Asking Price</span> <span style="color:var(--primary);">$340,000</span></div>
+                                <input type="number" value="340000" class="mat-select" readonly style="opacity:0.6;">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Down Payment <i class="fa-solid fa-circle-info info-icon" data-tooltip="The amount paid upfront. Higher down payment reduces loan size and interest costs."></i></span>
+                                    <span id="dpVal" style="color:var(--primary);">25%</span>
+                                </div>
+                                <input type="range" id="dpInput" min="10" max="90" step="5" value="25" oninput="updateFinancials()">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Interest Rate <i class="fa-solid fa-circle-info info-icon" data-tooltip="The cost of borrowing money from the bank annually."></i></span>
+                                    <span id="rateVal" style="color:var(--primary);">8.5%</span>
+                                </div>
+                                <input type="range" id="rateInput" min="4.0" max="15.0" step="0.1" value="8.5" oninput="updateFinancials()">
+                            </div>
+
+                            <div class="control-group">
+                                <div class="control-label"><span>Loan Term <i class="fa-solid fa-circle-info info-icon" data-tooltip="Length of time to pay off the loan. Shorter terms = higher monthly payments but less total interest."></i></span></div>
+                                <select id="termInput" class="mat-select" onchange="updateFinancials()">
+                                    <option value="10">10 Years</option>
+                                    <option value="15" selected>15 Years</option>
+                                    <option value="20">20 Years</option>
+                                    <option value="25">25 Years</option>
+                                </select>
+                            </div>
+
+                            <!-- Payoff Date Info -->
+                            <div style="margin-top:1rem; background:var(--bg-elevated); padding:1rem; border-radius:8px;">
+                                <div style="font-size:0.8rem; color:var(--text-secondary);">Projected Payoff Date</div>
+                                <div id="resPayoffDate" style="font-size:1.2rem; font-weight:700; color:var(--text-main);">October 2039</div>
+                            </div>
+                        </div>
+
+                        <!-- VISUALS -->
+                        <div style="display:flex; flex-direction:column; gap:1.5rem;">
+
+                            <!-- SCENARIO TOOLBAR -->
+                            <div class="scenario-header">
+                                <div>
+                                    <div class="scenario-title"><i class="fa-solid fa-bullseye"></i> Scenario: 10% Down / 5% Rate</div>
+                                    <div style="font-size:0.85rem; color:var(--text-secondary); margin-top:4px;">Optimized cashflow analysis</div>
+                                </div>
+                                <button class="preset-btn" onclick="applyScenario()">Apply 10% / 5% Preset</button>
+                            </div>
+
+                            <!-- WORKFLOW DIAGRAM -->
+                            <div class="card">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                                    <h3>Monthly Cashflow Workflow</h3>
+                                    <span style="font-size:0.8rem; color:var(--text-secondary);">Visualizing the money flow</span>
+                                </div>
+
+                                <div class="flow-container">
+                                    <!-- Pulaski -->
+                                    <div class="flow-step step-1">
+                                        <div class="flow-icon"><i class="fa-solid fa-building-columns"></i></div>
+                                        <div class="flow-label">Pulaski (TN)</div>
+                                        <div class="flow-value" id="flowPulaski">$1,566</div>
+                                        <div style="font-size:0.7rem; color:var(--success);">Zero Rent</div>
+                                    </div>
+
+                                    <div class="flow-arrow"><i class="fa-solid fa-plus"></i></div>
+
+                                    <!-- Rogersville -->
+                                    <div class="flow-step step-2">
+                                        <div class="flow-icon"><i class="fa-solid fa-highway"></i></div>
+                                        <div class="flow-label">Rogersville (AL)</div>
+                                        <div class="flow-value" id="flowRogersville">$2,466</div>
+                                        <div style="font-size:0.7rem; color:var(--text-secondary);">Net after Ground Lease</div>
+                                    </div>
+
+                                    <div class="flow-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                                    <!-- Total -->
+                                    <div class="flow-step step-3">
+                                        <div class="flow-icon"><i class="fa-solid fa-wallet"></i></div>
+                                        <div class="flow-label">Total Income</div>
+                                        <div class="flow-value" id="flowTotal">$4,033</div>
+                                        <div style="font-size:0.7rem; color:var(--text-secondary);">Net Operating Income</div>
+                                    </div>
+
+                                    <div class="flow-arrow"><i class="fa-solid fa-minus"></i></div>
+
+                                    <!-- Debt -->
+                                    <div class="flow-step step-4">
+                                        <div class="flow-icon"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                                        <div class="flow-label">Loan Payment</div>
+                                        <div class="flow-value" id="flowDebt">$2,420</div>
+                                        <div style="font-size:0.7rem; color:var(--text-secondary);">Principal + Interest</div>
+                                    </div>
+
+                                    <div class="flow-arrow"><i class="fa-solid fa-equals"></i></div>
+
+                                    <!-- Net -->
+                                    <div class="flow-step step-5">
+                                        <div class="flow-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                                        <div class="flow-label">Net Cashflow</div>
+                                        <div class="flow-value" id="flowNet">$1,613</div>
+                                        <div style="font-size:0.7rem; color:var(--success);">Profit in Pocket</div>
+                                    </div>
+                                </div>
+
+                                <div class="payoff-bar">
+                                    <div class="payoff-progress" id="payoffProgress"></div>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--text-secondary);">
+                                    <span>Month 1</span>
+                                    <span id="payoffProgressText">0% Paid</span>
+                                    <span id="payoffEndText">Month 180 (15 Yrs)</span>
+                                </div>
+                            </div>
+
+                            <!-- CHARTS -->
+                            <div class="grid-split" style="grid-template-columns: 1fr 1fr;">
+                                <div class="card">
+                                    <h3 style="margin-bottom:0.5rem;">Amortization Split</h3>
+                                    <div style="height:150px;"><canvas id="pieChart"></canvas></div>
+                                </div>
+                                <div class="card">
+                                    <h3 style="margin-bottom:0.5rem;">ROI Summary</h3>
+                                    <div style="margin-top:1rem;">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                                            <span style="font-size:0.9rem; color:var(--text-secondary);">Cash-on-Cash Return</span>
+                                            <span id="resROI" style="font-weight:700; color:var(--primary);">--</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between;">
+                                            <span style="font-size:0.9rem; color:var(--text-secondary);">Debt Service Coverage</span>
+                                            <span id="resDSCR" style="font-weight:700; color:var(--text-main);">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: MAP -->
+                <div id="map" class="tab-view">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Asset Map</h2>
+                            <p>Geographic view of Pulaski, TN and Rogersville, AL</p>
+                        </div>
+                    </div>
+                    <div id="map-container"></div>
+                </div>
+
+                <!-- TAB 4: DOCUMENTS -->
+                <div id="docs" class="tab-view">
+                    <div class="page-header">
+                        <div class="page-title">
+                            <h2>Resources & Documents</h2>
+                        </div>
+                    </div>
+                    <div class="grid-docs">
+                        <a href="https://www.loopnet.com/biz/business-asset/billboard-package-52k-net-income-15-cap-rate-tn-and-al/2418097/" target="_blank" class="link-card">
+                            <span class="link-icon"><i class="fa-solid fa-building"></i></span>
+                            LoopNet Listing
+                        </a>
+                        <a href="https://www.youtube.com/watch?v=EW351sdpN_w" target="_blank" class="link-card">
+                            <span class="link-icon"><i class="fa-solid fa-video"></i></span>
+                            Promotional Video
+                        </a>
+                        <a href="https://assessment.cot.tn.gov/TPAD/Parcel/Details?parcelId=096C%20A%2001800%20000&jur=028&parcelKey=028096C%20A%2001800%20000&SearchParameters=%7B%22GISLink%22%3A%22028096C%20A%201800%22,%22Jur%22%3A%22028%22,%22Query%22%3Anull,%22Owner%22%3Anull,%22PropertyAddress%22%3Anull,%22SubdivisionName%22%3Anull,%22PropertyType%22%3Anull,%22SaleDateRangeStart%22%3Anull,%22SaleDateRangeStartFormatted%22%3A%22%22,%22SaleDateRangeEnd%22%3Anull,%22SaleDateRangeEndFormatted%22%3A%22%22,%22ControlMap%22%3A%22096C%20%20%22,%22ControlMapFormatted%22%3A%22096C%22,%22MapGroup%22%3A%22A%20%22,%22MapGroupFormatted%22%3A%22A%22,%22ParcelNumber%22%3A%222000%22,%22ParcelNumberFormatted%22%3A%2201800%22,%22Group%22%3Anull,%22Parcel%22%3Anull,%22SortBy%22%3Anull,%22ClearDatatable%22%3Atrue%7D" target="_blank" class="link-card">
+                            <span class="link-icon"><i class="fa-solid fa-map-pin"></i></span>
+                            Pulaski GIS (TN)
+                        </a>
+                        <a href="https://altags.com/Lauderdale_Revenue/PropertyDetails.aspx?ppin=075540" target="_blank" class="link-card">
+                            <span class="link-icon"><i class="fa-solid fa-map-pin"></i></span>
+                            Rogersville GIS (AL)
+                        </a>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+
+        <!-- LOGIC -->
+        <script>
+            // --- CONSTANTS ---
+            const ASKING_PRICE = 340000;
+            const PULASKI_MONTHLY = 18800 / 12;
+            const ROGERSVILLE_MONTHLY = 29600 / 12;
+            const TOTAL_NOI_MONTHLY = PULASKI_MONTHLY + ROGERSVILLE_MONTHLY;
+
+            let pieChart;
+            let mapInstance;
+            let mapTiles;
+
+            window.addEventListener('DOMContentLoaded', () => {
+                initCharts();
+                initMap();
+                updateFinancials();
+            });
+
+            function switchTab(tabId, navElement) {
+                document.querySelectorAll('.tab-view').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                if(navElement) navElement.classList.add('active');
+
+                if(tabId === 'financials' && pieChart) setTimeout(() => pieChart.resize(), 50);
+                if(tabId === 'map' && mapInstance) setTimeout(() => mapInstance.invalidateSize(), 100);
+            }
+
+            function toggleTheme() {
+                const isDark = document.getElementById('themeSwitch').checked;
+                const theme = isDark ? 'dark' : 'light';
+                document.body.setAttribute('data-theme', theme);
+                updateMapTiles(theme);
+            }
+
+            // --- FINANCIALS ---
+            function initCharts() {
+                const ctx = document.getElementById('pieChart').getContext('2d');
+                pieChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Principal', 'Interest'],
+                        datasets: [{
+                            data: [0, 0],
+                            backgroundColor: ['#6366f1', '#334155'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                });
+            }
+
+            function applyScenario() {
+                document.getElementById('dpInput').value = 10;
+                document.getElementById('rateInput').value = 5.0;
+                document.getElementById('termInput').value = "15";
+                updateFinancials();
+                const btn = document.querySelector('.preset-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "Applied!";
+                setTimeout(() => btn.innerText = originalText, 1500);
+            }
+
+            function updateFinancials() {
+                const dpPercent = parseFloat(document.getElementById('dpInput').value);
+                const rate = parseFloat(document.getElementById('rateInput').value);
+                const years = parseInt(document.getElementById('termInput').value);
+
+                document.getElementById('dpVal').innerText = dpPercent + '%';
+                document.getElementById('rateVal').innerText = rate + '%';
+
+                const downPayment = ASKING_PRICE * (dpPercent / 100);
+                const loanAmount = ASKING_PRICE - downPayment;
+                const monthlyRate = (rate / 100) / 12;
+                const numPayments = years * 12;
+
+                let monthlyDebt = 0;
+                let totalPrincipal = 0;
+                let totalInterest = 0;
+
+                if(rate === 0) {
+                    monthlyDebt = loanAmount / numPayments;
+                    totalPrincipal = loanAmount;
+                } else {
+                    monthlyDebt = loanAmount * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / (Math.pow(1 + monthlyRate, numPayments) - 1);
+                    totalPrincipal = loanAmount;
+                    totalInterest = (monthlyDebt * numPayments) - loanAmount;
+                }
+
+                const monthlyCashflow = TOTAL_NOI_MONTHLY - monthlyDebt;
+                const annualCashflow = monthlyCashflow * 12;
+                const coc = (annualCashflow / downPayment) * 100;
+                const dscr = TOTAL_NOI_MONTHLY / monthlyDebt;
+
+                // Update Diagram
+                document.getElementById('flowPulaski').innerText = formatMoney(PULASKI_MONTHLY);
+                document.getElementById('flowRogersville').innerText = formatMoney(ROGERSVILLE_MONTHLY);
+                document.getElementById('flowTotal').innerText = formatMoney(TOTAL_NOI_MONTHLY);
+                document.getElementById('flowDebt').innerText = formatMoney(monthlyDebt);
+
+                const netEl = document.getElementById('flowNet');
+                netEl.innerText = formatMoney(monthlyCashflow);
+                netEl.style.color = monthlyCashflow >= 0 ? '#10b981' : '#ef4444';
+
+                if(pieChart) {
+                    pieChart.data.datasets[0].data = [totalPrincipal, totalInterest];
+                    pieChart.update();
+                }
+
+                document.getElementById('resROI').innerText = coc.toFixed(1) + '%';
+                document.getElementById('resDSCR').innerText = dscr.toFixed(2) + 'x';
+
+                const today = new Date();
+                const payoffDate = new Date(today.setMonth(today.getMonth() + numPayments));
+                const options = { year: 'numeric', month: 'long' };
+                document.getElementById('resPayoffDate').innerText = payoffDate.toLocaleDateString('en-US', options);
+
+                document.getElementById('payoffProgressText').innerText = "Start of Schedule";
+                document.getElementById('payoffEndText').innerText = `Month ${numPayments} (${years} Yrs)`;
+                document.getElementById('payoffProgress').style.width = '0%';
+            }
+
+            function formatMoney(num) {
+                return '$' + Math.round(num).toLocaleString();
+            }
+
+            // --- MAP ---
+            function initMap() {
+                mapInstance = L.map('map-container', { zoomControl: false }).setView([35.0, -87.2], 9);
+                L.control.zoom({ position: 'topright' }).addTo(mapInstance);
+
+                mapTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO',
+                    subdomains: 'abcd', maxZoom: 19
+                }).addTo(mapInstance);
+
+                const icon = L.divIcon({
+                    className: 'custom-pin',
+                    html: `<div style="background-color:var(--primary); width:14px; height:14px; border-radius:50%; border:2px solid white; box-shadow:0 0 10px var(--primary);"></div>`,
+                    iconSize: [14,14], iconAnchor: [7,7]
+                });
+
+                const locations = [
+                    { name: "Pulaski, TN", coords: [35.187, -87.031], img: "https://raymarkcompany.com/wp-content/uploads/2022/11/billboard2.jpg", desc: "Lifetime Easement" },
+                    { name: "Rogersville, AL", coords: [34.821, -87.289], img: "https://raymarkcompany.com/wp-content/uploads/2022/11/billboard3.jpg", desc: "15-Year Lease" }
+                ];
+
+                locations.forEach(loc => {
+                    const marker = L.marker(loc.coords, {icon: icon}).addTo(mapInstance);
+                    const popup = `<div style="width:200px;"><img src="${loc.img}" class="popup-img"><div style="font-weight:700">${loc.name}</div><div style="font-size:0.8rem;color:var(--text-secondary)">${loc.desc}</div></div>`;
+                    marker.bindPopup(popup);
+                });
+            }
+
+            function updateMapTiles(theme) {
+                if(!mapInstance || !mapTiles) return;
+                mapInstance.removeLayer(mapTiles);
+                const url = theme === 'light'
+                ? 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'
+                : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+                mapTiles = L.tileLayer(url, { attribution: '&copy; OpenStreetMap &copy; CARTO', subdomains: 'abcd', maxZoom: 19 }).addTo(mapInstance);
+            }
+        </script>
+    </body>
+</html>

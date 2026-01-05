@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Portland Investment Dashboard</title>
+        <style>
+            /* --- THEME VARIABLES --- */
+            :root {
+                /* Dark Mode (Default) */
+                --bg-body: #0f172a;
+                --bg-panel: #1e293b;
+                --bg-input: #334155;
+                --bg-hover: #334155;
+                --border: rgba(255, 255, 255, 0.08);
+                --text-main: #f1f5f9;
+                --text-muted: #94a3b8;
+                --primary: #6366f1;
+                --primary-dim: rgba(99, 102, 241, 0.2);
+                --accent: #10b981;
+                --accent-dim: rgba(16, 185, 129, 0.2);
+                --danger: #f43f5e;
+                --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+                --radius: 12px;
+                --transition: all 0.2s ease;
+            }
+
+            [data-theme="light"] {
+                /* Light Mode */
+                --bg-body: #f1f5f9;
+                --bg-panel: #ffffff;
+                --bg-input: #e2e8f0;
+                --bg-hover: #f1f5f9;
+                --border: #e2e8f0;
+                --text-main: #0f172a;
+                --text-muted: #64748b;
+                --primary: #4f46e5;
+                --primary-dim: rgba(79, 70, 229, 0.1);
+                --accent: #059669;
+                --accent-dim: rgba(5, 150, 105, 0.1);
+                --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+            /* --- RESET & BASE --- */
+            * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+            body {
+                font-family: 'Inter', -apple-system, sans-serif;
+                background: var(--bg-body);
+                color: var(--text-main);
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+
+            /* --- UTILS --- */
+            .mono { font-family: 'SF Mono', 'Menlo', monospace; }
+            .text-accent { color: var(--accent); }
+            .text-danger { color: var(--danger); }
+            .text-primary { color: var(--primary); }
+            .flex { display: flex; }
+            .flex-col { flex-direction: column; }
+            .items-center { align-items: center; }
+            .justify-between { justify-content: space-between; }
+            .gap-2 { gap: 0.5rem; }
+            .gap-4 { gap: 1rem; }
+
+            /* --- LAYOUT GRID --- */
+            .app-container {
+                display: grid;
+                grid-template-columns: 260px 1fr 400px; /* Nav | Details | WIDER Sandbox */
+                height: calc(100vh - 60px);
+                width: 100%;
+            }
+
+            /* --- HEADER --- */
+            header {
+                height: 60px;
+                background: var(--bg-panel);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 1.5rem;
+                flex-shrink: 0;
+                z-index: 20;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            .logo { font-weight: 800; font-size: 1.1rem; letter-spacing: -0.5px; }
+
+            .theme-toggle {
+                background: var(--bg-input);
+                border: 1px solid var(--border);
+                color: var(--text-main);
+                padding: 0.4rem 0.8rem;
+                border-radius: 8px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .theme-toggle:hover { background: var(--bg-hover); }
+
+            /* --- LEFT SIDEBAR (NAV) --- */
+            .sidebar {
+                background: var(--bg-panel);
+                border-right: 1px solid var(--border);
+                overflow-y: auto;
+                padding: 1rem 0.5rem;
+            }
+            .nav-item {
+                padding: 0.75rem 1rem;
+                margin-bottom: 0.5rem;
+                border-radius: var(--radius);
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                border: 1px solid transparent;
+                transition: var(--transition);
+            }
+            .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
+            .nav-item.active {
+                background: var(--primary-dim);
+                border-color: var(--primary);
+                color: var(--primary);
+                font-weight: 600;
+            }
+            .nav-price { font-size: 0.8rem; opacity: 0.7; display: block; margin-top: 2px; }
+
+            /* --- CENTER PANEL (DETAILS) --- */
+            .main-panel {
+                padding: 1.5rem;
+                background: var(--bg-body);
+                overflow-y: auto;
+            }
+
+            .top-grid {
+                display: grid;
+                grid-template-columns: 1.8fr 1.2fr;
+                gap: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            /* Image Carousel */
+            .carousel-container {
+                width: 100%;
+                height: 340px;
+                position: relative;
+                border-radius: var(--radius);
+                overflow: hidden;
+                background: #000;
+                box-shadow: var(--shadow);
+            }
+            .carousel-slide {
+                width: 100%; height: 100%;
+                object-fit: cover;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.4s ease;
+            }
+            .carousel-slide.active { display: block; opacity: 1; }
+
+            .carousel-btn {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background: rgba(0,0,0,0.6);
+                color: white;
+                border: none;
+                width: 40px; height: 40px;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1.2rem;
+                z-index: 5;
+                transition: all 0.2s;
+            }
+            .carousel-btn:hover { background: rgba(0,0,0,0.9); transform: translateY(-50%) scale(1.1); }
+            .prev-btn { left: 15px; }
+            .next-btn { right: 15px; }
+
+            .carousel-indicators {
+                position: absolute;
+                bottom: 15px; left: 50%; transform: translateX(-50%);
+                display: flex; gap: 8px;
+                z-index: 5;
+                background: rgba(0,0,0,0.4);
+                padding: 4px 10px;
+                border-radius: 20px;
+            }
+            .indicator {
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.5);
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .indicator:hover { background: rgba(255,255,255,1); }
+            .indicator.active { background: white; width: 16px; border-radius: 4px; }
+
+            /* Info Card */
+            .info-card {
+                background: var(--bg-panel);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 1.25rem;
+                display: flex;
+                flex-direction: column;
+                box-shadow: var(--shadow);
+                height: 100%;
+                justify-content: space-between; /* Pushes button to bottom */
+            }
+            .info-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+            .info-title { font-size: 1.25rem; font-weight: 700; line-height: 1.2; color: var(--text-main); }
+            .info-subtitle { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+            .stat-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+            .stat-item { display: flex; flex-direction: column; }
+            .stat-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 4px; }
+            .stat-val { font-size: 1.1rem; font-weight: 600; color: var(--text-main); }
+
+            /* BUTTON MOVED HERE */
+            .info-footer {
+                margin-top: auto; /* Push to bottom */
+                padding-top: 1rem;
+                border-top: 1px solid var(--border);
+            }
+            .btn-listing {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 50px;
+                width: 100%;
+                background: var(--primary);
+                color: white;
+                border-radius: var(--radius);
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.95rem;
+                transition: var(--transition);
+                box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+            }
+            .btn-listing:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+            /* Bottom Stack (Map + Desc) */
+            .bottom-stack {
+                display: grid;
+                grid-template-columns: 1fr 1.5fr;
+                gap: 1.5rem;
+                min-height: 350px;
+            }
+
+            .desc-section {
+                background: var(--bg-panel);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: 1rem;
+                overflow-y: auto;
+                height: 100%;
+            }
+            .desc-label { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 0.5rem; }
+            .desc-text { font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); }
+
+            .map-container {
+                height: 100%;
+                width: 100%;
+                border-radius: var(--radius);
+                overflow: hidden;
+                border: 1px solid var(--border);
+                box-shadow: var(--shadow);
+            }
+            .map-iframe { width: 100%; height: 100%; border: none; }
+
+            /* --- RIGHT PANEL (SANDBOX - REVAMPED) --- */
+            .sandbox-panel {
+                background: var(--bg-panel);
+                border-left: 1px solid var(--border);
+                padding: 1.5rem;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .panel-title { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+
+            /* VISUALIZER SECTION */
+            .visualizer-box {
+                background: var(--bg-input);
+                border-radius: var(--radius);
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            .flow-row { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem; }
+
+            .flow-label { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+            .flow-bar-container {
+                height: 24px;
+                background: var(--bg-body);
+                border-radius: 12px;
+                overflow: hidden;
+                position: relative;
+                display: flex;
+            }
+            .flow-bar {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.75rem;
+                font-weight: 700;
+                color: white;
+                white-space: nowrap;
+                transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .bar-in { background: var(--accent); }
+            .bar-out { background: var(--text-muted); }
+            .bar-mtg { background: var(--primary); }
+            .bar-net { background: var(--text-main); }
+
+            .payoff-card {
+                background: linear-gradient(135deg, var(--bg-panel) 0%, var(--bg-input) 100%);
+                border: 1px solid var(--border);
+                padding: 1rem;
+                border-radius: var(--radius);
+                text-align: center;
+                margin-top: 1rem;
+            }
+            .payoff-year { font-size: 1.5rem; font-weight: 800; color: var(--text-main); display: block; }
+            .payoff-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+
+            /* SCENARIO TEXT */
+            .scenario-insight {
+                font-size: 0.85rem;
+                color: var(--text-muted);
+                background: rgba(255,255,255,0.03);
+                padding: 0.75rem;
+                border-radius: 6px;
+                border-left: 3px solid var(--primary);
+                margin-bottom: 1rem;
+            }
+
+            /* CONTROLS */
+            .control-group { margin-bottom: 1.25rem; }
+            .control-header { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-muted); align-items: center; }
+
+            /* Tooltip Icons */
+            .help-icon {
+                display: inline-flex; width: 16px; height: 16px;
+                align-items: center; justify-content: center;
+                border-radius: 50%;
+                background: var(--bg-hover);
+                color: var(--text-muted);
+                font-size: 0.75rem; cursor: help;
+                margin-left: 0.5rem;
+                position: relative;
+            }
+            .help-icon:hover { color: var(--text-main); background: var(--primary); color: white; }
+
+            .tooltip {
+                visibility: hidden;
+                width: 200px;
+                background-color: var(--bg-body);
+                color: var(--text-main);
+                text-align: center;
+                border-radius: 6px;
+                padding: 8px;
+                position: absolute;
+                z-index: 100;
+                bottom: 125%; /* Position above */
+                left: 50%;
+                margin-left: -100px;
+                opacity: 0;
+                transition: opacity 0.3s;
+                box-shadow: var(--shadow);
+                border: 1px solid var(--border);
+                font-size: 0.8rem;
+                pointer-events: none;
+            }
+            .help-icon:hover .tooltip { visibility: visible; opacity: 1; bottom: 120%; }
+
+            input[type=range] {
+                width: 100%; height: 6px; background: var(--bg-body);
+                border-radius: 3px; appearance: none; outline: none;
+            }
+            input[type=range]::-webkit-slider-thumb {
+                appearance: none; width: 16px; height: 16px;
+                background: var(--primary); border-radius: 50%; cursor: pointer;
+                transition: transform 0.1s;
+            }
+            input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+            .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+            .chip {
+                background: var(--bg-input); border: 1px solid var(--border);
+                color: var(--text-muted); padding: 0.5rem; border-radius: 6px;
+                font-size: 0.85rem; cursor: pointer; text-align: center;
+                transition: var(--transition);
+            }
+            .chip:hover { background: var(--bg-hover); border-color: var(--text-muted); }
+            .chip.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+            .metrics-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+            .m-box { text-align: center; }
+            .m-val { font-size: 1.1rem; font-weight: 700; display: block; }
+            .m-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
+
+            /* --- RESPONSIVE --- */
+            @media (max-width: 1200px) {
+                .app-container { grid-template-columns: 220px 1fr; }
+                .sandbox-panel {
+                    position: fixed; top: 60px; right: -400px; width: 400px; height: calc(100vh - 60px);
+                    z-index: 30; border-left: 1px solid var(--border); transition: right 0.3s;
+                }
+                .sandbox-panel.open { right: 0; box-shadow: -10px 0 20px rgba(0,0,0,0.3); }
+                .top-grid { grid-template-columns: 1fr; }
+                .carousel-container { height: 280px; }
+                .bottom-stack { grid-template-columns: 1fr; height: auto; }
+                .map-container { height: 250px; margin-bottom: 1rem; }
+                .desc-section { height: 200px; }
+                .toggle-sandbox { display: block; }
+            }
+            @media (max-width: 768px) {
+                .app-container { display: block; overflow-y: auto; height: auto; }
+                .sidebar { display: none; }
+                .carousel-container { height: 220px; }
+                .mobile-select { display: block; width: 100%; padding: 1rem; margin-bottom: 1rem; background: var(--bg-input); color: var(--text-main); border: none; border-radius: var(--radius); }
+                .main-panel { padding: 1rem; }
+            }
+            .hidden { display: none; }
+        </style>
+    </head>
+    <body>
+
+        <!-- Header -->
+        <header>
+            <div class="logo flex items-center gap-2">
+                <span style="color:var(--primary)">PDX</span> Intel
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="toggle-sandbox hidden" onclick="document.querySelector('.sandbox-panel').classList.toggle('open')" style="border:none; background:var(--primary); color:white; padding:0.5rem 1rem; border-radius:8px; font-size:0.9rem; font-weight:600;">
+                    Calc
+                </button>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <span id="theme-icon">☀️</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="app-container">
+            <!-- 1. Sidebar Navigation -->
+            <nav class="sidebar" id="navList">
+                <!-- Items injected by JS -->
+            </nav>
+
+            <!-- 2. Main Content (Details) -->
+            <main class="main-panel" id="mainContent">
+                <select class="mobile-select hidden" id="mobileSelect" onchange="loadProperty(this.value)"></select>
+                <div id="propContainer" style="display:flex; flex-direction:column; height:100%;"></div>
+            </main>
+
+            <!-- 3. Right Panel (Sandbox/Calculator) -->
+            <aside class="sandbox-panel" id="sandboxPanel">
+                <div class="panel-title">
+                    <span>🧮 Investment Sandbox</span>
+                    <div class="flex gap-2">
+                        <span class="help-icon" data-tooltip="The projected profit or loss from the property after all expenses and mortgage payments.">?️</span>
+                    </div>
+                </div>
+
+                <!-- Visualizer -->
+                <div class="visualizer-box">
+                    <div class="flow-row">
+                        <div class="flow-label"><span>Income (Rent)</span> <span class="mono text-accent" id="visRent">$0</span></div>
+                        <div class="flow-bar-container">
+                            <div class="flow-bar bar-in" id="barRent" style="width: 0%">$0</div>
+                        </div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="flow-label"><span>Operating Expenses</span> <span class="mono" id="visExp">$0</span></div>
+                        <div class="flow-bar-container">
+                            <div class="flow-bar bar-out" id="barExp" style="width: 0%">$0</div>
+                        </div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="flow-label"><span>Mortgage P&I</span> <span class="mono text-primary" id="visMtg">$0</span></div>
+                        <div class="flow-bar-container">
+                            <div class="flow-bar bar-mtg" id="barMtg" style="width: 0%">$0</div>
+                        </div>
+                    </div>
+                    <div class="flow-row">
+                        <div class="flow-label"><span>Net Cash Flow</span> <span class="mono" id="visCf">$0</span></div>
+                        <div class="flow-bar-container">
+                            <div class="flow-bar bar-net" id="barCf" style="width: 0%">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scenario Insight -->
+                <div class="scenario-insight" id="scenarioText">
+                    Adjust sliders to see breakdown.
+                </div>
+
+                <div>
+                    <div class="control-header">Scenarios</div>
+                    <div class="preset-grid" id="presetGrid"></div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <span>Down Payment</span>
+                        <span class="mono" id="dispDown">20%</span>
+                    </div>
+                    <input type="range" id="inDown" min="0" max="50" step="0.5" value="20">
+                    <div class="flex justify-between" style="font-size:0.75rem; color:var(--text-muted); margin-top:0.25rem;">
+                        <span>0%</span>
+                        <span id="dispDownAmt">$0</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <span>Interest Rate</span>
+                        <span class="mono" id="dispRate">7.0%</span>
+                    </div>
+                    <input type="range" id="inRate" min="2" max="12" step="0.125" value="7.0">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <span>Est. Rent</span>
+                        <span class="mono text-accent" id="dispRent">$0</span>
+                    </div>
+                    <input type="range" id="inRent" min="1000" max="10000" step="50" value="0">
+                </div>
+
+                <!-- Loan Payoff Insight -->
+                <div class="payoff-card">
+                    <span class="payoff-label">Loan Paid Off By</span>
+                    <span class="payoff-year mono" id="payoffDate">January 2054</span>
+                    <span style="font-size:0.7rem; color:var(--text-muted); margin-top:0.5rem;">Based on 30-year fixed term</span>
+                </div>
+
+                <!-- Detailed Metrics -->
+                <div class="metrics-row">
+                    <div class="m-box">
+                        <span class="m-val mono" id="mtgVal">0</span>
+                        <span class="m-lbl">Mortgage</span>
+                    </div>
+                    <div class="m-box">
+                        <span class="m-val mono" id="cocVal">0%</span>
+                        <span class="m-lbl">CoC <div class="help-icon" data-tooltip="Cash on Cash Return: Annual Cash Flow divided by Total Cash Invested (Down Payment + Closing Costs).">?</div></span>
+                    </div>
+                    <div class="m-box">
+                        <span class="m-val mono" id="yldVal">0%</span>
+                        <span class="m-lbl">Yield <div class="help-icon" data-tooltip="Gross Rental Yield: Annual Rent divided by Purchase Price.">?</div></span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <script>
+            /* --- DATA --- */
+            const properties = [
+                {
+                    id: 1,
+                    address: "1335 NE 119TH AVE, Portland, OR 97220",
+                    price: 500000,
+                    units: 3,
+                    type: "Triplex (3)",
+                    cap: "8.4",
+                    year: "1964",
+                    images: [
+                        "https://photos.rmlsweb.com/webphotos/16100000/50000/2000/161529404-1.jpg",
+                        "https://photos.rmlsweb.com/webphotos/16100000/50000/2000/161529404-2.jpg",
+                        "https://photos.rmlsweb.com/webphotos/16100000/50000/2000/161529404-13.jpg"
+                    ],
+                    url: "https://www.arkrealestate.org/fine/real/estate/search_income/161529404/mlsname/RMLS",
+                    desc: "Great investment opportunity. Fully rented with month-to-month long term tenants. All units have 2 Bed /1 bath on one level. Contact agent for more details and showings.'24 hour notice required to schedule a showing.' Please do not disturb tenants.",
+                    expenses: 1200,
+                    baseRent: 4200,
+                    scenarios: [
+                        { name: "Standard", dp: 25, rate: 7.5 },
+                        { name: "FHA Hack", dp: 3.5, rate: 6.5, rentAdj: 1400 }
+                    ]
+                },
+                {
+                    id: 2,
+                    address: "4840 NE 99TH AVE, Portland, OR 97220",
+                    price: 559950,
+                    units: 4,
+                    type: "Fourplex (4)",
+                    cap: "9.74",
+                    year: "1933",
+                    images: [
+                        "https://photos.rmlsweb.com/webphotos/79600000/30000/7000/796374130-2.jpg",
+                        "https://photos.rmlsweb.com/webphotos/79600000/30000/7000/796374130-3.jpg",
+                        "https://photos.rmlsweb.com/webphotos/79600000/30000/7000/796374130-4.jpg",
+                        "https://photos.rmlsweb.com/webphotos/79600000/30000/7000/796374130-10.jpg"
+                    ],
+                    url: "https://www.arkrealestate.org/fine/real/estate/search_income/796374130/mlsname/RMLS",
+                    desc: "*** 10% DOWN INVESTOR LOAN *** 9.74% CAP RATE *** A CAP Rate higher than the loan interest rate is a no brainer! CLAIM THIS POSITIVE CASH FLOW NOW!!! Very convenient location for easy commute. This property has 2 duplex buildings on one tax lot. There are two 2 bed 1 bath units and two 1 bed 1 bath units plus a laundry room. This property provides a great opportunity for an owner occupant - loans available with as little as zero down for veterans or 3.5% and 5% down options for most other owner occupants and possible help for the 5%. Investor loan available with as little as 10% down. This is the deal you've been looking for!",
+                    expenses: 1500,
+                    baseRent: 5200,
+                    scenarios: [
+                        { name: "10% Inv Loan", dp: 10, rate: 7.25 },
+                        { name: "5% Rate Loan", dp: 20, rate: 5.0 },
+                        { name: "Owner Occ 3.5%", dp: 3.5, rate: 6.5, rentAdj: 1300 }
+                    ]
+                },
+                {
+                    id: 3,
+                    address: "15 NE 127TH AVE, Portland, OR 97230",
+                    price: 560000,
+                    units: 3,
+                    type: "Triplex (3)",
+                    cap: "7.5",
+                    year: "1982",
+                    images: [
+                        "https://photos.rmlsweb.com/webphotos/48400000/80000/0000/484809831-1.jpg",
+                        "https://photos.rmlsweb.com/webphotos/48400000/80000/0000/484809831-2.jpg",
+                        "https://photos.rmlsweb.com/webphotos/48400000/80000/0000/484809831-3.jpg",
+                        "https://photos.rmlsweb.com/webphotos/48400000/80000/0000/484809831-4.jpg"
+                    ],
+                    url: "https://www.arkrealestate.org/fine/real/estate/search_income/484809831/mlsname/RMLS",
+                    desc: "Charming Townhouse-Style Triplex! 15,17,19 are the unit #'s. Each spacious unit features cozy fireplaces, in-unit washer & dryer hookups, and private back patios—perfect for relaxing or entertaining. Conveniently located just minutes from the MAX station and shopping, this property offers excellent accessibility and appeal for renters or owner-occupants alike. A fantastic investment opportunity in a prime location! 5.96 RATE CAP! Do NOT Disturb the tenants",
+                    expenses: 1300,
+                    baseRent: 4500,
+                    scenarios: [
+                        { name: "Assume 5.96%", dp: 20, rate: 5.96 },
+                        { name: "New Market", dp: 25, rate: 7.5 }
+                    ]
+                },
+                {
+                    id: 4,
+                    address: "9630 SE FOSTER RD, Portland, OR 97266",
+                    price: 599000,
+                    units: 3,
+                    type: "Triplex (3)",
+                    cap: "8.0",
+                    year: "1979",
+                    images: [
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-1.jpg",
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-2.jpg",
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-3.jpg",
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-30.jpg",
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-31.jpg",
+                        "https://photos.rmlsweb.com/webphotos/24400000/00000/9000/24409664-33.jpg"
+                    ],
+                    url: "https://www.arkrealestate.org/fine/real/estate/search_income/24409664/mlsname/RMLS",
+                    desc: "Assumable FHA loan at 2.375% This updated triplex at 9630 SE Foster Rd, Portland presents an excellent investment opportunity. With a new roof and new siding, the property is in top condition, requiring minimal upkeep. enhancing the potential growth future cash flow. Located in a desirable area of Portland, this triplex offers both stability and growth potential for investors. Don't miss the chance to add this turnkey property to your portfolio! FHA loan at 2.375% with a balance of 450k and the PITI is $2,900If you assume the current loan and pay the seller the remaining you will cash flow 5.8% a year and there is more room to increase the rents!",
+                    expenses: 1400,
+                    baseRent: 4800,
+                    scenarios: [
+                        { name: "Assume 2.375%", dp: 24.87, rate: 2.375 },
+                        { name: "New Market", dp: 20, rate: 7.5 }
+                    ]
+                },
+                {
+                    id: 5,
+                    address: "1705 SE Morrison ST, Portland, OR 97214",
+                    price: 699900,
+                    units: 4,
+                    type: "Fourplex (4)",
+                    cap: "7.8",
+                    year: "1890",
+                    images: [
+                        "https://photos.rmlsweb.com/webphotos/21400000/80000/2000/214820890-1.jpg",
+                        "https://photos.rmlsweb.com/webphotos/21400000/80000/2000/214820890-21.jpg",
+                        "https://photos.rmlsweb.com/webphotos/21400000/80000/2000/214820890-22.jpg",
+                        "https://photos.rmlsweb.com/webphotos/21400000/80000/2000/214820890-8.jpg",
+                        "https://photos.rmlsweb.com/webphotos/21400000/80000/2000/214820890-2.jpg"
+                    ],
+                    url: "https://www.arkrealestate.org/fine/real/estate/search_income/214820890/mlsname/RMLS",
+                    desc: "Unlock a classic Buckman investment opportunity with this fourplex at 1705 SE Morrison St, set on an elevated corner lot in one of inner SE Portland’s most sought after close-in neighborhoods. Originally built in 1890, this character property offers four units under one roof; three are one bedroom, one bathroom, and the fourth is a studio with one bathroom, creating a versatile mix for steady tenancy and broad renter appeal. Two of the main level units feature high ceilings that enhance light, volume, and livability. All four units are currently tenant occupied, providing immediate in-place rental income from day one. Tenants are on a mix of terms and rent levels, reflecting strong demand for housing in this close-in SE location. Please do not disturb tenants; showings are subject to accepted offer and scheduled access. This property works for an investor seeking stable income, an owner occupant pursuing a house hacking setup, or a long term hold in a high demand rental area.",
+                    expenses: 1800,
+                    baseRent: 6200,
+                    scenarios: [
+                        { name: "House Hack", dp: 3.5, rate: 6.5, rentAdj: 1550 },
+                        { name: "Investor", dp: 25, rate: 7.5 }
+                    ]
+                }
+            ];
+
+            let currentProp = properties[0];
+            let currentTheme = 'dark';
+            let carouselIndexes = {}; // Store current slide index per property
+
+            /* --- UTILS --- */
+            const fmt = (n) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
+            const calcPI = (p, r, t) => {
+                const mr = r/1200; const n = t*30;
+                if(mr === 0) return 0;
+                return p * mr * Math.pow(1+mr, n) / (Math.pow(1+mr, n)-1);
+            };
+
+            function toggleTheme() {
+                currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', currentTheme);
+                document.getElementById('theme-icon').innerText = currentTheme === 'dark' ? '☀️' : '🌙';
+            }
+
+            /* --- RENDER --- */
+            function init() {
+                // Render Sidebar & Mobile Select
+                const nav = document.getElementById('navList');
+                const mob = document.getElementById('mobileSelect');
+
+                properties.forEach((p, i) => {
+                    // Sidebar Item
+                    const item = document.createElement('div');
+                    item.className = `nav-item ${i === 0 ? 'active' : ''}`;
+                    item.innerHTML = `
+                    <div style="font-weight:600;">${p.type}</div>
+                    <div class="nav-price">${fmt(p.price)}</div>
+                `;
+                    item.onclick = () => loadProperty(p.id);
+                    nav.appendChild(item);
+
+                    // Mobile Option
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.innerText = `${p.type} - ${fmt(p.price)}`;
+                    mob.appendChild(opt);
+                });
+
+                loadProperty(1);
+            }
+
+            function loadProperty(id) {
+                currentProp = properties.find(p => p.id === id);
+
+                // Update Nav Active State
+                document.querySelectorAll('.nav-item').forEach((item, i) => {
+                    item.classList.toggle('active', properties[i].id === id);
+                });
+                document.getElementById('mobileSelect').value = id;
+
+                const mapQuery = encodeURIComponent(currentProp.address);
+                const mapSrc = `https://maps.google.com/maps?q=${mapQuery}&t=k&z=19&ie=UTF8&iwloc=&output=embed`;
+
+                if(!carouselIndexes[id]) carouselIndexes[id] = 0;
+
+                const container = document.getElementById('propContainer');
+                container.innerHTML = `
+                <div class="top-grid">
+                    <!-- Carousel -->
+                    <div class="carousel-container">
+                        ${currentProp.images.map((img, i) => `
+                            <img src="${img}" class="carousel-slide ${i === 0 ? 'active' : ''}" id="slide-${id}-${i}">
+                        `).join('')}
+                        <button class="carousel-btn prev-btn" onclick="rotateCarousel(${id}, -1)">&#10094;</button>
+                        <button class="carousel-btn next-btn" onclick="rotateCarousel(${id}, 1)">&#10095;</button>
+                        <div class="carousel-indicators">
+                            ${currentProp.images.map((_, i) => `
+                                <div class="indicator ${i === 0 ? 'active' : ''}" id="ind-${id}-${i}" onclick="goToSlide(${id}, ${i})"></div>
+                            `).join('')}
+            </div>
+            </div>
+
+                    <!-- Info Card (Button now at bottom) -->
+                    <div class="info-card">
+                        <div class="info-header">
+                            <div>
+                                <div class="info-title">${currentProp.type}</div>
+                                <div class="info-subtitle">${currentProp.address}</div>
+            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:1.5rem; font-weight:700; color:var(--primary);">${fmt(currentProp.price)}</div>
+                                <div class="text-accent" style="font-size:0.9rem;">${currentProp.cap}% Cap</div>
+            </div>
+            </div>
+
+                        <div class="stat-grid">
+                            <div class="stat-item"><span class="stat-label">Built</span><span class="stat-val">${currentProp.year}</span></div>
+                            <div class="stat-item"><span class="stat-label">Units</span><span class="stat-val">${currentProp.units}</span></div>
+                            <div class="stat-item"><span class="stat-label">Exp/Mo</span><span class="stat-val mono">${fmt(currentProp.expenses)}</span></div>
+                            <div class="stat-item"><span class="stat-label">Rent/Mo</span><span class="stat-val mono text-accent">${fmt(currentProp.baseRent)}</span></div>
+            </div>
+
+                        <!-- MOVED TO BOTTOM -->
+                        <div class="info-footer">
+                            <a href="${currentProp.url}" target="_blank" class="btn-listing">
+                                View Full Listing
+            </a>
+            </div>
+            </div>
+            </div>
+
+                <!-- Bottom Stack: Map + Desc -->
+                <div class="bottom-stack">
+                    <div class="map-container">
+                        <iframe class="map-iframe" src="${mapSrc}" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+
+                    <div class="desc-section">
+                        <div class="desc-label">Property Details</div>
+                        <p class="desc-text">${currentProp.desc}</p>
+            </div>
+            </div>
+            `;
+
+                // Setup Sandbox Presets
+                const presetContainer = document.getElementById('presetGrid');
+                presetContainer.innerHTML = currentProp.scenarios.map((s, i) => `
+                <div class="chip" onclick="applyPreset(${i})">${s.name}<br><span style="opacity:0.7; font-size:0.75rem;">${s.dp}% @ ${s.rate}%</span></div>
+            `).join('');
+
+                applyPreset(0);
+            }
+
+            /* --- CAROUSEL LOGIC --- */
+            function rotateCarousel(propId, direction) {
+                const total = currentProp.images.length;
+                let current = carouselIndexes[propId];
+
+                current += direction;
+                if (current >= total) current = 0;
+                if (current < 0) current = total -1;
+
+                goToSlide(propId, current);
+            }
+
+            function goToSlide(propId, index) {
+                carouselIndexes[propId] = index;
+
+                // Update Images
+                currentProp.images.forEach((_, i) => {
+                    const slide = document.getElementById(`slide-${propId}-${i}`);
+                    if(slide) {
+                        slide.classList.toggle('active', i === index);
+                    }
+                });
+
+                // Update Indicators
+                currentProp.images.forEach((_, i) => {
+                    const ind = document.getElementById(`ind-${propId}-${i}`);
+                    if(ind) {
+                        ind.classList.toggle('active', i === index);
+                    }
+                });
+            }
+
+            /* --- CALCULATOR LOGIC --- */
+            function applyPreset(idx) {
+                const s = currentProp.scenarios[idx];
+                document.querySelectorAll('.chip').forEach((c, i) => c.classList.toggle('active', i === idx));
+
+                const rentVal = s.rentAdj ? (currentProp.baseRent - s.rentAdj) : currentProp.baseRent;
+                document.getElementById('inDown').value = s.dp;
+                document.getElementById('inRate').value = s.rate;
+                document.getElementById('inRent').value = rentVal;
+
+                calculate();
+            }
+
+            function calculate() {
+                const dpPct = parseFloat(document.getElementById('inDown').value);
+                const rate = parseFloat(document.getElementById('inRate').value);
+                const rent = parseFloat(document.getElementById('inRent').value);
+
+                document.getElementById('dispDown').innerText = dpPct + '%';
+                document.getElementById('dispRate').innerText = rate.toFixed(3) + '%';
+                document.getElementById('dispRent').innerText = fmt(rent);
+
+                const downAmt = currentProp.price * (dpPct / 100);
+                const loanAmt = currentProp.price - downAmt;
+                const monthlyPI = calcPI(loanAmt, rate, 30);
+                const cashFlow = rent - currentProp.expenses - monthlyPI;
+                const coc = downAmt > 0 ? ((cashFlow * 12) / downAmt) * 100 : 0;
+                const yieldVal = ((rent * 12) / currentProp.price) * 100;
+
+                // Update Sandbox Metrics
+                document.getElementById('mtgVal').innerText = fmt(monthlyPI);
+                document.getElementById('cocVal').innerText = coc.toFixed(1) + '%';
+                document.getElementById('yldVal').innerText = yieldVal.toFixed(1) + '%';
+
+                // Scenario Insight Text
+                const scenarioText = document.getElementById('scenarioText');
+                scenarioText.innerHTML = `
+                With <strong>${dpPct}% down</strong>, you need <strong>${fmt(downAmt)}</strong> at closing.<br>
+                Your monthly payment is <strong>${fmt(monthlyPI)}</strong>.
+            `;
+
+                // Update Visualizer Bars
+                document.getElementById('visRent').innerText = fmt(rent);
+                document.getElementById('visExp').innerText = fmt(currentProp.expenses);
+                document.getElementById('visMtg').innerText = fmt(monthlyPI);
+                const cfEl = document.getElementById('visCf');
+                cfEl.innerText = fmt(cashFlow);
+                cfEl.style.color = cashFlow >= 0 ? 'var(--accent)' : 'var(--danger)';
+
+                // Bar Widths
+                const maxVal = Math.max(rent, currentProp.expenses, monthlyPI, Math.abs(cashFlow)) * 1.2; // 1.2 multiplier for visual breathing room
+                const barRentPct = (rent / maxVal) * 100;
+                const barExpPct = (currentProp.expenses / maxVal) * 100;
+                const barMtgPct = (monthlyPI / maxVal) * 100;
+                const barCfPct = (Math.abs(cashFlow) / maxVal) * 100;
+
+                document.getElementById('barRent').style.width = `${barRentPct}%`;
+                document.getElementById('barExp').style.width = `${barExpPct}%`;
+                document.getElementById('barMtg').style.width = `${barMtgPct}%`;
+                document.getElementById('barCf').style.width = `${barCfPct}%`;
+
+                // Color net bar based on positive/negative
+                const netBar = document.getElementById('barCf');
+                if(cashFlow >= 0) {
+                    netBar.className = 'flow-bar bar-in';
+                } else {
+                    netBar.className = 'flow-bar bar-out'; // Red/Gray for loss
+                }
+
+                // Payoff Date Calculation
+                const today = new Date();
+                const months = 30 * 12;
+                const payoffDate = new Date(today.setMonth(today.getMonth() + months));
+                const monthName = payoffDate.toLocaleString('default', { month: 'long' });
+                const year = payoffDate.getFullYear();
+                document.getElementById('payoffDate').innerText = `${monthName} ${year}`;
+            }
+
+            // Listeners
+            ['inDown', 'inRate', 'inRent'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                    calculate();
+                });
+            });
+
+            init();
+        </script>
+    </body>
+</html>
