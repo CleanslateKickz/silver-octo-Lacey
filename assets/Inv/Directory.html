@@ -15,28 +15,29 @@
     .container {
       max-width: 900px;
       margin: 0 auto;
-      padding: 48px 24px;
+      padding: 40px 20px;
     }
 
     h1 {
-      font-size: 28px;
+      font-size: clamp(22px, 5vw, 28px);
       margin-bottom: 8px;
     }
 
-    p.subtitle {
+    .subtitle {
       color: #6b7280;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
+      font-size: 15px;
     }
 
     .card {
       background: #ffffff;
-      border-radius: 12px;
+      border-radius: 14px;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-      padding: 20px 24px;
+      padding: 18px 20px;
       margin-bottom: 16px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 6px;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
@@ -48,17 +49,18 @@
     .card a {
       text-decoration: none;
       color: #111827;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 500;
+      line-height: 1.35;
     }
 
     .card span {
       color: #9ca3af;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     footer {
-      margin-top: 48px;
+      margin-top: 40px;
       font-size: 13px;
       color: #9ca3af;
       text-align: center;
@@ -87,6 +89,13 @@
     <div class="card">
       <a href="https://cleanslatekickz.github.io/silver-octo-Lacey/assets/Inv/GLM-4.7%20-%20InvestPro-V2.html" target="_blank">
         InvestPro
+      </a>
+      <span>HTML Report</span>
+    </div>
+
+    <div class="card">
+      <a href="https://cleanslatekickz.github.io/silver-octo-Lacey/assets/Inv/88%20NW%20Murray%20Blvd%20Investment" target="_blank">
+        88 NW Murray Blvd Investment
       </a>
       <span>HTML Report</span>
     </div>
