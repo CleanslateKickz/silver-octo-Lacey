@@ -3,662 +3,843 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NNN Property Intelligence (Compact Dashboard)</title>
+    <title>Property Intelligence | Command Center</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #3498db;
-            --success: #27ae60;
-            --warning: #f39c12;
-            --danger: #c0392b;
-            --text-main: #333;
-            --text-light: #7f8c8d;
-            --border-radius: 6px;
-            --shadow: 0 2px 4px rgba(0,0,0,0.05);
+            /* Palette */
+            --primary: #0f172a;       /* Deep Navy */
+            --primary-light: #334155;
+            --accent: #2563eb;        /* Modern Blue */
+            --accent-hover: #1d4ed8;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            
+            /* Tiers */
+            --success: #10b981;       /* Emerald */
+            --success-bg: #ecfdf5;
+            --warning: #f59e0b;       /* Amber */
+            --warning-bg: #fffbeb;
+            --danger: #ef4444;        /* Red */
+            --danger-bg: #fef2f2;
+
+            /* Text */
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+
+            /* Spacing & UI */
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f7f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
             color: var(--text-main);
             line-height: 1.4;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden; /* App-like feel */
         }
 
-        /* Compact Header */
+        /* --- Header --- */
         header {
-            background-color: var(--primary);
-            color: white;
-            padding: 0.8rem 1.5rem;
+            background-color: var(--bg-card);
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0.6rem 1.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 60px;
+            flex-shrink: 0;
         }
-        header h1 { font-size: 1.2rem; font-weight: 600; }
-        header p { font-size: 0.8rem; opacity: 0.8; }
 
-        /* Main Layout */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .brand-text h1 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+        .brand-text span {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        /* --- Main Layout --- */
         main {
             flex: 1;
-            max-width: 1400px;
             width: 100%;
-            margin: 1rem auto;
-            padding: 0 1rem;
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 0.75rem;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center vertically if screen is tall */
+            gap: 0.75rem;
+            height: calc(100vh - 60px); /* Fill remaining height */
         }
 
-        /* Compact Search */
-        .search-container {
-            background: white;
-            padding: 0.8rem;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 1rem;
+        /* --- Search Section --- */
+        .search-section {
+            background: var(--bg-card);
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
             display: flex;
-            gap: 10px;
             align-items: center;
+            gap: 1rem;
+            flex-shrink: 0;
         }
 
-        .search-label {
-            font-weight: 600;
-            color: var(--secondary);
-            font-size: 0.9rem;
-            white-space: nowrap;
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            max-width: 600px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            width: 18px;
         }
 
         input[type="text"] {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 100%;
+            padding: 8px 12px 8px 36px;
             font-size: 0.9rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-md);
+            outline: none;
+            background: #f8fafc;
         }
-        input[type="text"]:focus { border-color: var(--accent); outline: none; }
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            background: #fff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
 
-        button.search-btn {
-            background-color: var(--accent);
+        .btn-analyze {
+            background-color: var(--primary);
             color: white;
             border: none;
             padding: 8px 20px;
             font-size: 0.9rem;
             font-weight: 600;
-            border-radius: 4px;
+            border-radius: var(--radius-md);
             cursor: pointer;
+            transition: background 0.2s;
         }
-        button.search-btn:hover { background-color: #2980b9; }
+        .btn-analyze:hover { background-color: var(--accent); }
 
-        /* Loader */
-        .loader { display: none; text-align: center; padding: 2rem; }
-        .spinner {
-            border: 3px solid #f3f3f3; border-top: 3px solid var(--accent);
-            border-radius: 50%; width: 30px; height: 30px;
-            animation: spin 1s linear infinite; margin: 0 auto 0.5rem;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* Dashboard Grid (3 Columns) */
-        .results-container {
+        /* --- Dashboard Grid (3 Columns - Placer Much Wider) --- */
+        .dashboard-grid {
             display: none;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            align-items: start;
+            /*
+               Left: 300px (Data)
+               Center: 1fr (Google Maps - remaining space)
+               Right: 700px (Placer - Very Wide)
+            */
+            grid-template-columns: 300px 1fr 700px;
+            gap: 0.75rem;
+            height: 100%; /* Fill remaining vertical space */
+            min-height: 0; /* Crucial for grid scrolling */
         }
 
-        @media (max-width: 1024px) {
-            .results-container { grid-template-columns: repeat(2, 1fr); }
+        /* Responsive Breakpoint */
+        @media (max-width: 1600px) {
+            .dashboard-grid {
+                grid-template-columns: 300px 1fr 600px;
+            }
         }
+
+        @media (max-width: 1300px) {
+            /* Tablet/Laptop: Collapse Right Col under Left Col */
+            .dashboard-grid {
+                grid-template-columns: 300px 1fr;
+                grid-template-rows: 1fr auto;
+            }
+            .col-right {
+                grid-column: 1;
+                grid-row: 2;
+                height: 500px; /* Fixed height for Placer when stacked */
+            }
+            .col-center {
+                grid-column: 2;
+                grid-row: 1 / span 2;
+            }
+            .col-left {
+                grid-column: 1;
+                grid-row: 1;
+            }
+        }
+
         @media (max-width: 768px) {
-            .results-container { grid-template-columns: 1fr; }
+            body { height: auto; overflow: auto; }
+            .dashboard-grid {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+            }
+            .map-card { height: 500px !important; min-height: 500px; }
         }
 
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            padding: 1rem;
+        /* --- Column Containers --- */
+        .col-left {
             display: flex;
             flex-direction: column;
-            height: 100%; /* Equal height cards */
+            gap: 0.75rem;
+            overflow-y: auto; /* Scroll independently */
+            padding-right: 2px;
+        }
+
+        .col-center, .col-right {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
         }
 
         .card-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.8rem;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
+            background: #f8fafc;
+            flex-shrink: 0;
+            z-index: 10;
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
             font-weight: 700;
-            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 6px;
         }
 
-        /* Ranking Styles */
-        .ranking-badge {
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 4px;
-            color: white;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-        .rank-top { background-color: var(--success); }
-        .rank-mid { background-color: var(--warning); }
-        .rank-low { background-color: var(--danger); }
-
-        .state-score-display { text-align: center; margin-bottom: 0.5rem; }
-        .score-circle {
-            width: 60px; height: 60px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; font-weight: bold; color: white;
-            margin: 0 auto 5px;
-            background-color: #bdc3c7; /* Default */
-        }
-
-        .notes-section {
-            font-size: 0.8rem;
-            color: #555;
-            background: #f9f9f9;
-            padding: 0.5rem;
-            border-radius: 4px;
-            border-left: 3px solid var(--secondary);
-            margin-top: auto; /* Push to bottom */
-            /* Truncate long text to save space */
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
+        /* Map Cards Specifics */
+        .map-card {
+            height: 100%;
+            padding: 0; /* No padding inside map cards */
             overflow: hidden;
+            position: relative;
         }
 
-        /* Comparison Styles */
-        .comparison-container { display: flex; flex-direction: column; gap: 0.5rem; }
-        .neighbor-row {
-            display: flex; align-items: center; gap: 10px;
-            padding: 6px; border-radius: 4px; font-size: 0.9rem;
+        .iframe-wrapper {
+            flex: 1;
+            background-color: #e2e8f0;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            /* FIX: Allow scrolling if content is taller than the container */
+            overflow-y: auto;
+            overflow-x: hidden;
         }
-        .neighbor-row:hover { background-color: #f0f8ff; }
-        .neighbor-score { font-weight: bold; width: 30px; text-align: center; }
-        .neighbor-info { flex: 1; display: flex; flex-direction: column; }
-        .neighbor-name { font-weight: 700; font-size: 0.85rem; }
-        .neighbor-reason { font-size: 0.75rem; color: #666; font-style: italic; }
-        .center-divider { text-align: center; font-size: 1.2rem; color: #ccc; margin: -5px 0; }
 
-        /* Demographics Styles */
-        .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem; }
-        .stat-item { background: #fafafa; padding: 5px; border-radius: 4px; text-align: center; }
-        .stat-label { font-size: 0.7rem; color: var(--text-light); }
-        .stat-value { font-size: 0.9rem; font-weight: 700; color: var(--secondary); }
-
-        .progress-bar-container { margin-top: 8px; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 3px; }
-        .progress-track { background-color: #e0e0e0; height: 6px; border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background-color: var(--accent); width: 0%; transition: width 0.5s; }
-
-        .verification-box {
-            margin-top: auto;
-            padding-top: 0.8rem;
-            border-top: 1px dashed #eee;
-            font-size: 0.75rem;
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
         }
-        .verif-status { font-weight: bold; display: block; }
-        .verif-zip { color: #777; }
 
-        /* Footer Advice (Compact) */
-        .advice-section {
-            font-size: 0.8rem; color: #555; margin-top: 0.5rem;
-            background: #f4f8fb; padding: 0.5rem; border-radius: 4px;
+        /* --- Content Components --- */
+        
+        /* Score Widget */
+        .score-widget {
+            padding: 1rem;
+            text-align: center;
+            background: #fff;
         }
-        .advice-text { font-weight: 600; color: var(--accent); }
 
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin: 0 auto 0.5rem;
+            box-shadow: var(--shadow-md);
+        }
+        .score-top { background: linear-gradient(135deg, var(--success), #059669); }
+        .score-mid { background: linear-gradient(135deg, var(--warning), #d97706); }
+        .score-low { background: linear-gradient(135deg, var(--danger), #b91c1c); }
+
+        .score-label { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+        .rank-badge {
+            background: #f1f5f9; color: var(--text-muted); padding: 4px 8px;
+            border-radius: 12px; font-size: 0.75rem; font-weight: 600;
+            border: 1px solid #e2e8f0; display: inline-block; margin-top: 4px;
+        }
+        .score-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+        .badge {
+            padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+        }
+        .badge.top { background: var(--success-bg); color: #065f46; }
+        .badge.mid { background: var(--warning-bg); color: #92400e; }
+        .badge.low { background: var(--danger-bg); color: #991b1b; }
+
+        /* Advice & Notes */
+        .advice-box {
+            padding: 0.75rem; background: #eff6ff; border-left: 3px solid var(--accent);
+            margin-top: 0.5rem; border-radius: 0 4px 4px 0;
+        }
+        .advice-text { font-size: 0.8rem; color: #1e3a8a; font-weight: 600; }
+        .notes-text { font-size: 0.75rem; color: #475569; line-height: 1.4; margin-top: 0.5rem; }
+
+        /* Comparison List */
+        .comp-list { display: flex; flex-direction: column; }
+        .comp-item {
+            padding: 0.6rem; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; font-size: 0.85rem;
+        }
+        .comp-item:last-child { border-bottom: none; }
+        .comp-score { font-weight: 700; width: 24px; text-align: center; margin-right: 8px; }
+        .comp-name { flex: 1; font-weight: 600; color: var(--primary); }
+        .comp-reason { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* Demographics (Compact in Sidebar) */
+        .demo-card { padding: 0.75rem; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; }
+        .stat-val { font-weight: 700; color: var(--primary); }
+        
+        .progress-row { margin-bottom: 0.75rem; }
+        .p-head { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 3px; font-weight: 600; color: var(--text-muted); }
+        .p-track { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; }
+        .p-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+
+        .verif-footer { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0; font-size: 0.7rem; color: var(--text-muted); }
+
+        /* Loader */
+        .loader-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         /* Toast */
         .toast {
-            visibility: hidden;
-            background-color: #333; color: #fff;
-            text-align: center; border-radius: 4px; padding: 12px;
-            position: fixed; z-index: 1; left: 50%; bottom: 30px;
-            transform: translateX(-50%); font-size: 0.85rem;
+            position: fixed; bottom: 20px; right: 20px;
+            background: #1e293b; color: white;
+            padding: 10px 20px; border-radius: 6px;
+            font-size: 0.85rem;
+            transform: translateY(100px);
+            transition: transform 0.3s;
+            z-index: 200;
+            box-shadow: var(--shadow-md);
         }
-        .toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        .toast.active { transform: translateY(0); }
+
     </style>
-    </head>
-    <body>
+</head>
+<body>
 
-        <header>
-            <div>
-                <h1>NNN Property Intelligence</h1>
-                <p>Real-time Rankings & Demographics</p>
+    <header>
+        <div class="brand">
+            <div class="brand-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l8-4 8 4v14"/></svg>
             </div>
-            <div style="font-size: 0.7rem; text-align: right; opacity: 0.7;">2025 Data</div>
-        </header>
+            <div class="brand-text">
+                <h1>NNN Intelligence</h1>
+                <span>Command Center</span>
+            </div>
+        </div>
+        <div style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted);">
+            v2.2 | 2025 Data
+        </div>
+    </header>
 
-        <main>
-            <section class="search-container">
-                <label for="addressInput" class="search-label">Address:</label>
-                <input type="text" id="addressInput" placeholder="1600 Pennsylvania Ave, Washington, DC">
-                <button class="search-btn" id="analyzeBtn">Analyze</button>
+    <main>
+        <!-- Search -->
+        <section class="search-section">
+            <div class="search-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="addressInput" placeholder="Enter Address (e.g., 1002 N Spence Ave, Goldsboro, NC)">
+            </div>
+            <button class="btn-analyze" id="analyzeBtn">Analyze</button>
+        </section>
+
+        <!-- 3-Column Dashboard -->
+        <div class="dashboard-grid" id="dashboard">
+            
+            <!-- COLUMN 1: LEFT (Data & Stats) -->
+            <aside class="col-left">
+                
+                <!-- Score Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Target State</div>
+                        <div id="stateBadge" class="badge">---</div>
+                    </div>
+                    <div class="score-widget">
+                        <div id="scoreCircle" class="score-circle" style="background: #cbd5e1;">--</div>
+                        <div class="score-label" id="stateName">---</div>
+                        <div class="rank-badge" id="rankBadge" style="display:none;">Rank #--/50</div>
+                        <div class="score-sub" id="exchangeAdvice">Ready to analyze</div>
+                    </div>
+                    <div class="advice-box" id="notesContainer" style="display:none;">
+                        <div class="advice-text" id="stateNotes">---</div>
+                    </div>
+                </div>
+
+                <!-- Comparison Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Market Context</div>
+                    </div>
+                    <div class="comp-list" id="neighborContainer">
+                        <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">
+                            Pending Data...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demographics Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Demographics</div>
+                    </div>
+                    <div class="demo-card">
+                        <div class="stat-row"><span>Population</span> <span class="stat-val" id="demoPop">--</span></div>
+                        <div class="stat-row"><span>Med. Income</span> <span class="stat-val" id="demoInc">--</span></div>
+                        <div class="stat-row"><span>Avg Age</span> <span class="stat-val" id="demoAge">--</span></div>
+                        <div class="stat-row"><span>Growth</span> <span class="stat-val" id="demoGrowth">--</span></div>
+                        
+                        <div style="margin-top: 10px;">
+                            <div class="progress-row">
+                                <div class="p-head"><span>Disposable Inc</span> <span id="disposableVal">0%</span></div>
+                                <div class="p-track"><div id="disposableBar" class="p-fill" style="width:0%; background:var(--accent);"></div></div>
+                            </div>
+                            <div class="progress-row">
+                                <div class="p-head"><span>Education (B+)</span> <span id="educationVal">0%</span></div>
+                                <div class="p-track"><div id="educationBar" class="p-fill" style="width:0%; background:#8b5cf6;"></div></div>
+                            </div>
+                        </div>
+                        <div class="verif-footer">
+                            <span id="verifStatus">---</span> | <span id="verifZip">---</span>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- COLUMN 2: CENTER (Google Maps) -->
+            <section class="col-center">
+                <div class="map-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--primary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Location & Aerial View
+                        </div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">GOOGLE MAPS</span>
+                    </div>
+                    <div class="iframe-wrapper">
+                        <iframe id="googleMapFrame" src="" loading="lazy"></iframe>
+                    </div>
+                </div>
             </section>
 
-            <div class="loader" id="loader">
-                <div class="spinner"></div>
-                <p style="font-size: 0.8rem;">Geocoding...</p>
-            </div>
-
-            <div class="results-container" id="results">
-
-                <!-- Card 1: Target State -->
-                <article class="card">
+            <!-- COLUMN 3: RIGHT (Placer - Very Wider) -->
+            <aside class="col-right">
+                <div class="map-card">
                     <div class="card-header">
                         <div class="card-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                            Target State
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="#7c3aed"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                            Foot Traffic & POI
                         </div>
-                        <div id="stateBadge" class="ranking-badge rank-mid">UNK</div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">PLACER.AI</span>
                     </div>
-
-                    <div class="state-score-display">
-                        <div id="scoreCircle" class="score-circle">--</div>
-                        <h2 id="stateName" style="font-size: 1.2rem; color: var(--primary);">---</h2>
+                    <div class="iframe-wrapper">
+                        <iframe id="placerFrame" src="" loading="lazy"></iframe>
                     </div>
+                </div>
+            </aside>
 
-                    <div class="advice-section">
-                        <span id="exchangeAdvice" class="advice-text">Search to see 1031 advice.</span>
-                    </div>
+        </div>
+    </main>
 
-                    <div class="notes-section" style="margin-top: 0.5rem;">
-                        <p id="stateNotes">---</p>
-                    </div>
-                </article>
+    <!-- Overlay Loader -->
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <div style="margin-top: 10px; font-weight: 600; color: var(--primary);">Gathering Intelligence...</div>
+    </div>
 
-                <!-- Card 2: Neighbors -->
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                            Market Context
-                        </div>
-                    </div>
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
 
-                    <div class="comparison-container" id="neighborContainer">
-                        <div style="text-align: center; color: #999; font-size: 0.8rem; padding: 2rem;">
-                            Enter address to compare.
-                        </div>
-                    </div>
-                </article>
+    <script>
+        const CENSUS_API_KEY = "b1819672ea28ef76ff4262612aea81b018db6674";
 
-                <!-- Card 3: Demographics -->
-                <article class="card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            Local Demographics
-                        </div>
-                    </div>
+        const stateData = {
+            'AL': { name: 'Alabama', tier: 'mid', score: 65, notes: 'Low cost of entry. Slower growth than Sun Belt.' },
+            'AK': { name: 'Alaska', tier: 'low', score: 45, notes: 'High operational costs. Limited inventory.' },
+            'AZ': { name: 'Arizona', tier: 'top', score: 88, notes: 'Explosive growth. High demand for NNN.' },
+            'AR': { name: 'Arkansas', tier: 'mid', score: 62, notes: 'Low taxes. Steady economy.' },
+            'CA': { name: 'California', tier: 'low', score: 40, notes: 'Strict regulations, high taxes, cap rate compression.' },
+            'CO': { name: 'Colorado', tier: 'top', score: 85, notes: 'Strong economy. Denver is a prime hub.' },
+            'CT': { name: 'Connecticut', tier: 'low', score: 50, notes: 'High taxes dampen long-term stability.' },
+            'DE': { name: 'Delaware', tier: 'mid', score: 70, notes: 'Tax-friendly. Good for corporate leases.' },
+            'FL': { name: 'Florida', tier: 'top', score: 95, notes: '#1 for 1031 exchanges. No state tax, massive growth.' },
+            'GA': { name: 'Georgia', tier: 'top', score: 90, notes: 'Atlanta logistics hub. High growth rate.' },
+            'HI': { name: 'Hawaii', tier: 'low', score: 48, notes: 'High costs/difficult regulations.' },
+            'ID': { name: 'Idaho', tier: 'top', score: 82, notes: 'Boise rapid appreciation.' },
+            'IL': { name: 'Illinois', tier: 'low', score: 42, notes: 'Fiscal instability drives businesses out.' },
+            'IN': { name: 'Indiana', tier: 'mid', score: 72, notes: 'Conservative. Solid cap rates.' },
+            'IA': { name: 'Iowa', tier: 'mid', score: 68, notes: 'Stolid, slow growth. Low risk.' },
+            'KS': { name: 'Kansas', tier: 'mid', score: 66, notes: 'Central location logistics. Steady.' },
+            'KY': { name: 'Kentucky', tier: 'mid', score: 69, notes: 'Low costs. Benefits from Cincinnati overflow.' },
+            'LA': { name: 'Louisiana', tier: 'low', score: 52, notes: 'Economic volatility/insurance costs.' },
+            'ME': { name: 'Maine', tier: 'mid', score: 71, notes: 'Seasonal economy. Safe but limited.' },
+            'MD': { name: 'Maryland', tier: 'mid', score: 74, notes: 'High income density near DC.' },
+            'MA': { name: 'Massachusetts', tier: 'mid', score: 63, notes: 'Tenant-friendly laws make remediation hard.' },
+            'MI': { name: 'Michigan', tier: 'mid', score: 67, notes: 'Resurging manufacturing. Value-add opps.' },
+            'MN': { name: 'Minnesota', tier: 'mid', score: 73, notes: 'Strong corporate tenants. Stable economy.' },
+            'MS': { name: 'Mississippi', tier: 'low', score: 48, notes: 'Lowest income levels.' },
+            'MO': { name: 'Missouri', tier: 'mid', score: 70, notes: 'St. Louis and KC provide diverse options.' },
+            'MT': { name: 'Montana', tier: 'mid', score: 75, notes: 'Growing popularity, scarce inventory.' },
+            'NE': { name: 'Nebraska', tier: 'mid', score: 71, notes: 'Omaha hidden gem. Very low unemployment.' },
+            'NV': { name: 'Nevada', tier: 'top', score: 86, notes: 'No state income tax. High appreciation.' },
+            'NH': { name: 'New Hampshire', tier: 'mid', score: 74, notes: 'No income tax. Limited inventory.' },
+            'NJ': { name: 'New Jersey', tier: 'low', score: 52, notes: 'High taxes/regulatory burden.' },
+            'NM': { name: 'New Mexico', tier: 'low', score: 55, notes: 'Economic struggles. High poverty rates.' },
+            'NY': { name: 'New York', tier: 'low', score: 44, notes: 'Upstate stagnant; Downstate overpriced.' },
+            'NC': { name: 'North Carolina', tier: 'top', score: 92, notes: 'Massive financial hub. Top 1031 performer.' },
+            'ND': { name: 'North Dakota', tier: 'mid', score: 69, notes: 'Energy-dependent.' },
+            'OH': { name: 'Ohio', tier: 'mid', score: 71, notes: 'Heartland value play.' },
+            'OK': { name: 'Oklahoma', tier: 'mid', score: 64, notes: 'Landlord friendly. Energy-dependent.' },
+            'OR': { name: 'Oregon', tier: 'mid', score: 58, notes: 'Regulations hurt climate.' },
+            'PA': { name: 'Pennsylvania', tier: 'mid', score: 68, notes: 'Philly/Pittsburgh offer stability.' },
+            'RI': { name: 'Rhode Island', tier: 'low', score: 56, notes: 'High taxes. Small market.' },
+            'SC': { name: 'South Carolina', tier: 'top', score: 89, notes: 'Massive influx of businesses.' },
+            'SD': { name: 'South Dakota', tier: 'top', score: 80, notes: 'No income tax. Business-friendly.' },
+            'TN': { name: 'Tennessee', tier: 'top', score: 93, notes: 'No income tax. Nashville boomtown.' },
+            'TX': { name: 'Texas', tier: 'top', score: 91, notes: 'Massive economy. Diverse industries.' },
+            'UT': { name: 'Utah', tier: 'top', score: 87, notes: 'Young demographic. Booming tech sector.' },
+            'VT': { name: 'Vermont', tier: 'low', score: 54, notes: 'Strict regulations. Aging pop.' },
+            'VA': { name: 'Virginia', tier: 'top', score: 84, notes: 'Highest income levels. Gov/tech backing.' },
+            'WA': { name: 'Washington', tier: 'top', score: 81, notes: 'No income tax. Strong economy.' },
+            'WV': { name: 'West Virginia', tier: 'low', score: 50, notes: 'Economic struggles/Pop decline.' },
+            'WI': { name: 'Wisconsin', tier: 'mid', score: 70, notes: 'Madison/Milwaukee stable.' },
+            'WY': { name: 'Wyoming', tier: 'mid', score: 72, notes: 'Tax-friendly. Energy based.' }
+        };
 
-                    <div class="demo-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">Pop</div>
-                            <div class="stat-value" id="demoPop">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Income</div>
-                            <div class="stat-value" id="demoInc">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Age</div>
-                            <div class="stat-value" id="demoAge">--</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">Growth</div>
-                            <div class="stat-value" id="demoGrowth">--</div>
-                        </div>
-                    </div>
+        const stateNameMap = {
+            'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR', 'california': 'CA',
+            'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'florida': 'FL', 'georgia': 'GA',
+            'hawaii': 'HI', 'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA',
+            'kansas': 'KS', 'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+            'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS', 'missouri': 'MO',
+            'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ',
+            'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH',
+            'oklahoma': 'OK', 'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+            'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT',
+            'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY',
+            'district of columbia': 'DC'
+        };
 
-                    <div style="margin-top: 0.5rem;">
-                        <div class="progress-label">
-                            <span>Disposable Income</span>
-                            <span id="disposableVal">0%</span>
-                        </div>
-                        <div class="progress-track"><div id="disposableBar" class="progress-fill" style="width: 0%;"></div></div>
+        const sortedStates = Object.entries(stateData).sort((a, b) => b[1].score - a[1].score);
 
-                        <div class="progress-label" style="margin-top: 5px;">
-                            <span>Education</span>
-                            <span id="educationVal">0%</span>
-                        </div>
-                        <div class="progress-track"><div id="educationBar" class="progress-fill" style="width: 0%; background-color: var(--warning);"></div></div>
-                    </div>
+        // DOM
+        const addressInput = document.getElementById('addressInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loader = document.getElementById('loader');
+        const dashboard = document.getElementById('dashboard');
 
-                    <!-- Verification Section -->
-                    <div class="verification-box">
-                        <span id="verifStatus" class="verif-status">---</span>
-                        <span id="verifZip" class="verif-zip">---</span>
-                    </div>
-                </article>
+        const stateBadge = document.getElementById('stateBadge');
+        const scoreCircle = document.getElementById('scoreCircle');
+        const stateName = document.getElementById('stateName');
+        const stateNotes = document.getElementById('stateNotes');
+        const notesContainer = document.getElementById('notesContainer');
+        const exchangeAdvice = document.getElementById('exchangeAdvice');
+        const neighborContainer = document.getElementById('neighborContainer');
+        const rankBadge = document.getElementById('rankBadge');
 
-            </div>
-        </main>
+        const googleMapFrame = document.getElementById('googleMapFrame');
+        const placerFrame = document.getElementById('placerFrame');
 
-        <div id="toast" class="toast"></div>
+        const demoPop = document.getElementById('demoPop');
+        const demoInc = document.getElementById('demoInc');
+        const demoAge = document.getElementById('demoAge');
+        const demoGrowth = document.getElementById('demoGrowth');
+        const disposableBar = document.getElementById('disposableBar');
+        const disposableVal = document.getElementById('disposableVal');
+        const educationBar = document.getElementById('educationBar');
+        const educationVal = document.getElementById('educationVal');
+        const verifStatus = document.getElementById('verifStatus');
+        const verifZip = document.getElementById('verifZip');
 
-        <script>
-            /*
-     * CONFIGURATION
-     * Paste your US Census API Key here.
-     * Get it free at: https://api.census.gov/data/key_signup.html
-     */
-            const CENSUS_API_KEY = "b1819672ea28ef76ff4262612aea81b018db6674";
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('active');
+            setTimeout(() => t.classList.remove('active'), 3000);
+        }
 
-            const stateData = {
-                'AL': { name: 'Alabama', tier: 'mid', score: 65, notes: 'Low cost of entry. Slower growth than Sun Belt.' },
-                'AK': { name: 'Alaska', tier: 'low', score: 45, notes: 'High operational costs. Limited inventory.' },
-                'AZ': { name: 'Arizona', tier: 'top', score: 88, notes: 'Explosive growth. High demand for NNN.' },
-                'AR': { name: 'Arkansas', tier: 'mid', score: 62, notes: 'Low taxes. Steady economy.' },
-                'CA': { name: 'California', tier: 'low', score: 40, notes: 'Strict regulations, high taxes, cap rate compression.' },
-                'CO': { name: 'Colorado', tier: 'top', score: 85, notes: 'Strong economy. Denver is a prime hub.' },
-                'CT': { name: 'Connecticut', tier: 'low', score: 50, notes: 'High taxes dampen long-term stability.' },
-                'DE': { name: 'Delaware', tier: 'mid', score: 70, notes: 'Tax-friendly. Good for corporate leases.' },
-                'FL': { name: 'Florida', tier: 'top', score: 95, notes: '#1 for 1031 exchanges. No state tax, massive growth.' },
-                'GA': { name: 'Georgia', tier: 'top', score: 90, notes: 'Atlanta logistics hub. High growth rate.' },
-                'HI': { name: 'Hawaii', tier: 'low', score: 48, notes: 'High costs/difficult regulations.' },
-                'ID': { name: 'Idaho', tier: 'top', score: 82, notes: 'Boise rapid appreciation.' },
-                'IL': { name: 'Illinois', tier: 'low', score: 42, notes: 'Fiscal instability drives businesses out.' },
-                'IN': { name: 'Indiana', tier: 'mid', score: 72, notes: 'Conservative. Solid cap rates.' },
-                'IA': { name: 'Iowa', tier: 'mid', score: 68, notes: 'Stolid, slow growth. Low risk.' },
-                'KS': { name: 'Kansas', tier: 'mid', score: 66, notes: 'Central location logistics. Steady.' },
-                'KY': { name: 'Kentucky', tier: 'mid', score: 69, notes: 'Low costs. Benefits from Cincinnati overflow.' },
-                'LA': { name: 'Louisiana', tier: 'low', score: 52, notes: 'Economic volatility/insurance costs.' },
-                'ME': { name: 'Maine', tier: 'mid', score: 71, notes: 'Seasonal economy. Safe but limited.' },
-                'MD': { name: 'Maryland', tier: 'mid', score: 74, notes: 'High income density near DC.' },
-                'MA': { name: 'Massachusetts', tier: 'mid', score: 63, notes: 'Tenant-friendly laws make remediation hard.' },
-                'MI': { name: 'Michigan', tier: 'mid', score: 67, notes: 'Resurging manufacturing. Value-add opps.' },
-                'MN': { name: 'Minnesota', tier: 'mid', score: 73, notes: 'Strong corporate tenants. Stable economy.' },
-                'MS': { name: 'Mississippi', tier: 'low', score: 48, notes: 'Lowest income levels.' },
-                'MO': { name: 'Missouri', tier: 'mid', score: 70, notes: 'St. Louis and KC provide diverse options.' },
-                'MT': { name: 'Montana', tier: 'mid', score: 75, notes: 'Growing popularity, scarce inventory.' },
-                'NE': { name: 'Nebraska', tier: 'mid', score: 71, notes: 'Omaha hidden gem. Very low unemployment.' },
-                'NV': { name: 'Nevada', tier: 'top', score: 86, notes: 'No state income tax. High appreciation.' },
-                'NH': { name: 'New Hampshire', tier: 'mid', score: 74, notes: 'No income tax. Limited inventory.' },
-                'NJ': { name: 'New Jersey', tier: 'low', score: 52, notes: 'High taxes/regulatory burden.' },
-                'NM': { name: 'New Mexico', tier: 'low', score: 55, notes: 'Economic struggles. High poverty rates.' },
-                'NY': { name: 'New York', tier: 'low', score: 44, notes: 'Upstate stagnant; Downstate overpriced.' },
-                'NC': { name: 'North Carolina', tier: 'top', score: 92, notes: 'Massive financial hub. Top 1031 performer.' },
-                'ND': { name: 'North Dakota', tier: 'mid', score: 69, notes: 'Energy-dependent.' },
-                'OH': { name: 'Ohio', tier: 'mid', score: 71, notes: 'Heartland value play.' },
-                'OK': { name: 'Oklahoma', tier: 'mid', score: 64, notes: 'Landlord friendly. Energy-dependent.' },
-                'OR': { name: 'Oregon', tier: 'mid', score: 58, notes: 'Regulations hurt climate.' },
-                'PA': { name: 'Pennsylvania', tier: 'mid', score: 68, notes: 'Philly/Pittsburgh offer stability.' },
-                'RI': { name: 'Rhode Island', tier: 'low', score: 56, notes: 'High taxes. Small market.' },
-                'SC': { name: 'South Carolina', tier: 'top', score: 89, notes: 'Massive influx of businesses.' },
-                'SD': { name: 'South Dakota', tier: 'top', score: 80, notes: 'No income tax. Business-friendly.' },
-                'TN': { name: 'Tennessee', tier: 'top', score: 93, notes: 'No income tax. Nashville boomtown.' },
-                'TX': { name: 'Texas', tier: 'top', score: 91, notes: 'Massive economy. Diverse industries.' },
-                'UT': { name: 'Utah', tier: 'top', score: 87, notes: 'Young demographic. Booming tech sector.' },
-                'VT': { name: 'Vermont', tier: 'low', score: 54, notes: 'Strict regulations. Aging pop.' },
-                'VA': { name: 'Virginia', tier: 'top', score: 84, notes: 'Highest income levels. Gov/tech backing.' },
-                'WA': { name: 'Washington', tier: 'top', score: 81, notes: 'No income tax. Strong economy.' },
-                'WV': { name: 'West Virginia', tier: 'low', score: 50, notes: 'Economic struggles/Pop decline.' },
-                'WI': { name: 'Wisconsin', tier: 'mid', score: 70, notes: 'Madison/Milwaukee stable.' },
-                'WY': { name: 'Wyoming', tier: 'mid', score: 72, notes: 'Tax-friendly. Energy based.' }
-            };
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
 
-            const stateNameMap = {
-                'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR', 'california': 'CA',
-                'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE', 'florida': 'FL', 'georgia': 'GA',
-                'hawaii': 'HI', 'idaho': 'ID', 'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA',
-                'kansas': 'KS', 'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
-                'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS', 'missouri': 'MO',
-                'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV', 'new hampshire': 'NH', 'new jersey': 'NJ',
-                'new mexico': 'NM', 'new york': 'NY', 'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH',
-                'oklahoma': 'OK', 'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
-                'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT', 'vermont': 'VT',
-                'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV', 'wisconsin': 'WI', 'wyoming': 'WY',
-                'district of columbia': 'DC'
-            };
+        function createGoogleMapsUrl(lat, lng, address) {
+            const encodedAddress = encodeURIComponent(address);
+            return `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1000!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2s${encodedAddress}!5e1!3m2!1sen!2sus!4v${Date.now()}!5m1!1e4`;
+        }
 
-            const sortedStates = Object.entries(stateData).sort((a, b) => {
-                if (b[1].score !== a[1].score) return b[1].score - a[1].score;
-                return a[1].name.localeCompare(b[1].name);
-            });
+        function createPlacerUrl(zipCode, address) {
+            const encodedAddress = encodeURIComponent(address);
+            return `https://embedded-widget.placer.ai/widgets/v1/zip-code-map/?zipCode=${zipCode}&address=${encodedAddress}&utm_source=https%3A%2F%2Fwww.placer.ai%2Fexplore%2Fpoints-of-interest`;
+        }
 
-            // DOM
-            const analyzeBtn = document.getElementById('analyzeBtn');
-            const addressInput = document.getElementById('addressInput');
-            const loader = document.getElementById('loader');
-            const results = document.getElementById('results');
-            const toast = document.getElementById('toast');
+        async function fetchAddressData(address) {
+            try {
+                const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1`;
+                const osmResponse = await fetch(osmUrl);
+                if (!osmResponse.ok) throw new Error(`Server Error: ${osmResponse.status}`);
+                const osmData = await osmResponse.json();
 
-            const stateBadge = document.getElementById('stateBadge');
-            const scoreCircle = document.getElementById('scoreCircle');
-            const stateName = document.getElementById('stateName');
-            const stateNotes = document.getElementById('stateNotes');
-            const neighborContainer = document.getElementById('neighborContainer');
-            const exchangeAdvice = document.getElementById('exchangeAdvice');
+                if (!osmData || !Array.isArray(osmData) || osmData.length === 0) throw new Error("Address not found.");
+                const locationData = osmData[0];
 
-            const demoPop = document.getElementById('demoPop');
-            const demoInc = document.getElementById('demoInc');
-            const demoAge = document.getElementById('demoAge');
-            const demoGrowth = document.getElementById('demoGrowth');
-            const disposableBar = document.getElementById('disposableBar');
-            const disposableVal = document.getElementById('disposableVal');
-            const educationBar = document.getElementById('educationBar');
-            const educationVal = document.getElementById('educationVal');
+                if (!locationData || !locationData.address) throw new Error("Incomplete address data.");
 
-            // Verification Elements
-            const verifStatus = document.getElementById('verifStatus');
-            const verifZip = document.getElementById('verifZip');
+                const lat = parseFloat(locationData.lat);
+                const lon = parseFloat(locationData.lon);
+                const zipCode = locationData.address.postcode;
+                if (!zipCode) throw new Error("Zip code missing.");
 
-            function showToast(msg) {
-                toast.textContent = msg;
-                toast.className = "toast show";
-                setTimeout(() => toast.className = toast.className.replace("show", ""), 3000);
-            }
+                let stateNameRaw = locationData.address.state || locationData.address.region || locationData.address.state_district;
+                if (!stateNameRaw) throw new Error("State not found.");
+                
+                const cleanStateName = stateNameRaw.replace("State of ", "").trim().toLowerCase();
+                const stateAbbr = stateNameMap[cleanStateName];
+                if (!stateAbbr) throw new Error(`State "${stateNameRaw}" not supported.`);
 
-            function formatNumber(num) {
-                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            }
-
-            function getComparisonReason(currScore, neighScore, currTier, neighTier) {
-                const diff = Math.abs(currScore - neighScore);
-                const isHigher = neighScore > currScore;
-                const tierStrength = { 'top': 3, 'mid': 2, 'low': 1 };
-                let reason = "";
-                if (tierStrength[neighTier] > tierStrength[currTier]) reason = `Higher tier (${neighTier.toUpperCase()})`;
-                else if (tierStrength[neighTier] < tierStrength[currTier]) reason = `Lower tier (${neighTier.toUpperCase()})`;
-                else reason = diff > 5 ? `Significant score gap (${diff})` : `Similar aggregate score`;
-                return isHigher ? `Higher: ${reason}` : `Lower: ${reason}`;
-            }
-
-            function renderNeighbors(stateAbbr) {
-                neighborContainer.innerHTML = '';
-                const currentIndex = sortedStates.findIndex(s => s[0] === stateAbbr);
-                if (currentIndex === -1) return;
-                const currentState = sortedStates[currentIndex][1];
-                let html = '';
-
-                if (currentIndex > 0) {
-                    const above = sortedStates[currentIndex - 1];
-                    const reason = getComparisonReason(currentState.score, above[1].score, currentState.tier, above[1].tier);
-                    html += `<div class="neighbor-row"><div class="neighbor-score score-up">${above[1].score}</div><div class="neighbor-info"><span class="neighbor-name">${above[1].name}</span><span class="neighbor-reason">${reason}</span></div><div style="color:var(--success)">▲</div></div>`;
-                } else { html += `<div style="text-align:center;color:#ccc;font-style:italic;font-size:0.8rem">#1 Ranked State</div>`; }
-
-                html += `<div class="center-divider">—</div>`;
-
-                if (currentIndex < sortedStates.length - 1) {
-                    const below = sortedStates[currentIndex + 1];
-                    const reason = getComparisonReason(currentState.score, below[1].score, currentState.tier, below[1].tier);
-                    html += `<div class="neighbor-row"><div class="neighbor-score score-down">${below[1].score}</div><div class="neighbor-info"><span class="neighbor-name">${below[1].name}</span><span class="neighbor-reason">${reason}</span></div><div style="color:var(--danger)">▼</div></div>`;
-                } else { html += `<div style="text-align:center;color:#ccc;font-style:italic;font-size:0.8rem">Lowest Ranked</div>`; }
-                neighborContainer.innerHTML = html;
-            }
-
-            async function fetchAddressData(address) {
-                try {
-                    const osmUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&addressdetails=1`;
-                    const osmResponse = await fetch(osmUrl);
-                    if (!osmResponse.ok) throw new Error(`Server Error: ${osmResponse.status}`);
-                    const osmData = await osmResponse.json();
-
-                    if (!osmData || !Array.isArray(osmData) || osmData.length === 0) throw new Error("Address not found. Try adding State.");
-                    const locationData = osmData[0];
-
-                    if (!locationData || !locationData.address) throw new Error("Missing address data.");
-                    const zipCode = locationData.address.postcode;
-                    if (!zipCode) throw new Error("Missing Zip Code.");
-
-                    let stateNameRaw = locationData.address.state || locationData.address.region || locationData.address.state_district;
-                    if (!stateNameRaw) throw new Error("State not found.");
-                    const cleanStateName = stateNameRaw.replace("State of ", "").trim().toLowerCase();
-                    const stateAbbr = stateNameMap[cleanStateName];
-                    if (!stateAbbr) throw new Error(`State "${stateNameRaw}" not supported.`);
-
-                    const displayName = stateData[stateAbbr].name;
-                    return { stateAbbr, stateName: displayName, zipCode };
-                } catch (error) { throw error; }
-            }
-
-            async function fetchCensusData(zipCode) {
-                if (!CENSUS_API_KEY) return null;
-                try {
-                    const censusUrl = `https://api.census.gov/data/2020/acs/acs5?get=NAME,B19013_001E,B01002_001E,B01003_001E,B15003_022E&for=zip%20code%20tabulation%20area:${zipCode}&key=${CENSUS_API_KEY}`;
-                    const response = await fetch(censusUrl);
-                    const data = await response.json();
-                    if (data.length < 2) return null;
-
-                    const stats = data[1];
-                    const headers = data[0];
-                    const getVal = (name) => stats[headers.indexOf(name)];
-
-                    const pop = parseInt(getVal("B01003_001E")) || 0;
-                    const income = parseInt(getVal("B19013_001E")) || 0;
-                    const age = parseFloat(getVal("B01002_001E")) || 0;
-                    const edu = parseInt(getVal("B15003_022E")) || 0;
-                    const eduPercent = pop > 0 ? ((edu / pop) * 100) : 0;
-
-                    return { pop, income, age, growth: "0.5", disposable: Math.min(100, Math.max(40, (income / 100000) * 100)), education: eduPercent };
-                } catch (error) { return null; }
-            }
-
-            function generateFallbackDemographics(stateCode) {
-                const tier = stateData[stateCode].tier;
-                let incMultiplier = tier === 'top' ? 1.4 : (tier === 'mid' ? 1.0 : 0.8);
-                let popMultiplier = tier === 'top' ? 1.5 : (tier === 'mid' ? 1.0 : 0.8);
-                let eduPercent = tier === 'top' ? 35 : (tier === 'mid' ? 25 : 18);
                 return {
-                    pop: Math.floor((100000 * popMultiplier) + (Math.random() * 50000)),
-                    income: Math.floor((50000 * incMultiplier) + (Math.random() * 10000)),
-                    age: (35 + Math.random() * 10).toFixed(1),
-                    growth: (0.2 + Math.random() * 0.5).toFixed(2),
-                    disposable: eduPercent + 10,
+                    stateAbbr,
+                    stateName: stateData[stateAbbr].name,
+                    zipCode,
+                    lat,
+                    lon,
+                    formattedAddress: locationData.display_name
+                };
+            } catch (error) { throw error; }
+        }
+
+        function renderNeighbors(stateAbbr) {
+            neighborContainer.innerHTML = '';
+            const currentIndex = sortedStates.findIndex(s => s[0] === stateAbbr);
+            if (currentIndex === -1) return;
+            
+            const currentState = sortedStates[currentIndex][1];
+            let html = '';
+
+            if (currentIndex > 0) {
+                const above = sortedStates[currentIndex - 1];
+                html += `<div class="comp-item"><div class="comp-score" style="color:var(--success)">${above[1].score}</div><div class="comp-name">${above[1].name}</div><div style="font-size:10px;color:var(--success)">▲</div></div>`;
+            } else { html += `<div style="text-align:center;color:#94a3b8;font-size:0.7rem;padding:4px;">#1 Ranked</div>`; }
+
+            if (currentIndex < sortedStates.length - 1) {
+                const below = sortedStates[currentIndex + 1];
+                html += `<div class="comp-item"><div class="comp-score" style="color:var(--danger)">${below[1].score}</div><div class="comp-name">${below[1].name}</div><div style="font-size:10px;color:var(--danger)">▼</div></div>`;
+            } else { html += `<div style="text-align:center;color:#94a3b8;font-size:0.7rem;padding:4px;">Lowest Ranked</div>`; }
+            
+            neighborContainer.innerHTML = html;
+        }
+
+        async function fetchCensusData(zipCode) {
+            if (!CENSUS_API_KEY) return null;
+            try {
+                const censusUrl = `https://api.census.gov/data/2020/acs/acs5?get=NAME,B19013_001E,B01002_001E,B01003_001E,B15003_022E&for=zip%20code%20tabulation%20area:${zipCode}&key=${CENSUS_API_KEY}`;
+                const response = await fetch(censusUrl);
+                const data = await response.json();
+                if (data.length < 2) return null;
+
+                const stats = data[1];
+                const headers = data[0];
+                const getVal = (name) => stats[headers.indexOf(name)];
+
+                const pop = parseInt(getVal("B01003_001E")) || 0;
+                const income = parseInt(getVal("B19013_001E")) || 0;
+                const age = parseFloat(getVal("B01002_001E")) || 0;
+                const edu = parseInt(getVal("B15003_022E")) || 0;
+                const eduPercent = pop > 0 ? ((edu / pop) * 100) : 0;
+
+                return {
+                    pop,
+                    income,
+                    age,
+                    growth: "0.8",
+                    disposable: Math.min(100, Math.max(40, (income / 120000) * 100)),
                     education: eduPercent
                 };
-            }
+            } catch (error) { return null; }
+        }
 
-            analyzeBtn.addEventListener('click', async () => {
-                const input = addressInput.value.trim();
-                if (!input) { showToast("Enter an address."); return; }
-                results.style.display = 'none';
-                loader.style.display = 'block';
-                analyzeBtn.disabled = true;
+        function generateFallbackDemographics(stateCode) {
+            const tier = stateData[stateCode].tier;
+            let incMultiplier = tier === 'top' ? 1.4 : (tier === 'mid' ? 1.0 : 0.8);
+            let popMultiplier = tier === 'top' ? 1.5 : (tier === 'mid' ? 1.0 : 0.8);
+            let eduPercent = tier === 'top' ? 38 : (tier === 'mid' ? 26 : 18);
+            return {
+                pop: Math.floor((45000 * popMultiplier) + (Math.random() * 50000)),
+                income: Math.floor((55000 * incMultiplier) + (Math.random() * 15000)),
+                age: (35 + Math.random() * 10).toFixed(1),
+                growth: (0.5 + Math.random() * 1.5).toFixed(1),
+                disposable: eduPercent + 15,
+                education: eduPercent
+            };
+        }
 
-                try {
-                    const locationInfo = await fetchAddressData(input);
-                    const stateCode = locationInfo.stateAbbr;
-                    const data = stateData[stateCode];
+        analyzeBtn.addEventListener('click', async () => {
+            const input = addressInput.value.trim();
+            if (!input) { showToast("Enter an address."); return; }
+            
+            dashboard.style.display = 'none';
+            loader.style.display = 'flex';
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Processing...';
 
-                    // Update UI
-                    stateName.textContent = data.name;
-                    stateNotes.textContent = data.notes;
-                    scoreCircle.textContent = data.score;
+            try {
+                const locationInfo = await fetchAddressData(input);
+                const stateCode = locationInfo.stateAbbr;
+                const data = stateData[stateCode];
 
-                    // Reset Colors
-                    scoreCircle.style.backgroundColor = '';
-                    stateBadge.className = 'ranking-badge';
+                const rankIndex = sortedStates.findIndex(s => s[0] === stateCode);
+                const currentRank = rankIndex + 1;
 
-                    if (data.tier === 'top') {
-                        scoreCircle.style.backgroundColor = 'var(--success)';
-                        stateBadge.classList.add('rank-top');
-                        stateBadge.textContent = "TOP";
-                        exchangeAdvice.textContent = "High Priority 1031: Strong demand.";
-                    } else if (data.tier === 'mid') {
-                        scoreCircle.style.backgroundColor = 'var(--warning)';
-                        stateBadge.classList.add('rank-mid');
-                        stateBadge.textContent = "MID";
-                        exchangeAdvice.textContent = "Moderate: Look for value-add.";
-                    } else {
-                        scoreCircle.style.backgroundColor = 'var(--danger)';
-                        stateBadge.classList.add('rank-low');
-                        stateBadge.textContent = "LOW";
-                        exchangeAdvice.textContent = "Caution: High risk factors.";
-                    }
+                stateName.textContent = data.name;
+                stateNotes.textContent = data.notes;
+                notesContainer.style.display = 'block';
+                scoreCircle.textContent = data.score;
+                rankBadge.textContent = `Rank #${currentRank} / 50`;
+                rankBadge.style.display = 'inline-block';
 
-                    renderNeighbors(stateCode);
+                scoreCircle.className = 'score-circle';
+                stateBadge.className = 'badge';
 
-                    // Demographics
-                    let demos = await fetchCensusData(locationInfo.zipCode);
-
-                    // Verification Logic
-                    verifZip.textContent = `Zip: ${locationInfo.zipCode}`;
-                    if (demos) {
-                        verifStatus.textContent = "✓ Verified (US Census)";
-                        verifStatus.style.color = "var(--success)";
-                    } else {
-                        if (CENSUS_API_KEY === "") {
-                            showToast("API Key missing. Using simulation.");
-                        } else {
-                            showToast("Census unavailable. Using simulation.");
-                        }
-                        verifStatus.textContent = "⚠ Estimated (Simulation)";
-                        verifStatus.style.color = "var(--warning)";
-                        demos = generateFallbackDemographics(stateCode);
-                    }
-
-                    // Fill Data
-                    demoPop.textContent = formatNumber(demos.pop);
-                    demoInc.textContent = "$" + formatNumber(demos.income);
-                    demoAge.textContent = demos.age + " yrs";
-                    demoGrowth.textContent = (demos.growth > 0 ? "+" : "") + demos.growth + "%";
-
-                    disposableBar.style.width = '0%';
-                    educationBar.style.width = '0%';
-                    disposableVal.textContent = demos.disposable.toFixed(1) + "%";
-                    educationVal.textContent = demos.education.toFixed(1) + "%";
-
-                    loader.style.display = 'none';
-                    results.style.display = 'grid';
-                    analyzeBtn.disabled = false;
-
-                    setTimeout(() => {
-                        disposableBar.style.width = demos.disposable + "%";
-                        educationBar.style.width = demos.education + "%";
-                    }, 100);
-
-                } catch (error) {
-                    loader.style.display = 'none';
-                    analyzeBtn.disabled = false;
-                    showToast(error.message);
+                if (data.tier === 'top') {
+                    scoreCircle.classList.add('score-top');
+                    stateBadge.classList.add('top');
+                    stateBadge.textContent = "TOP";
+                    exchangeAdvice.textContent = "High 1031 Priority";
+                    rankBadge.style.borderColor = "var(--success)";
+                    rankBadge.style.color = "var(--success)";
+                } else if (data.tier === 'mid') {
+                    scoreCircle.classList.add('score-mid');
+                    stateBadge.classList.add('mid');
+                    stateBadge.textContent = "MID";
+                    exchangeAdvice.textContent = "Value-Add Potential";
+                    rankBadge.style.borderColor = "var(--warning)";
+                    rankBadge.style.color = "#b45309";
+                } else {
+                    scoreCircle.classList.add('score-low');
+                    stateBadge.classList.add('low');
+                    stateBadge.textContent = "LOW";
+                    exchangeAdvice.textContent = "High Risk Factors";
+                    rankBadge.style.borderColor = "var(--danger)";
+                    rankBadge.style.color = "var(--danger)";
                 }
-            });
 
-            addressInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') analyzeBtn.click();
-            });
-        </script>
+                renderNeighbors(stateCode);
 
+                if (locationInfo.lat && locationInfo.lon) {
+                    googleMapFrame.src = createGoogleMapsUrl(locationInfo.lat, locationInfo.lon, locationInfo.formattedAddress);
+                    placerFrame.src = createPlacerUrl(locationInfo.zipCode, locationInfo.formattedAddress);
+                }
+
+                let demos = await fetchCensusData(locationInfo.zipCode);
+                verifZip.textContent = locationInfo.zipCode;
+                
+                if (demos) {
+                    verifStatus.textContent = "Verified (Census)";
+                    verifStatus.style.color = "var(--success)";
+                } else {
+                    if (CENSUS_API_KEY === "") showToast("Simulation Mode (No API Key).");
+                    verifStatus.textContent = "Est. (Sim)";
+                    verifStatus.style.color = "var(--warning)";
+                    demos = generateFallbackDemographics(stateCode);
+                }
+
+                demoPop.textContent = formatNumber(demos.pop);
+                demoInc.textContent = "$" + formatNumber(demos.income);
+                demoAge.textContent = demos.age + " yrs";
+                demoGrowth.textContent = (demos.growth > 0 ? "+" : "") + demos.growth + "%";
+
+                disposableVal.textContent = demos.disposable.toFixed(1) + "%";
+                educationVal.textContent = demos.education.toFixed(1) + "%";
+                
+                disposableBar.style.width = '0%';
+                educationBar.style.width = '0%';
+
+                loader.style.display = 'none';
+                dashboard.style.display = 'grid'; // Use grid for 3-col layout
+                
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Analyze';
+
+                setTimeout(() => {
+                    disposableBar.style.width = demos.disposable + "%";
+                    educationBar.style.width = demos.education + "%";
+                }, 100);
+
+            } catch (error) {
+                loader.style.display = 'none';
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Analyze';
+                showToast(error.message);
+            }
+        });
+
+        addressInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') analyzeBtn.click();
+        });
+    </script>
     </body>
 </html>
