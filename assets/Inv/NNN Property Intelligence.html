@@ -98,7 +98,8 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            height: calc(100vh - 60px); /* Fill remaining height */
+            min-height: 0;
+            overflow: auto;
         }
 
         /* --- Search Section --- */
@@ -155,45 +156,19 @@
         }
         .btn-analyze:hover { background-color: var(--accent); }
 
-        /* --- Dashboard Grid (3 Columns - Placer Much Wider) --- */
+        /* --- Dashboard Grid (2 Columns) --- */
         .dashboard-grid {
             display: none;
-            /*
-               Left: 300px (Data)
-               Center: 1fr (Google Maps - remaining space)
-               Right: 700px (Placer - Very Wide)
-            */
-            grid-template-columns: 300px 1fr 700px;
+            grid-template-columns: clamp(260px, 18vw, 320px) minmax(520px, 1fr);
             gap: 0.75rem;
-            height: 100%; /* Fill remaining vertical space */
+            flex: 1;
+            height: auto;
             min-height: 0; /* Crucial for grid scrolling */
         }
 
-        /* Responsive Breakpoint */
-        @media (max-width: 1600px) {
-            .dashboard-grid {
-                grid-template-columns: 300px 1fr 600px;
-            }
-        }
-
-        @media (max-width: 1300px) {
-            /* Tablet/Laptop: Collapse Right Col under Left Col */
+        @media (max-width: 1200px) {
             .dashboard-grid {
                 grid-template-columns: 300px 1fr;
-                grid-template-rows: 1fr auto;
-            }
-            .col-right {
-                grid-column: 1;
-                grid-row: 2;
-                height: 500px; /* Fixed height for Placer when stacked */
-            }
-            .col-center {
-                grid-column: 2;
-                grid-row: 1 / span 2;
-            }
-            .col-left {
-                grid-column: 1;
-                grid-row: 1;
             }
         }
 
@@ -214,6 +189,7 @@
             gap: 0.75rem;
             overflow-y: auto; /* Scroll independently */
             padding-right: 2px;
+            min-height: 0;
         }
 
         .col-center, .col-right {
@@ -257,7 +233,15 @@
 
         /* Map Cards Specifics */
         .map-card {
-            height: 100%;
+            flex: 1;
+            height: auto;
+            min-height: 0;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
             padding: 0; /* No padding inside map cards */
             overflow: hidden;
             position: relative;
@@ -267,11 +251,10 @@
             flex: 1;
             background-color: #e2e8f0;
             width: 100%;
-            height: 100%;
+            min-height: 0;
             position: relative;
-            /* FIX: Allow scrolling if content is taller than the container */
-            overflow-y: auto;
-            overflow-x: hidden;
+            display: flex;
+            overflow: hidden;
         }
 
         iframe {
@@ -279,6 +262,230 @@
             height: 100%;
             border: none;
             display: block;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .icon-btn {
+            border: 1px solid #e2e8f0;
+            background: var(--bg-card);
+            color: var(--primary);
+            border-radius: var(--radius-md);
+            padding: 7px 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s, border-color 0.15s, transform 0.05s;
+        }
+
+        .icon-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .icon-btn:active {
+            transform: translateY(1px);
+        }
+
+        .tooltip-wrap {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .tooltip-wrap::before {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 4px);
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid rgba(15, 23, 42, 0.95);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .tooltip-wrap::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 10px);
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(15, 23, 42, 0.95);
+            color: white;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .tooltip-wrap:hover::after,
+        .tooltip-wrap:focus-within::after,
+        .tooltip-wrap:hover::before,
+        .tooltip-wrap:focus-within::before {
+            opacity: 1;
+        }
+
+        .tooltip-wrap:hover::after,
+        .tooltip-wrap:focus-within::after {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .tax-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 350;
+            display: none;
+        }
+
+        .tax-overlay.active {
+            display: block;
+        }
+
+        .tax-drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: min(560px, 92vw);
+            background: var(--bg-card);
+            box-shadow: -12px 0 30px rgba(0,0,0,0.2);
+            transform: translateX(100%);
+            transition: transform 0.22s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tax-overlay.active .tax-drawer {
+            transform: translateX(0);
+        }
+
+        .tax-drawer-header {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+
+        .tax-drawer-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .tax-close {
+            border: 1px solid #e2e8f0;
+            background: var(--bg-card);
+            color: var(--primary);
+            width: 34px;
+            height: 34px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tax-close:hover {
+            background: #f1f5f9;
+        }
+
+        .tax-drawer-body {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .tax-iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+            background: white;
+        }
+
+        .placer-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 340;
+            display: none;
+        }
+
+        .placer-overlay.active {
+            display: block;
+        }
+
+        .placer-drawer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: min(980px, 96vw);
+            background: var(--bg-card);
+            box-shadow: -12px 0 30px rgba(0,0,0,0.2);
+            transform: translateX(100%);
+            transition: transform 0.22s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .placer-overlay.active .placer-drawer {
+            transform: translateX(0);
+        }
+
+        .placer-drawer-header {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            flex-shrink: 0;
+        }
+
+        .placer-drawer-title {
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+
+        .placer-drawer-body {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+        }
+
+        .placer-drawer-body .map-card {
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
         }
 
         /* --- Content Components --- */
@@ -392,8 +599,22 @@
                 <span>Command Center</span>
             </div>
         </div>
-        <div style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted);">
-            v2.2 | 2025 Data
+        <div class="header-actions">
+            <span class="tooltip-wrap" data-tooltip="View income tax-free states">
+                <button class="icon-btn" id="openTaxInfoBtn" type="button" aria-haspopup="dialog" aria-controls="taxOverlay">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"></path><path d="M7 7h10"></path><path d="M7 12h10"></path><path d="M7 17h10"></path></svg>
+                    Tax-Free States
+                </button>
+            </span>
+            <span class="tooltip-wrap" data-tooltip="Show Placer.ai foot traffic sidebar">
+                <button class="icon-btn" id="openPlacerBtn" type="button" aria-haspopup="dialog" aria-controls="placerOverlay">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"></path><path d="M7 16h10"></path><path d="M7 12h6"></path><path d="M7 8h4"></path></svg>
+                    Foot Traffic
+                </button>
+            </span>
+            <div style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted);">
+                v2.2 | 2025 Data
+            </div>
         </div>
     </header>
 
@@ -487,22 +708,6 @@
                 </div>
             </section>
 
-            <!-- COLUMN 3: RIGHT (Placer - Very Wider) -->
-            <aside class="col-right">
-                <div class="map-card">
-                    <div class="card-header">
-                        <div class="card-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="#7c3aed"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
-                            Foot Traffic & POI
-                        </div>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">PLACER.AI</span>
-                    </div>
-                    <div class="iframe-wrapper">
-                        <iframe id="placerFrame" src="" loading="lazy"></iframe>
-                    </div>
-                </div>
-            </aside>
-
         </div>
     </main>
 
@@ -514,6 +719,41 @@
 
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+
+    <div id="taxOverlay" class="tax-overlay" aria-hidden="true">
+        <div class="tax-drawer" role="dialog" aria-modal="true" aria-label="State income tax information">
+            <div class="tax-drawer-header">
+                <div class="tax-drawer-title">State Tax Information</div>
+                <button class="tax-close" id="closeTaxInfoBtn" type="button" aria-label="Close">×</button>
+            </div>
+            <div class="tax-drawer-body">
+                <iframe id="taxMapFrame" class="tax-iframe" src="GLM-4.6.html?mode=tax" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="placerOverlay" class="placer-overlay" aria-hidden="true">
+        <div class="placer-drawer" role="dialog" aria-modal="true" aria-label="Foot traffic and points of interest">
+            <div class="placer-drawer-header">
+                <div class="placer-drawer-title">Foot Traffic & POI</div>
+                <button class="tax-close" id="closePlacerBtn" type="button" aria-label="Close">×</button>
+            </div>
+            <div class="placer-drawer-body">
+                <div class="map-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="#7c3aed"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>
+                            Property Area Insights
+                        </div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">PLACER.AI</span>
+                    </div>
+                    <div class="iframe-wrapper">
+                        <iframe id="placerFrame" src="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const CENSUS_API_KEY = "b1819672ea28ef76ff4262612aea81b018db6674";
@@ -750,6 +990,10 @@
                 const locationInfo = await fetchAddressData(input);
                 const stateCode = locationInfo.stateAbbr;
                 const data = stateData[stateCode];
+                currentAnalyzedState = stateCode;
+                updateTaxMapFrame();
+                currentAnalyzedState = stateCode;
+                updateTaxMapFrame();
 
                 const rankIndex = sortedStates.findIndex(s => s[0] === stateCode);
                 const currentRank = rankIndex + 1;
@@ -839,6 +1083,69 @@
 
         addressInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') analyzeBtn.click();
+        });
+
+        const openTaxInfoBtn = document.getElementById('openTaxInfoBtn');
+        const taxOverlay = document.getElementById('taxOverlay');
+        const closeTaxInfoBtn = document.getElementById('closeTaxInfoBtn');
+        const taxMapFrame = document.getElementById('taxMapFrame');
+        let currentAnalyzedState = null;
+        let taxLastFocus = null;
+        const openPlacerBtn = document.getElementById('openPlacerBtn');
+        const placerOverlay = document.getElementById('placerOverlay');
+        const closePlacerBtn = document.getElementById('closePlacerBtn');
+        let placerLastFocus = null;
+
+        function updateTaxMapFrame() {
+            if (!taxMapFrame) return;
+            const selected = currentAnalyzedState ? `&selected=${encodeURIComponent(currentAnalyzedState)}` : '';
+            const nextSrc = `GLM-4.6.html?mode=tax${selected}`;
+            if (taxMapFrame.getAttribute('src') !== nextSrc) taxMapFrame.setAttribute('src', nextSrc);
+        }
+
+        function openTaxDrawer() {
+            taxLastFocus = document.activeElement;
+            updateTaxMapFrame();
+            if (placerOverlay.classList.contains('active')) closePlacerDrawer();
+            taxOverlay.classList.add('active');
+            taxOverlay.setAttribute('aria-hidden', 'false');
+            closeTaxInfoBtn.focus();
+        }
+
+        function closeTaxDrawer() {
+            taxOverlay.classList.remove('active');
+            taxOverlay.setAttribute('aria-hidden', 'true');
+            if (taxLastFocus && typeof taxLastFocus.focus === 'function') taxLastFocus.focus();
+        }
+
+        function openPlacerDrawer() {
+            placerLastFocus = document.activeElement;
+            if (taxOverlay.classList.contains('active')) closeTaxDrawer();
+            placerOverlay.classList.add('active');
+            placerOverlay.setAttribute('aria-hidden', 'false');
+            closePlacerBtn.focus();
+        }
+
+        function closePlacerDrawer() {
+            placerOverlay.classList.remove('active');
+            placerOverlay.setAttribute('aria-hidden', 'true');
+            if (placerLastFocus && typeof placerLastFocus.focus === 'function') placerLastFocus.focus();
+        }
+
+        openTaxInfoBtn.addEventListener('click', openTaxDrawer);
+        closeTaxInfoBtn.addEventListener('click', closeTaxDrawer);
+        taxOverlay.addEventListener('click', (e) => {
+            if (e.target === taxOverlay) closeTaxDrawer();
+        });
+        openPlacerBtn.addEventListener('click', openPlacerDrawer);
+        closePlacerBtn.addEventListener('click', closePlacerDrawer);
+        placerOverlay.addEventListener('click', (e) => {
+            if (e.target === placerOverlay) closePlacerDrawer();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Escape') return;
+            if (placerOverlay.classList.contains('active')) { closePlacerDrawer(); return; }
+            if (taxOverlay.classList.contains('active')) closeTaxDrawer();
         });
     </script>
     </body>
