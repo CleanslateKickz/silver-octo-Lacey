@@ -156,19 +156,75 @@
         }
         .btn-analyze:hover { background-color: var(--accent); }
 
-        /* --- Dashboard Grid (2 Columns) --- */
+        /* --- Dashboard Grid (3 Columns) --- */
         .dashboard-grid {
             display: none;
-            grid-template-columns: clamp(260px, 18vw, 320px) minmax(520px, 1fr);
-            gap: 0.75rem;
+            /* 3-column grid for Property Facts, Visuals, and Demographics */
+            grid-template-columns: minmax(280px, 1fr) minmax(400px, 1.5fr) minmax(280px, 1fr);
+            gap: 1rem;
             flex: 1;
             height: auto;
-            min-height: 0; /* Crucial for grid scrolling */
+            min-height: 0;
+            padding-bottom: 2rem;
+        }
+
+        /* Summary Row at Top */
+        .summary-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .summary-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid #e2e8f0;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .summary-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .summary-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .summary-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         @media (max-width: 1200px) {
             .dashboard-grid {
-                grid-template-columns: 300px 1fr;
+                grid-template-columns: 1fr 1fr;
+            }
+            .col-center {
+                grid-column: 1 / -1; /* Map takes full width on medium screens */
+                order: -1; /* Put map on top */
             }
         }
 
@@ -179,23 +235,21 @@
                 flex-direction: column;
                 height: auto;
             }
-            .map-card { height: 500px !important; min-height: 500px; }
+            .map-card { height: 400px !important; min-height: 400px; }
         }
 
         /* --- Column Containers --- */
-        .col-left {
+        .col-left, .col-right {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
-            overflow-y: auto; /* Scroll independently */
-            padding-right: 2px;
+            gap: 1rem;
             min-height: 0;
         }
 
-        .col-center, .col-right {
+        .col-center {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            gap: 1rem;
             min-height: 0;
         }
 
@@ -628,41 +682,110 @@
             <button class="btn-analyze" id="analyzeBtn">Analyze</button>
         </section>
 
+        <!-- Summary Row (Visible after analysis) -->
+        <div class="summary-row" id="summaryRow" style="display:none;">
+            <!-- State Status -->
+            <div class="summary-card">
+                <div class="summary-icon" id="scoreCircleSmall">--</div>
+                <div class="summary-content">
+                    <div class="summary-label">State Score</div>
+                    <div class="summary-value" id="stateNameSmall">---</div>
+                    <div id="stateBadgeSmall" class="badge" style="width:fit-content; margin-top:2px;">---</div>
+                </div>
+            </div>
+            <!-- Rank -->
+            <div class="summary-card">
+                <div class="summary-icon" style="background:#f0fdf4; color:#16a34a;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2h-4a2 2 0 0 0-2 2h0a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h2"></path><path d="M18 9v2a2 2 0 0 1-2 2h-2"></path></svg>
+                </div>
+                <div class="summary-content">
+                    <div class="summary-label">National Rank</div>
+                    <div class="summary-value" id="rankBadgeSmall">#--</div>
+                    <div style="font-size:0.7rem; color:var(--text-muted);" id="exchangeAdviceSmall">---</div>
+                </div>
+            </div>
+            <!-- Market Context -->
+            <div class="summary-card" style="flex:1.5;">
+                <div class="summary-content" style="width:100%;">
+                    <div class="summary-label" style="margin-bottom:4px;">Market Context</div>
+                    <div style="display:flex; gap:1rem; align-items:center;" id="neighborContainerSmall">
+                        <span style="font-size:0.8rem; color:var(--text-muted);">Analysis pending...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 3-Column Dashboard -->
         <div class="dashboard-grid" id="dashboard">
             
-            <!-- COLUMN 1: LEFT (Data & Stats) -->
+            <!-- COLUMN 1: LEFT (Insights & Environment) -->
             <aside class="col-left">
                 
-                <!-- Score Card -->
+                <!-- Location Insights Card -->
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Target State</div>
-                        <div id="stateBadge" class="badge">---</div>
+                        <div class="card-title">Location Insights</div>
                     </div>
-                    <div class="score-widget">
-                        <div id="scoreCircle" class="score-circle" style="background: #cbd5e1;">--</div>
-                        <div class="score-label" id="stateName">---</div>
-                        <div class="rank-badge" id="rankBadge" style="display:none;">Rank #--/50</div>
-                        <div class="score-sub" id="exchangeAdvice">Ready to analyze</div>
-                    </div>
-                    <div class="advice-box" id="notesContainer" style="display:none;">
-                        <div class="advice-text" id="stateNotes">---</div>
-                    </div>
-                </div>
-
-                <!-- Comparison Card -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Market Context</div>
-                    </div>
-                    <div class="comp-list" id="neighborContainer">
-                        <div style="padding:1rem; text-align:center; color:var(--text-muted); font-size:0.8rem;">
-                            Pending Data...
+                    <div class="demo-card">
+                        <div style="margin-bottom: 0.8rem;">
+                            <div style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 2px;">METRO / MICRO AREA</div>
+                            <div id="msaName" style="font-size: 0.85rem; font-weight: 700; color: var(--primary); line-height: 1.3;">---</div>
+                        </div>
+                        
+                        <div>
+                            <div style="font-size: 0.7rem; font-weight: 600; color: var(--text-muted); margin-bottom: 4px;">PROXIMITY TO MAJOR HUBS</div>
+                            <div id="cityProximityList" style="display: flex; flex-direction: column; gap: 4px;">
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">---</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Property Environment Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Property Environment</div>
+                    </div>
+                    <div class="demo-card">
+                        <div class="stat-row">
+                            <span>Current Weather</span>
+                            <div style="text-align:right;">
+                                <div id="weatherTemp" style="font-weight:700; color:var(--primary);">--°F</div>
+                                <div id="weatherDesc" style="font-size:0.7rem; color:var(--text-muted);">---</div>
+                            </div>
+                        </div>
+                        <div class="stat-row">
+                            <span>Elevation</span>
+                            <span class="stat-val" id="elevationDisplay">-- ft</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>County</span>
+                            <span class="stat-val" id="countyName">---</span>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- COLUMN 2: CENTER (Google Maps) -->
+            <section class="col-center">
+                <div class="map-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--primary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            Location & Aerial View
+                        </div>
+                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">GOOGLE MAPS</span>
+                    </div>
+                    <div class="iframe-wrapper">
+                        <iframe id="googleMapFrame" src="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </section>
+
+            <!-- COLUMN 3: RIGHT (Demographics) -->
+            <aside class="col-right">
+                
                 <!-- Demographics Card -->
                 <div class="card">
                     <div class="card-header">
@@ -690,23 +813,19 @@
                     </div>
                 </div>
 
-            </aside>
-
-            <!-- COLUMN 2: CENTER (Google Maps) -->
-            <section class="col-center">
-                <div class="map-card">
+                <!-- Advice/Notes (Moved here or kept in Summary?) Let's keep specific advice here if needed, or remove since we have summary. 
+                     Actually, let's put the "State Notes" here as a "Strategy" card.
+                -->
+                <div class="card">
                     <div class="card-header">
-                        <div class="card-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" color="var(--primary)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                            Location & Aerial View
-                        </div>
-                        <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600;">GOOGLE MAPS</span>
+                        <div class="card-title">State Strategy</div>
                     </div>
-                    <div class="iframe-wrapper">
-                        <iframe id="googleMapFrame" src="" loading="lazy"></iframe>
+                    <div class="advice-box" style="margin:0; border:none; background:transparent; padding:0.75rem;">
+                        <div class="advice-text" id="stateNotes">---</div>
                     </div>
                 </div>
-            </section>
+
+            </aside>
 
         </div>
     </main>
@@ -827,21 +946,86 @@
 
         const sortedStates = Object.entries(stateData).sort((a, b) => b[1].score - a[1].score);
 
+        // --- Major Cities Data (Top ~50 US Cities for Proximity) ---
+        const majorCities = [
+            { name: "New York, NY", lat: 40.7128, lon: -74.0060 },
+            { name: "Los Angeles, CA", lat: 34.0522, lon: -118.2437 },
+            { name: "Chicago, IL", lat: 41.8781, lon: -87.6298 },
+            { name: "Houston, TX", lat: 29.7604, lon: -95.3698 },
+            { name: "Phoenix, AZ", lat: 33.4484, lon: -112.0740 },
+            { name: "Philadelphia, PA", lat: 39.9526, lon: -75.1652 },
+            { name: "San Antonio, TX", lat: 29.4241, lon: -98.4936 },
+            { name: "San Diego, CA", lat: 32.7157, lon: -117.1611 },
+            { name: "Dallas, TX", lat: 32.7767, lon: -96.7970 },
+            { name: "San Jose, CA", lat: 37.3382, lon: -121.8863 },
+            { name: "Austin, TX", lat: 30.2672, lon: -97.7431 },
+            { name: "Jacksonville, FL", lat: 30.3322, lon: -81.6557 },
+            { name: "Fort Worth, TX", lat: 32.7555, lon: -97.3308 },
+            { name: "Columbus, OH", lat: 39.9612, lon: -82.9988 },
+            { name: "Indianapolis, IN", lat: 39.7684, lon: -86.1581 },
+            { name: "Charlotte, NC", lat: 35.2271, lon: -80.8431 },
+            { name: "San Francisco, CA", lat: 37.7749, lon: -122.4194 },
+            { name: "Seattle, WA", lat: 47.6062, lon: -122.3321 },
+            { name: "Denver, CO", lat: 39.7392, lon: -104.9903 },
+            { name: "Oklahoma City, OK", lat: 35.4676, lon: -97.5164 },
+            { name: "Nashville, TN", lat: 36.1627, lon: -86.7816 },
+            { name: "El Paso, TX", lat: 31.7619, lon: -106.4850 },
+            { name: "Washington, DC", lat: 38.9072, lon: -77.0369 },
+            { name: "Boston, MA", lat: 42.3601, lon: -71.0589 },
+            { name: "Las Vegas, NV", lat: 36.1699, lon: -115.1398 },
+            { name: "Portland, OR", lat: 45.5152, lon: -122.6784 },
+            { name: "Detroit, MI", lat: 42.3314, lon: -83.0458 },
+            { name: "Louisville, KY", lat: 38.2527, lon: -85.7585 },
+            { name: "Memphis, TN", lat: 35.1495, lon: -90.0490 },
+            { name: "Baltimore, MD", lat: 39.2904, lon: -76.6122 },
+            { name: "Milwaukee, WI", lat: 43.0389, lon: -87.9065 },
+            { name: "Albuquerque, NM", lat: 35.0844, lon: -106.6504 },
+            { name: "Tucson, AZ", lat: 32.2226, lon: -110.9747 },
+            { name: "Fresno, CA", lat: 36.7378, lon: -119.7871 },
+            { name: "Sacramento, CA", lat: 38.5816, lon: -121.4944 },
+            { name: "Kansas City, MO", lat: 39.0997, lon: -94.5786 },
+            { name: "Mesa, AZ", lat: 33.4152, lon: -111.8315 },
+            { name: "Atlanta, GA", lat: 33.7490, lon: -84.3880 },
+            { name: "Omaha, NE", lat: 41.2565, lon: -95.9345 },
+            { name: "Colorado Springs, CO", lat: 38.8339, lon: -104.8214 },
+            { name: "Raleigh, NC", lat: 35.7796, lon: -78.6382 },
+            { name: "Long Beach, CA", lat: 33.7701, lon: -118.1937 },
+            { name: "Virginia Beach, VA", lat: 36.8529, lon: -75.9780 },
+            { name: "Miami, FL", lat: 25.7617, lon: -80.1918 },
+            { name: "Oakland, CA", lat: 37.8044, lon: -122.2711 },
+            { name: "Minneapolis, MN", lat: 44.9778, lon: -93.2650 },
+            { name: "Tulsa, OK", lat: 36.1540, lon: -95.9928 },
+            { name: "Tampa, FL", lat: 27.9506, lon: -82.4572 },
+            { name: "Arlington, TX", lat: 32.7357, lon: -97.1081 },
+            { name: "New Orleans, LA", lat: 29.9511, lon: -90.0715 }
+        ];
+
         // DOM
         const addressInput = document.getElementById('addressInput');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const loader = document.getElementById('loader');
         const dashboard = document.getElementById('dashboard');
+        const summaryRow = document.getElementById('summaryRow'); // New
 
-        const stateBadge = document.getElementById('stateBadge');
-        const scoreCircle = document.getElementById('scoreCircle');
-        const stateName = document.getElementById('stateName');
+        // Summary Row Elements
+        const stateBadgeSmall = document.getElementById('stateBadgeSmall');
+        const scoreCircleSmall = document.getElementById('scoreCircleSmall');
+        const stateNameSmall = document.getElementById('stateNameSmall');
+        const exchangeAdviceSmall = document.getElementById('exchangeAdviceSmall');
+        const neighborContainerSmall = document.getElementById('neighborContainerSmall');
+        const rankBadgeSmall = document.getElementById('rankBadgeSmall');
+
+        // Facts & Environment
+        const msaName = document.getElementById('msaName');
+        const cityProximityList = document.getElementById('cityProximityList');
+        const countyName = document.getElementById('countyName');
+        const elevationDisplay = document.getElementById('elevationDisplay');
+        const weatherTemp = document.getElementById('weatherTemp');
+        const weatherDesc = document.getElementById('weatherDesc');
+
+        // Existing
         const stateNotes = document.getElementById('stateNotes');
-        const notesContainer = document.getElementById('notesContainer');
-        const exchangeAdvice = document.getElementById('exchangeAdvice');
-        const neighborContainer = document.getElementById('neighborContainer');
-        const rankBadge = document.getElementById('rankBadge');
-
+        
         const googleMapFrame = document.getElementById('googleMapFrame');
         const placerFrame = document.getElementById('placerFrame');
 
@@ -901,19 +1085,23 @@
                 const stateAbbr = stateNameMap[cleanStateName];
                 if (!stateAbbr) throw new Error(`State "${stateNameRaw}" not supported.`);
 
+                // Extract County if available
+                const county = locationData.address.county || "Unknown County";
+
                 return {
                     stateAbbr,
                     stateName: stateData[stateAbbr].name,
                     zipCode,
                     lat,
                     lon,
+                    county,
                     formattedAddress: locationData.display_name
                 };
             } catch (error) { throw error; }
         }
 
         function renderNeighbors(stateAbbr) {
-            neighborContainer.innerHTML = '';
+            neighborContainerSmall.innerHTML = '';
             const currentIndex = sortedStates.findIndex(s => s[0] === stateAbbr);
             if (currentIndex === -1) return;
             
@@ -930,7 +1118,7 @@
                 html += `<div class="comp-item"><div class="comp-score" style="color:var(--danger)">${below[1].score}</div><div class="comp-name">${below[1].name}</div><div style="font-size:10px;color:var(--danger)">▼</div></div>`;
             } else { html += `<div style="text-align:center;color:#94a3b8;font-size:0.7rem;padding:4px;">Lowest Ranked</div>`; }
             
-            neighborContainer.innerHTML = html;
+            neighborContainerSmall.innerHTML = html;
         }
 
         async function fetchCensusData(zipCode) {
@@ -977,11 +1165,76 @@
             };
         }
 
+        // --- New Helper Functions for Insights ---
+
+        function haversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 3958.8; // Radius of Earth in miles
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        async function fetchFCCData(lat, lon) {
+            try {
+                // Use the FCC Block API to get MSA info
+                const url = `https://geo.fcc.gov/api/census/block/find?latitude=${lat}&longitude=${lon}&showall=true&format=json`;
+                const res = await fetch(url);
+                if (!res.ok) return null;
+                const data = await res.json();
+                
+                // The API returns MSA info inside the 'Block' object or root depending on version
+                if (data && data.Block && data.Block.MSA) {
+                    return data.Block.MSA.MSAName || data.Block.MSA.MsaName || null;
+                }
+                if (data && data.MsaName) return data.MsaName;
+                
+                return null;
+            } catch (e) {
+                console.warn("FCC API Error:", e);
+                return null;
+            }
+        }
+
+        async function fetchWeatherAndElevation(lat, lon) {
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=auto&elevation=true&temperature_unit=fahrenheit`;
+                const res = await fetch(url);
+                if (!res.ok) return null;
+                const data = await res.json();
+                
+                return {
+                    temp: data.current.temperature_2m,
+                    unit: data.current_units.temperature_2m,
+                    code: data.current.weather_code,
+                    elevation: data.elevation
+                };
+            } catch (e) {
+                console.warn("Weather API Error:", e);
+                return null;
+            }
+        }
+
+        function getWeatherDesc(code) {
+             if (code === 0) return "Clear Sky";
+             if (code >= 1 && code <= 3) return "Partly Cloudy";
+             if (code >= 45 && code <= 48) return "Fog";
+             if (code >= 51 && code <= 67) return "Rain/Drizzle";
+             if (code >= 71 && code <= 77) return "Snow";
+             if (code >= 80 && code <= 82) return "Rain Showers";
+             if (code >= 95) return "Thunderstorm";
+             return "Overcast/Varied";
+        }
+
         analyzeBtn.addEventListener('click', async () => {
             const input = addressInput.value.trim();
             if (!input) { showToast("Enter an address."); return; }
             
             dashboard.style.display = 'none';
+            summaryRow.style.display = 'none';
             loader.style.display = 'flex';
             analyzeBtn.disabled = true;
             analyzeBtn.textContent = 'Processing...';
@@ -992,43 +1245,38 @@
                 const data = stateData[stateCode];
                 currentAnalyzedState = stateCode;
                 updateTaxMapFrame();
-                currentAnalyzedState = stateCode;
-                updateTaxMapFrame();
 
                 const rankIndex = sortedStates.findIndex(s => s[0] === stateCode);
                 const currentRank = rankIndex + 1;
 
-                stateName.textContent = data.name;
+                // Update Summary Row
+                stateNameSmall.textContent = data.name;
                 stateNotes.textContent = data.notes;
-                notesContainer.style.display = 'block';
-                scoreCircle.textContent = data.score;
-                rankBadge.textContent = `Rank #${currentRank} / 50`;
-                rankBadge.style.display = 'inline-block';
-
-                scoreCircle.className = 'score-circle';
-                stateBadge.className = 'badge';
+                
+                scoreCircleSmall.textContent = data.score;
+                rankBadgeSmall.textContent = `Rank #${currentRank} / 50`;
+                
+                scoreCircleSmall.className = 'summary-icon';
+                stateBadgeSmall.className = 'badge';
 
                 if (data.tier === 'top') {
-                    scoreCircle.classList.add('score-top');
-                    stateBadge.classList.add('top');
-                    stateBadge.textContent = "TOP";
-                    exchangeAdvice.textContent = "High 1031 Priority";
-                    rankBadge.style.borderColor = "var(--success)";
-                    rankBadge.style.color = "var(--success)";
+                    scoreCircleSmall.style.background = 'var(--success-bg)';
+                    scoreCircleSmall.style.color = 'var(--success)';
+                    stateBadgeSmall.classList.add('top');
+                    stateBadgeSmall.textContent = "TOP TIER";
+                    exchangeAdviceSmall.textContent = "High 1031 Priority";
                 } else if (data.tier === 'mid') {
-                    scoreCircle.classList.add('score-mid');
-                    stateBadge.classList.add('mid');
-                    stateBadge.textContent = "MID";
-                    exchangeAdvice.textContent = "Value-Add Potential";
-                    rankBadge.style.borderColor = "var(--warning)";
-                    rankBadge.style.color = "#b45309";
+                    scoreCircleSmall.style.background = 'var(--warning-bg)';
+                    scoreCircleSmall.style.color = '#b45309';
+                    stateBadgeSmall.classList.add('mid');
+                    stateBadgeSmall.textContent = "MID TIER";
+                    exchangeAdviceSmall.textContent = "Value-Add Potential";
                 } else {
-                    scoreCircle.classList.add('score-low');
-                    stateBadge.classList.add('low');
-                    stateBadge.textContent = "LOW";
-                    exchangeAdvice.textContent = "High Risk Factors";
-                    rankBadge.style.borderColor = "var(--danger)";
-                    rankBadge.style.color = "var(--danger)";
+                    scoreCircleSmall.style.background = 'var(--danger-bg)';
+                    scoreCircleSmall.style.color = 'var(--danger)';
+                    stateBadgeSmall.classList.add('low');
+                    stateBadgeSmall.textContent = "LOW TIER";
+                    exchangeAdviceSmall.textContent = "High Risk Factors";
                 }
 
                 renderNeighbors(stateCode);
@@ -1036,6 +1284,49 @@
                 if (locationInfo.lat && locationInfo.lon) {
                     googleMapFrame.src = createGoogleMapsUrl(locationInfo.lat, locationInfo.lon, locationInfo.formattedAddress);
                     placerFrame.src = createPlacerUrl(locationInfo.zipCode, locationInfo.formattedAddress);
+                    
+                    countyName.textContent = locationInfo.county || "Unknown";
+
+                    // --- Insights & Environment ---
+                    
+                    // 1. Fetch MSA
+                    const msaEl = document.getElementById('msaName');
+                    msaEl.textContent = "Loading...";
+                    fetchFCCData(locationInfo.lat, locationInfo.lon).then(msa => {
+                        msaEl.textContent = msa || "Not in a Metro Area";
+                    });
+
+                    // 2. Weather & Elevation
+                    weatherTemp.textContent = "--";
+                    weatherDesc.textContent = "Loading...";
+                    fetchWeatherAndElevation(locationInfo.lat, locationInfo.lon).then(w => {
+                        if (w) {
+                            weatherTemp.textContent = `${w.temp}${w.unit}`;
+                            weatherDesc.textContent = getWeatherDesc(w.code);
+                            elevationDisplay.textContent = `${w.elevation.toFixed(0)} m`;
+                        } else {
+                            weatherDesc.textContent = "Unavail";
+                        }
+                    });
+
+                    // 3. Nearest Major Cities
+                    const distances = majorCities.map(city => {
+                        return {
+                            ...city,
+                            dist: haversineDistance(locationInfo.lat, locationInfo.lon, city.lat, city.lon)
+                        };
+                    });
+                    
+                    distances.sort((a, b) => a.dist - b.dist);
+                    const nearest = distances.slice(0, 3);
+
+                    const cityListEl = document.getElementById('cityProximityList');
+                    cityListEl.innerHTML = nearest.map(c => `
+                        <div style="display:flex; justify-content:space-between; font-size:0.8rem;">
+                            <span style="font-weight:600; color:var(--primary);">${c.name}</span>
+                            <span style="color:var(--text-muted);">${c.dist.toFixed(1)} mi</span>
+                        </div>
+                    `).join('');
                 }
 
                 let demos = await fetchCensusData(locationInfo.zipCode);
@@ -1063,7 +1354,8 @@
                 educationBar.style.width = '0%';
 
                 loader.style.display = 'none';
-                dashboard.style.display = 'grid'; // Use grid for 3-col layout
+                dashboard.style.display = 'grid'; 
+                summaryRow.style.display = 'grid'; // Show Summary Row
                 
                 analyzeBtn.disabled = false;
                 analyzeBtn.textContent = 'Analyze';
