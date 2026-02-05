@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon"
-        href="https://uploads-ssl.webflow.com/5f31698a5aac96c8926baeed/5f319989546c7931b41e74d3_Acquisition%20Icons.png">
+    <link rel="icon" type="image/x-icon" href="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491">
     <title>CoStar Research Console</title>
 
     <!-- Tailwind CSS -->
@@ -15,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- SheetJS -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -37,7 +36,9 @@
         body {
             background-color: #f8fafc;
             overflow: hidden;
-            font-size: 15px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         .table-container {
@@ -94,16 +95,26 @@
         }
 
         /* Drawer/Sidebar Transitions */
+        /* Drawer/Sidebar Transitions */
         .sidebar-left,
-        .sidebar-right {
+        .sidebar-right,
+        #sidebar-left,
+        #sidebar-right {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .sidebar-left.open {
+        /* BOTH sidebars are active/open when the drawer is open */
+        .sidebar-left.active,
+        .sidebar-left.open,
+        #sidebar-left.active,
+        #sidebar-left.open {
             transform: translateX(0) !important;
         }
 
-        .sidebar-right.open {
+        .sidebar-right.active,
+        .sidebar-right.open,
+        #sidebar-right.active,
+        #sidebar-right.open {
             transform: translateX(0) !important;
         }
 
@@ -231,6 +242,57 @@
             background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
         }
+
+        /* Filter Popover */
+        .filter-popover {
+            position: absolute;
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+            z-index: 50;
+            min-width: 220px;
+            max-height: 320px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 0.35rem 0.5rem;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .filter-option:hover {
+            background-color: #f1f5f9;
+        }
+
+        .filter-option input {
+            margin-right: 0.5rem;
+            accent-color: #2563eb;
+        }
+
+        .filter-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f1f5f9;
+            margin-top: 0.25rem;
+        }
+
+        .filter-btn-sm {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 
@@ -288,10 +350,6 @@
                 <i class="fa-solid fa-table-columns"></i> Columns
             </button>
 
-            <button onclick="autoFillStates()"
-                class="flex items-center gap-2.5 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 text-sm font-bold uppercase tracking-wider rounded-lg transition-all">
-                <i class="fa-solid fa-map-pin"></i> Fix States
-            </button>
 
             <div class="h-8 w-px bg-gray-200"></div>
 
@@ -392,65 +450,65 @@
         <!-- Overlay - click to close -->
         <div id="sidebar-overlay" class="fixed inset-0 z-[65] overlay hidden" onclick="closeDrawer()"></div>
 
-        <!-- Left Sidebar - Property Details (Visuals & Core Info) -->
-        <aside id="sidebar-left"
-            class="sidebar-left fixed inset-y-0 left-0 w-[480px] bg-slate-50 shadow-2xl transform -translate-x-full z-[70] border-r border-gray-200 flex flex-col">
+        <!-- "Left" Sidebar -> Now "Visuals" Panel (Inner Right) -->
+        <aside id="sidebar-left" style="right: 320px;"
+            class="fixed inset-y-0 right-[320px] w-[340px] bg-slate-50 shadow-xl transform translate-x-[200%] z-[70] border-l border-gray-200 flex flex-col pointer-events-auto transition-transform duration-300">
             <!-- Header -->
-            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
-                <div class="flex items-center gap-3">
+            <div
+                class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white shrink-0 h-[57px]">
+                <div class="flex items-center gap-2">
                     <button onclick="navigateRow(-1)" id="btn-prev"
-                        class="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
-                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                        class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
                     </button>
-                    <div class="text-sm text-gray-600 font-semibold">
+                    <div class="text-xs text-gray-500 font-semibold tabular-nums">
                         <span id="current-index">1</span> / <span id="total-filtered">1</span>
                     </div>
                     <button onclick="navigateRow(1)" id="btn-next"
-                        class="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
-                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                        class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
             </div>
             <!-- Content -->
-            <div id="sidebar-left-content" class="flex-1 overflow-y-auto p-5 space-y-4">
+            <div id="sidebar-left-content" class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
                 <!-- Injected via JS -->
             </div>
         </aside>
 
         <!-- Right Sidebar - Input Fields -->
-        <aside id="sidebar-right"
-            class="sidebar-right fixed inset-y-0 right-0 w-[480px] bg-white shadow-2xl transform translate-x-full z-[70] border-l border-gray-200 flex flex-col">
+        <aside id="sidebar-right" style="right: 0;"
+            class="fixed inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform translate-x-full z-[71] border-l border-gray-200 flex flex-col pointer-events-auto transition-transform duration-300">
             <!-- Header -->
-            <div class="px-5 py-4 border-b border-gray-100 flex flex-col gap-3 bg-slate-50 shrink-0">
-                <!-- CoStar Button - Smaller size -->
-                <button onclick="openCoStarPage()"
-                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700 rounded-lg shadow-sm transition-all">
-                    <img src="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491"
-                        class="w-5 h-5 object-contain" alt="CoStar">
-                    <span class="font-semibold text-sm">Open in CoStar</span>
-                </button>
-
-                <!-- Title and Action Buttons -->
+            <div class="px-5 py-3 border-b border-gray-100 flex flex-col gap-3 bg-white shrink-0">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-gray-800 text-base">Edit Property</h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openCoStarPage()"
+                            class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-700 rounded-md transition-all group">
+                            <img src="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491"
+                                class="w-4 h-4 object-contain opacity-70 group-hover:opacity-100" alt="CoStar">
+                            <span class="font-semibold text-xs">CoStar</span>
+                        </button>
+                    </div>
+
                     <div class="flex items-center gap-2">
                         <button onclick="deleteProperty()" title="Delete"
-                            class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all border border-red-200">
+                            class="w-8 h-8 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition-all">
                             <i class="fa-solid fa-trash text-sm"></i>
                         </button>
                         <button onclick="saveDrawer()" title="Save"
-                            class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-sm">
-                            <i class="fa-solid fa-floppy-disk text-sm"></i>
+                            class="w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-sm">
+                            <i class="fa-solid fa-check text-sm"></i>
                         </button>
                         <button onclick="closeDrawer()"
-                            class="w-9 h-9 rounded-lg bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all">
-                            <i class="fa-solid fa-xmark text-sm"></i>
+                            class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-all">
+                            <i class="fa-solid fa-xmark text-base"></i>
                         </button>
                     </div>
                 </div>
             </div>
             <!-- Content -->
-            <div id="sidebar-right-content" class="flex-1 p-5 space-y-4 overflow-y-auto">
+            <div id="sidebar-right-content" class="flex-1 p-5 space-y-5 overflow-y-auto">
                 <!-- Injected via JS -->
             </div>
         </aside>
@@ -491,10 +549,6 @@
     <script>
         const DEFAULT_DATA_URL = 'Master.xlsx';
         const API_URL = 'https://costar-api.vercel.app/api/properties';
-        const DB_NAME = 'costar_console_db';
-        const DB_VERSION = 1;
-        const STORE_PROPERTIES = 'properties';
-        const STORE_KV = 'kv';
 
         // Field mapping: HTML (camelCase) <-> API (snake_case)
         const FIELD_MAP_TO_API = {
@@ -575,21 +629,25 @@
             { id: 'notes', label: 'Notes', width: '260px', visible: false },
         ];
 
-        let properties = [];
-        let columnConfig = [];
-        let currentTab = 'incomplete';
         let currentView = 'table';
-        let searchQuery = '';
-        let selectedRowKey = null;
-        let tempDrawerData = {};
-        let currentViewIndex = -1;
-        let filteredProperties = [];
+        let currentViewIndex = 0;
+        let currentTab = 'incomplete';
         let sortColumn = null;
-        let sortDirection = 'asc';
-        let persistTimer = null;
-
-        const dbPromise = openDb();
-
+        let sortDirection = 'asc'; // 'asc' or 'desc'
+        let searchQuery = '';
+        let selectedRowKey = null; // To highlight selected row
+        // IndexedDB constants (moved from global scope)
+        const DB_NAME = 'CoStarConsoleDB';
+        const DB_VERSION = 1;
+        const STORE_PROPERTIES = 'properties';
+        const STORE_KV = 'kv';
+        let dbPromise = openDb();
+        // Data
+        let properties = [];
+        let filteredProperties = [];
+        let columnConfig = [];
+        // Filtering
+        let columnFilters = {}; // { colId: ['val1', 'val2'] }
         window.addEventListener('DOMContentLoaded', () => {
             init().catch(err => {
                 console.error(err);
@@ -992,12 +1050,14 @@
         function getFilteredProperties() {
             let result = properties;
 
+            // 1. Tab Filtering
             if (currentTab === 'incomplete') {
                 result = result.filter(p => isIncomplete(p));
             } else {
                 result = result.filter(p => !isIncomplete(p));
             }
 
+            // 2. Global Search
             if (searchQuery) {
                 result = result.filter(p => {
                     const searchFields = ['address', 'city', 'state', 'ownername', 'ownerphone', 'owneremail', 'tenant', 'buildingname', 'agent', 'notes', 'costarid', 'propertytype', 'status'];
@@ -1005,6 +1065,21 @@
                 });
             }
 
+            // 3. Column Filters
+            Object.keys(columnFilters).forEach(colId => {
+                const activeValues = columnFilters[colId];
+                if (activeValues && activeValues.length > 0) {
+                    result = result.filter(p => {
+                        let val = p[colId];
+                        if (val === undefined || val === null || val === '') {
+                            return activeValues.includes('(Missing)');
+                        }
+                        return activeValues.includes(String(val));
+                    });
+                }
+            });
+
+            // 4. Sort
             if (sortColumn) {
                 result = [...result].sort((a, b) => {
                     let valA = a[sortColumn] || '';
@@ -1066,6 +1141,147 @@
             return s;
         }
 
+        // --- FILTER UI ---
+        let activeFilterMenu = null;
+
+        function toggleFilterMenu(colId, btnEl) {
+            // Close existing
+            const existing = document.getElementById('filter-popover');
+            if (existing) {
+                const wasSame = existing.dataset.col === colId;
+                existing.remove();
+                if (wasSame) return;
+            }
+
+            // Create Popover
+            const popover = document.createElement('div');
+            popover.id = 'filter-popover';
+            popover.className = 'filter-popover';
+            popover.dataset.col = colId;
+
+            // Get unique values from CURRENT filtered set (ignoring this column's filter for list?)
+            // Normally we want values from the *entire* dataset or the *current* dataset?
+            // Let's use entire dataset for options, to avoid disappearing options.
+            // Or use properties filtered by OTHER columns.
+            // Simple approach: Use all unique values in properties for now.
+            const uniqueValues = new Set();
+            properties.forEach(p => {
+                const val = p[colId];
+                if (val === undefined || val === null || val === '') uniqueValues.add('(Missing)');
+                else uniqueValues.add(String(val));
+            });
+            const sortedValues = Array.from(uniqueValues).sort();
+
+            // Render Options
+            const currentFilters = columnFilters[colId] || [];
+
+            // "Select All" / "Clear" buttons?
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'filter-actions';
+            actionsDiv.innerHTML = `
+                <button class="filter-btn-sm text-blue-600 hover:bg-blue-50" onclick="applyFilterAll('${colId}', true)">All</button>
+                <button class="filter-btn-sm text-gray-500 hover:bg-gray-100" onclick="applyFilterAll('${colId}', false)">None</button>
+            `;
+            // Add at bottom or top?
+            // Let's iterate values
+
+            sortedValues.forEach(val => {
+                const label = document.createElement('label');
+                label.className = 'filter-option';
+                const isChecked = currentFilters.length === 0 || currentFilters.includes(val);
+                // If filters are empty, it means "All". But here we want explicit selection?
+                // Logic: If columnFilters[colId] is undefined/empty, we show Checked? 
+                // Wait, if undefined, we haven't filtered. So showing all checked is UI rep of "no filter".
+                // But if user unchecks one, we need to add all OTHERS to the list.
+
+                label.innerHTML = `<input type="checkbox" value="${val}" ${isChecked ? 'checked' : ''} onchange="updateColumnFilter('${colId}', this.value, this.checked)"> ${val}`;
+                popover.appendChild(label);
+            });
+
+            popover.appendChild(actionsDiv);
+
+            // Position
+            const rect = btnEl.getBoundingClientRect();
+            popover.style.top = (rect.bottom + window.scrollY + 5) + 'px';
+            popover.style.left = (rect.left + window.scrollX) + 'px';
+
+            document.body.appendChild(popover);
+
+            // Click outside listener
+            setTimeout(() => {
+                document.addEventListener('click', closeFilterOnClickOutside);
+            }, 0);
+        }
+
+        function closeFilterOnClickOutside(e) {
+            const popover = document.getElementById('filter-popover');
+            if (popover && !popover.contains(e.target) && !e.target.closest('button')) {
+                popover.remove();
+                document.removeEventListener('click', closeFilterOnClickOutside);
+                renderAll(); // Re-render to update filter icon state if needed
+            }
+        }
+
+        function updateColumnFilter(colId, val, checked) {
+            if (!columnFilters[colId]) {
+                // If starting from "All", we need to populate with all EXCEPT the unchecked one?
+                // Or if we check one, does it switch to "Only this"?
+                // Standard: "Select All" is default. Unchecking one creates a filter list of (All - 1).
+                // AND checking one from blank state?
+                // Let's initialize with ALL existing values if it was empty?
+                // Or simpler: If empty, it means ALL. 
+                // If user clicks a checkbox, we need to know the state.
+                // Let's assume we maintain the EXPLICIT list of ALLOWED items.
+                // If empty/undefined, it means ALL.
+
+                // If list is empty, and user UNCHECKS "Val A", we need to add [All - Val A].
+                // If list is empty, and user CHECKS ??? (It's already checked).
+
+                // Better UI approach for "All":
+                // If no filter, all checkboxes are checked.
+                // If user unchecks val, we populate list with ALL values EXCEPT val.
+
+                const uniqueValues = new Set();
+                properties.forEach(p => {
+                    const v = p[colId];
+                    if (v === undefined || v === null || v === '') uniqueValues.add('(Missing)');
+                    else uniqueValues.add(String(v));
+                });
+                const allVals = Array.from(uniqueValues);
+                columnFilters[colId] = allVals;
+            }
+
+            if (checked) {
+                columnFilters[colId].push(val);
+            } else {
+                columnFilters[colId] = columnFilters[colId].filter(v => v !== val);
+            }
+
+            // If all checked, clear filter
+            const uniqueValues = new Set();
+            properties.forEach(p => {
+                const v = p[colId];
+                if (v === undefined || v === null || v === '') uniqueValues.add('(Missing)');
+                else uniqueValues.add(String(v));
+            });
+            if (columnFilters[colId].length === uniqueValues.size) {
+                delete columnFilters[colId];
+            }
+        }
+
+        function applyFilterAll(colId, selectAll) {
+            if (selectAll) {
+                delete columnFilters[colId];
+            } else {
+                columnFilters[colId] = []; // Empty list means nothing allowed
+            }
+            // Update UI checkboxes
+            const popover = document.getElementById('filter-popover');
+            if (popover) {
+                const inputs = popover.querySelectorAll('input[type="checkbox"]');
+                inputs.forEach(inp => inp.checked = selectAll);
+            }
+        }
         function renderTable() {
             const thead = document.querySelector('#data-table thead');
             const tbody = document.querySelector('#data-table tbody');
@@ -1080,13 +1296,33 @@
                 const th = document.createElement('th');
                 th.style.width = col.width;
                 th.style.minWidth = col.width;
-                th.className = 'px-4 py-4 text-left border-b border-gray-200 sortable' + (sortColumn === col.id ? ' sorted' : '');
-                th.onclick = () => handleSort(col.id);
+                th.className = 'px-4 py-4 text-left border-b border-gray-200 select-none group ' + (sortColumn === col.id ? 'bg-gray-100' : '');
+
+                // Content Container
+                const container = document.createElement('div');
+                container.className = "flex items-center justify-between";
+
+                // Label & Sort
+                const labelSpan = document.createElement('span');
+                labelSpan.className = "flex items-center gap-2 cursor-pointer";
+                labelSpan.onclick = () => handleSort(col.id);
 
                 const sortIcon = sortColumn === col.id
                     ? (sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down')
                     : 'fa-sort';
-                th.innerHTML = `<span class="flex items-center gap-2">${col.label}<i class="fa-solid ${sortIcon} sort-icon"></i></span>`;
+                labelSpan.innerHTML = `${col.label}<i class="fa-solid ${sortIcon} sort-icon"></i>`;
+
+                // Filter Button
+                const isFiltered = columnFilters[col.id] && columnFilters[col.id].length > 0;
+                const filterBtn = document.createElement('button');
+                filterBtn.className = `p-1.5 rounded transition-all ml-2 ${isFiltered ? 'text-blue-600 bg-blue-50 opacity-100' : 'text-gray-400 opacity-0 group-hover:opacity-100 hover:bg-gray-200'}`;
+                filterBtn.innerHTML = '<i class="fa-solid fa-filter text-xs"></i>';
+                filterBtn.onclick = (e) => { e.stopPropagation(); toggleFilterMenu(col.id, e.target.closest('button')); };
+
+                container.appendChild(labelSpan);
+                container.appendChild(filterBtn);
+                th.appendChild(container);
+
                 trHead.appendChild(th);
             });
             // Actions column
@@ -1120,7 +1356,7 @@
                             td.innerHTML = `<div class="w-14 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-sm"></i></div>`;
                         }
                     } else if (col.id === 'address') {
-                        td.innerHTML = `<div class="font-semibold text-gray-900 truncate text-base">${formattedVal}</div>`;
+                        td.innerHTML = `<div class="font-semibold text-gray-900 truncate text-base hover:text-blue-600 cursor-pointer" onclick="event.stopPropagation(); copyToClipboard('${formattedVal.replace(/'/g, "\\'")}')" title="Click to copy">${formattedVal}</div>`;
                     } else if (col.id === 'city') {
                         const state = row['state'] || '';
                         td.innerHTML = `<div class="truncate text-base">${formattedVal}${state ? `, <span class="text-gray-400">${state}</span>` : ''}</div>`;
@@ -1176,6 +1412,7 @@
                     <i class="fa-regular fa-folder-open text-5xl mb-4 block"></i>
                     <p class="font-medium text-lg">No properties found</p>
                 </td>`;
+                tbody.appendChild(trEmpty);
                 tbody.appendChild(trEmpty);
             }
         }
@@ -1286,8 +1523,11 @@
             renderDrawerContent();
 
             document.getElementById('sidebar-overlay').classList.remove('hidden');
-            document.getElementById('sidebar-left').classList.add('open');
-            document.getElementById('sidebar-right').classList.add('open');
+            // Add active class to trigger slide-in
+            setTimeout(() => {
+                document.getElementById('sidebar-left').classList.add('active');
+                document.getElementById('sidebar-right').classList.add('active');
+            }, 10);
         }
 
         function renderDrawerContent() {
@@ -1309,7 +1549,7 @@
                     <h2 class="text-lg font-bold text-gray-900">${row.buildingname || row.address || 'Unknown Property'}</h2>
                     <p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1.5">
                         <i class="fa-solid fa-location-dot"></i>
-                        ${fullAddress || 'No address'}
+                        <span class="cursor-pointer hover:text-blue-600 transition-colors" onclick="copyToClipboard('${fullAddress.replace(/'/g, "\\'")}')" title="Click to copy">${fullAddress || 'No address'}</span>
                     </p>
                 </div>
                 
@@ -1622,12 +1862,26 @@
         function openCoStarPage() {
             const propertyId = tempDrawerData.costarid;
             if (!propertyId) {
-                showToast('No CoStar ID available', 'error');
+                // If no ID, open home page and copy address
+                const fullAddress = [tempDrawerData.address, tempDrawerData.city, tempDrawerData.state, tempDrawerData.zip].filter(Boolean).join(', ');
+                if (fullAddress) {
+                    copyToClipboard(fullAddress);
+                    showToast('Address copied to clipboard', 'success');
+                }
+                window.open('https://product.costar.com/suiteapps/home', '_blank');
                 return;
             }
             window.open(`https://product.costar.com/detail/lookup/${propertyId}/analytic-changes`, '_blank');
         }
 
+        function closeDrawer() {
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+            // Remove open class from both
+            document.getElementById('sidebar-left').classList.remove('active');
+            document.getElementById('sidebar-right').classList.remove('active');
+            selectedRowKey = null;
+            renderAll();
+        }
         function toggleDrawerComplete(checked) {
             tempDrawerData._completed = checked;
         }
@@ -1660,8 +1914,8 @@
 
         function closeDrawer() {
             document.getElementById('sidebar-overlay').classList.add('hidden');
-            document.getElementById('sidebar-left').classList.remove('open');
-            document.getElementById('sidebar-right').classList.remove('open');
+            document.getElementById('sidebar-left').classList.remove('active');
+            document.getElementById('sidebar-right').classList.remove('active');
             selectedRowKey = null;
             renderAll();
         }
@@ -1855,6 +2109,37 @@
 
             t.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+
+        function copyToClipboard(text) {
+            if (!text) return;
+            // Try modern API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Copied to clipboard', 'success');
+                }).catch(err => {
+                    console.error('Clipboard API failed', err);
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            try {
+                document.execCommand('copy');
+                showToast('Copied to clipboard', 'success');
+            } catch (err) {
+                showToast('Failed to copy', 'error');
+            }
+            document.body.removeChild(ta);
         }
     </script>
 </body>
