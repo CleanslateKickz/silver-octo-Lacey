@@ -1,0 +1,1862 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon"
+        href="https://uploads-ssl.webflow.com/5f31698a5aac96c8926baeed/5f319989546c7931b41e74d3_Acquisition%20Icons.png">
+    <title>CoStar Research Console</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            overflow: hidden;
+            font-size: 15px;
+        }
+
+        .table-container {
+            overflow: auto;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Sticky Logic */
+        .sticky-col {
+            position: sticky;
+            z-index: 10;
+            background-color: white;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background-color: #f9fafb;
+        }
+
+        th.sticky-col {
+            z-index: 30;
+            background-color: #f3f4f6;
+        }
+
+        /* Row Hover */
+        tbody tr:hover td {
+            background-color: #eff6ff;
+        }
+
+        tr.selected-row td {
+            background-color: #dbeafe !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Drawer/Sidebar Transitions */
+        .sidebar-left,
+        .sidebar-right {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-left.open {
+            transform: translateX(0) !important;
+        }
+
+        .sidebar-right.open {
+            transform: translateX(0) !important;
+        }
+
+        /* Sortable Headers */
+        th.sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th.sortable:hover {
+            background-color: #e5e7eb;
+        }
+
+        th .sort-icon {
+            opacity: 0.3;
+            margin-left: 6px;
+            font-size: 12px;
+        }
+
+        th.sorted .sort-icon {
+            opacity: 1;
+            color: #2563eb;
+        }
+
+        /* Subtle scrollbar for right sidebar */
+        #sidebar-right-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #sidebar-right-content::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        #sidebar-right-content::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Inputs */
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.6rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Card Grid - Compact */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .property-card:hover {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+
+        /* Tab Active State */
+        .tab-btn.active {
+            background: white;
+            color: #1e40af;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* View Toggle */
+        .view-btn.active {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* Badge Styles */
+        .badge-incomplete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .badge-complete {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+        }
+
+        /* DOM Warning */
+        .dom-warning {
+            background: #fef2f2;
+            color: #dc2626;
+            font-weight: 700;
+        }
+
+        /* Overlay */
+        .overlay {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col text-gray-800">
+
+    <!-- HEADER -->
+    <header
+        class="bg-white border-b border-gray-200 h-20 flex-none z-50 shadow-sm flex items-center justify-between px-8">
+        <div class="flex items-center gap-5">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-building text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 leading-tight">CoStar Console</h1>
+                    <p class="text-xs text-gray-500 font-medium tracking-wide uppercase">Property Research Tool</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- View Toggle -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1.5 border border-gray-200">
+                <button onclick="setView('table')" id="view-table"
+                    class="view-btn active px-4 py-2 rounded-md text-sm font-semibold transition-all">
+                    <i class="fa-solid fa-table-list"></i>
+                </button>
+                <button onclick="setView('cards')" id="view-cards"
+                    class="view-btn px-4 py-2 rounded-md text-sm font-semibold transition-all">
+                    <i class="fa-solid fa-grip"></i>
+                </button>
+            </div>
+
+            <div class="h-8 w-px bg-gray-200"></div>
+
+            <div class="bg-blue-50 text-blue-700 px-5 py-2.5 rounded-lg border border-blue-100 text-base font-bold">
+                <span id="showing-count">0</span> of <span id="total-count">0</span> properties
+            </div>
+        </div>
+    </header>
+
+    <!-- TOOLBAR -->
+    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-none z-40">
+        <div class="flex items-center gap-4">
+            <input type="file" id="file-input" multiple accept=".csv, .xlsx, .xls" style="display:none">
+
+            <button onclick="document.getElementById('file-input').click()"
+                class="flex items-center gap-2.5 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all">
+                <i class="fa-solid fa-file-import"></i> Import
+            </button>
+
+            <button onclick="openColumnManager()"
+                class="flex items-center gap-2.5 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 text-sm font-bold uppercase tracking-wider rounded-lg transition-all">
+                <i class="fa-solid fa-table-columns"></i> Columns
+            </button>
+
+            <button onclick="autoFillStates()"
+                class="flex items-center gap-2.5 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 text-sm font-bold uppercase tracking-wider rounded-lg transition-all">
+                <i class="fa-solid fa-map-pin"></i> Fix States
+            </button>
+
+            <div class="h-8 w-px bg-gray-200"></div>
+
+            <!-- Tabs -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1.5">
+                <button onclick="setTab('incomplete')" id="tab-incomplete"
+                    class="tab-btn active flex items-center gap-2.5 px-5 py-2.5 rounded-md text-sm font-bold transition-all">
+                    <i class="fa-solid fa-circle-exclamation text-amber-500"></i>
+                    Needs Research <span id="incomplete-count"
+                        class="bg-red-500 text-white px-2.5 py-1 rounded-full text-xs ml-1">0</span>
+                </button>
+                <button onclick="setTab('complete')" id="tab-complete"
+                    class="tab-btn flex items-center gap-2.5 px-5 py-2.5 rounded-md text-sm font-bold transition-all">
+                    <i class="fa-solid fa-circle-check text-green-500"></i>
+                    Completed <span id="complete-count"
+                        class="bg-green-500 text-white px-2.5 py-1 rounded-full text-xs ml-1">0</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <!-- Search -->
+            <div class="relative">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
+                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search properties..."
+                    class="pl-11 pr-4 py-3 border border-gray-300 rounded-lg text-base w-80 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
+            </div>
+
+            <button onclick="refreshData()"
+                class="text-gray-400 hover:text-gray-600 p-2.5 rounded-lg hover:bg-gray-100 transition-colors"
+                title="Refresh">
+                <i class="fa-solid fa-arrows-rotate text-base"></i>
+            </button>
+
+            <button onclick="exportData()"
+                class="flex items-center gap-2.5 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all">
+                <i class="fa-solid fa-file-excel"></i> Export
+            </button>
+
+            <button onclick="clearAll()" class="text-red-500 hover:bg-red-50 p-3 rounded-lg transition-colors"
+                title="Clear All">
+                <i class="fa-solid fa-trash-can text-base"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- WORKSPACE -->
+    <main class="flex-1 relative overflow-hidden bg-slate-100 flex">
+
+        <!-- Upload Overlay -->
+        <div id="upload-overlay"
+            class="absolute inset-0 z-[60] bg-white flex flex-col items-center justify-center text-center">
+            <div class="bg-white p-12 rounded-2xl shadow-xl border border-gray-100 max-w-lg w-full transition-transform hover:scale-[1.01] duration-300 cursor-pointer group"
+                id="drop-area">
+                <div
+                    class="w-24 h-24 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Import Your Data</h2>
+                <p class="text-gray-500 mb-6">Drag & Drop Multiple Files to Merge</p>
+
+                <!-- Clear Data Option -->
+                <div class="flex items-center gap-3 mb-4">
+                    <input type="checkbox" id="clear-data-checkbox" class="w-5 h-5 accent-blue-600 cursor-pointer">
+                    <label for="clear-data-checkbox" class="text-sm text-gray-600 cursor-pointer select-none">Clear
+                        existing data before import</label>
+                </div>
+
+                <button onclick="document.getElementById('file-input').click()"
+                    class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors text-sm shadow-lg">
+                    Browse Files
+                </button>
+                <p class="text-xs text-gray-400 mt-4">Supports .xlsx, .xls, .csv</p>
+            </div>
+        </div>
+
+        <!-- Data Table View -->
+        <div id="table-view" class="table-container bg-white flex-grow shadow-sm">
+            <table class="w-full border-collapse" id="data-table">
+                <thead class="bg-gray-50 text-sm font-bold text-gray-500 uppercase tracking-wider select-none">
+                    <!-- Injected via JS -->
+                </thead>
+                <tbody class="text-base text-gray-700 divide-y divide-gray-100">
+                    <!-- Injected via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Card Gallery View -->
+        <div id="cards-view" class="hidden flex-grow overflow-auto bg-slate-100">
+            <div class="card-grid" id="card-container">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- Detail Sidebars (Split into Two) -->
+        <!-- Overlay - click to close -->
+        <div id="sidebar-overlay" class="fixed inset-0 z-[65] overlay hidden" onclick="closeDrawer()"></div>
+
+        <!-- Left Sidebar - Property Details (Visuals & Core Info) -->
+        <aside id="sidebar-left"
+            class="sidebar-left fixed inset-y-0 left-0 w-[480px] bg-slate-50 shadow-2xl transform -translate-x-full z-[70] border-r border-gray-200 flex flex-col">
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <button onclick="navigateRow(-1)" id="btn-prev"
+                        class="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-left text-sm"></i>
+                    </button>
+                    <div class="text-sm text-gray-600 font-semibold">
+                        <span id="current-index">1</span> / <span id="total-filtered">1</span>
+                    </div>
+                    <button onclick="navigateRow(1)" id="btn-next"
+                        class="w-9 h-9 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
+                        <i class="fa-solid fa-chevron-right text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Content -->
+            <div id="sidebar-left-content" class="flex-1 overflow-y-auto p-5 space-y-4">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
+
+        <!-- Right Sidebar - Input Fields -->
+        <aside id="sidebar-right"
+            class="sidebar-right fixed inset-y-0 right-0 w-[480px] bg-white shadow-2xl transform translate-x-full z-[70] border-l border-gray-200 flex flex-col">
+            <!-- Header -->
+            <div class="px-5 py-4 border-b border-gray-100 flex flex-col gap-3 bg-slate-50 shrink-0">
+                <!-- CoStar Button - Smaller size -->
+                <button onclick="openCoStarPage()"
+                    class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-blue-200 hover:bg-blue-50 hover:border-blue-300 text-blue-700 rounded-lg shadow-sm transition-all">
+                    <img src="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491"
+                        class="w-5 h-5 object-contain" alt="CoStar">
+                    <span class="font-semibold text-sm">Open in CoStar</span>
+                </button>
+
+                <!-- Title and Action Buttons -->
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800 text-base">Edit Property</h3>
+                    <div class="flex items-center gap-2">
+                        <button onclick="deleteProperty()" title="Delete"
+                            class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 flex items-center justify-center transition-all border border-red-200">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                        <button onclick="saveDrawer()" title="Save"
+                            class="w-9 h-9 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-sm">
+                            <i class="fa-solid fa-floppy-disk text-sm"></i>
+                        </button>
+                        <button onclick="closeDrawer()"
+                            class="w-9 h-9 rounded-lg bg-white hover:bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-all">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Content -->
+            <div id="sidebar-right-content" class="flex-1 p-5 space-y-4 overflow-y-auto">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- COLUMN MODAL -->
+    <div id="column-modal" class="fixed inset-0 z-[80] overlay hidden flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Column Settings</h3>
+                <button onclick="closeColumnManager()" class="text-gray-400 hover:text-gray-600"><i
+                        class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-2" id="column-list"></div>
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl">
+                <button onclick="resetColumns()" class="text-xs text-red-500 font-bold hover:underline">Reset to
+                    Defaults</button>
+                <div class="flex gap-2">
+                    <button onclick="closeColumnManager()"
+                        class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button onclick="applyColumnSettings()"
+                        class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 shadow-sm">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"
+        class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 z-[100]">
+        <div class="bg-gray-900 text-white px-5 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-green-400"></i>
+            <span id="toast-msg">Notification</span>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_DATA_URL = 'Master.xlsx';
+        const API_URL = 'https://costar-api.vercel.app/api/properties';
+        const DB_NAME = 'costar_console_db';
+        const DB_VERSION = 1;
+        const STORE_PROPERTIES = 'properties';
+        const STORE_KV = 'kv';
+
+        // Field mapping: HTML (camelCase) <-> API (snake_case)
+        const FIELD_MAP_TO_API = {
+            imageurl: 'image_url',
+            buildingname: 'building_name',
+            postalcode: 'postal_code',
+            newsalestatus: 'new_sale_status',
+            currentprice: 'current_price',
+            daysonmarket: 'days_on_market',
+            analysisnotes: 'analysis_notes',
+            changedate: 'change_date',
+            om: 'om_url',
+            costarid: 'costar_id',
+            ownerphone: 'phone1',
+            ownerphone2: 'phone2',
+            owneremail: 'email',
+            ownercontact: 'owner_contact',
+            ownerfullname: 'owner_full_name',
+            ownerentity: 'owner_entity',
+            otherowners: 'other_owners',
+            owneraddress: 'owner_address',
+            contactnotes: 'contact_notes',
+            withdrawaloccurrences: 'withdrawal_occurrences',
+            pricereductions: 'price_reductions',
+            _completed: 'completed'
+        };
+
+        const FIELD_MAP_FROM_API = Object.fromEntries(
+            Object.entries(FIELD_MAP_TO_API).map(([k, v]) => [v, k])
+        );
+
+        function toApiFormat(prop) {
+            const out = {};
+            for (const [k, v] of Object.entries(prop)) {
+                if (k.startsWith('_') && k !== '_completed') continue;
+                const apiKey = FIELD_MAP_TO_API[k] || k;
+                out[apiKey] = v;
+            }
+            return out;
+        }
+
+        function fromApiFormat(row) {
+            const out = {};
+            for (const [k, v] of Object.entries(row)) {
+                const htmlKey = FIELD_MAP_FROM_API[k] || k;
+                out[htmlKey] = v;
+            }
+            // Compute internal keys
+            if (!out.ownername) out.ownername = pickOwnerName(out);
+            const costar = (out.costarid || '').toString().trim();
+            const addressKey = computeAddressKey(out);
+            out._addressKey = addressKey;
+            out._id = costar ? `c:${costar}` : `a:${addressKey}`;
+            out._uniqueKey = out._id;
+            out._dbId = row.id; // Store the database ID
+            out._completed = row.completed || false;
+            return out;
+        }
+
+        const STATUS_TYPES = ["", "Still Active", "Still Expired", "Sold", "Under Contract", "Unknown", "Demolished", "Withdrawn"];
+        const OWNER_TYPES = ["", "Institutional", "Corporate", "Private Equity", "Mom & Pop", "Individual", "Unknown", "N/A"];
+
+        const DEFAULT_COLUMNS = [
+            { id: 'imageurl', label: 'Image', width: '70px', visible: true },
+            { id: 'address', label: 'Address', width: '240px', visible: true },
+            { id: 'city', label: 'City', width: '140px', visible: true },
+            { id: 'state', label: 'State', width: '70px', visible: true },
+            { id: 'price', label: 'Price', width: '120px', visible: true },
+            { id: 'daysonmarket', label: 'DOM', width: '80px', visible: true },
+            { id: 'status', label: 'Status', width: '140px', visible: true },
+            { id: 'ownername', label: 'Owner', width: '220px', visible: true },
+            { id: 'ownerphone', label: 'Phone', width: '150px', visible: false },
+            { id: 'owneremail', label: 'Email', width: '220px', visible: false },
+            { id: 'tenant', label: 'Tenant', width: '180px', visible: false },
+            { id: 'buildingname', label: 'Building Name', width: '220px', visible: false },
+            { id: 'costarid', label: 'CoStar ID', width: '120px', visible: true },
+            { id: 'analysisnotes', label: 'Analysis Notes', width: '260px', visible: false },
+            { id: 'notes', label: 'Notes', width: '260px', visible: false },
+        ];
+
+        let properties = [];
+        let columnConfig = [];
+        let currentTab = 'incomplete';
+        let currentView = 'table';
+        let searchQuery = '';
+        let selectedRowKey = null;
+        let tempDrawerData = {};
+        let currentViewIndex = -1;
+        let filteredProperties = [];
+        let sortColumn = null;
+        let sortDirection = 'asc';
+        let persistTimer = null;
+
+        const dbPromise = openDb();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            init().catch(err => {
+                console.error(err);
+                showToast('Failed to initialize app. Check console.', 'error');
+            });
+            setupDragDrop();
+        });
+
+        async function init() {
+            await loadConfig();
+            await loadDataFromDb();
+            if (!properties.length) {
+                const loaded = await tryBootstrapFromDefaultWorkbook();
+                if (loaded) {
+                    hideUpload();
+                }
+            }
+            updateColumnConfigFromData();
+            renderAll();
+        }
+
+        function openDb() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(STORE_PROPERTIES)) {
+                        db.createObjectStore(STORE_PROPERTIES, { keyPath: '_id' });
+                    }
+                    if (!db.objectStoreNames.contains(STORE_KV)) {
+                        db.createObjectStore(STORE_KV, { keyPath: 'key' });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function kvGet(key) {
+            const db = await dbPromise;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_KV, 'readonly');
+                const store = tx.objectStore(STORE_KV);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result ? req.result.value : undefined);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function kvSet(key, value) {
+            const db = await dbPromise;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_KV, 'readwrite');
+                const store = tx.objectStore(STORE_KV);
+                store.put({ key, value });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        // --- API FUNCTIONS ---
+        async function apiGetAllProperties() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                const rows = await res.json();
+                return rows.map(fromApiFormat);
+            } catch (err) {
+                console.error('Failed to fetch properties:', err);
+                return [];
+            }
+        }
+
+        async function apiCreateProperty(prop) {
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(toApiFormat(prop))
+                });
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                return await res.json();
+            } catch (err) {
+                console.error('Failed to create property:', err);
+                return null;
+            }
+        }
+
+        async function apiUpdateProperty(dbId, prop) {
+            try {
+                const res = await fetch(`${API_URL}?id=${dbId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(toApiFormat(prop))
+                });
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                return await res.json();
+            } catch (err) {
+                console.error('Failed to update property:', err);
+                return null;
+            }
+        }
+
+        async function apiDeleteProperty(dbId) {
+            try {
+                const res = await fetch(`${API_URL}?id=${dbId}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error(`API error: ${res.status}`);
+                return true;
+            } catch (err) {
+                console.error('Failed to delete property:', err);
+                return false;
+            }
+        }
+
+        async function apiClearAll() {
+            // Delete all properties one by one
+            const toDelete = properties.filter(p => p._dbId);
+            for (const p of toDelete) {
+                await apiDeleteProperty(p._dbId);
+            }
+        }
+
+        async function loadConfig() {
+            const saved = await kvGet('columnConfig');
+            columnConfig = saved ? saved : JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+        }
+
+        async function saveConfig() {
+            await kvSet('columnConfig', columnConfig);
+            renderAll();
+        }
+
+        function resetColumns() {
+            if (!confirm("Reset columns?")) return;
+            kvSet('columnConfig', undefined).catch(() => { });
+            columnConfig = JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+            saveConfig().catch(() => { });
+        }
+
+        async function loadDataFromDb() {
+            properties = await apiGetAllProperties();
+            if (properties.length) {
+                hideUpload();
+            }
+        }
+
+        let pendingSaves = new Map(); // Track pending saves by _uniqueKey
+
+        function schedulePersist() {
+            // No-op for API mode - saves are immediate per property
+        }
+
+        async function saveData(immediate = false) {
+            // For API mode, we handle saves per-property
+            // This is called after bulk operations, so we sync new properties without _dbId
+            const newProps = properties.filter(p => !p._dbId);
+            for (const p of newProps) {
+                const result = await apiCreateProperty(p);
+                if (result) {
+                    p._dbId = result.id;
+                }
+            }
+            updateStats();
+        }
+
+        function updateStats() {
+            const incomplete = properties.filter(p => isIncomplete(p)).length;
+            const complete = properties.length - incomplete;
+            document.getElementById('incomplete-count').innerText = incomplete;
+            document.getElementById('complete-count').innerText = complete;
+            document.getElementById('total-count').innerText = properties.length;
+            document.getElementById('showing-count').innerText = filteredProperties.length;
+        }
+
+        function isIncomplete(p) {
+            // Property is incomplete if Owner is missing OR if manually marked incomplete
+            if (p._completed === false) return true;
+            if (p._completed === true) return false;
+            return !p.ownername || p.ownername.toString().trim() === '';
+        }
+
+        function normalizeKey(key) {
+            if (!key) return '';
+            return key.toString().trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
+        function updateColumnConfigFromData() {
+            if (properties.length === 0) return;
+            const foundKeys = new Set();
+            properties.forEach(p => Object.keys(p).forEach(k => foundKeys.add(k)));
+            let updated = false;
+            foundKeys.forEach(key => {
+                if (key.startsWith('_')) return;
+                const exists = columnConfig.find(c => c.id === key);
+                if (!exists) {
+                    const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim() || key.toUpperCase();
+                    columnConfig.push({ id: key, label: label, width: '120px', visible: false });
+                    updated = true;
+                }
+            });
+            if (updated) saveConfig().catch(() => { });
+        }
+
+        const fileInput = document.getElementById('file-input');
+        fileInput.addEventListener('change', handleFiles);
+
+        function setupDragDrop() {
+            const dz = document.getElementById('drop-area');
+            dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('ring-4', 'ring-blue-300', 'scale-105'); });
+            dz.addEventListener('dragleave', () => dz.classList.remove('ring-4', 'ring-blue-300', 'scale-105'));
+            dz.addEventListener('drop', (e) => {
+                e.preventDefault(); dz.classList.remove('ring-4', 'ring-blue-300', 'scale-105');
+                processFiles(Array.from(e.dataTransfer.files));
+            });
+        }
+
+        function handleFiles(e) { processFiles(Array.from(e.target.files)).catch(err => console.error(err)); }
+
+        function readFileAsArrayBuffer(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        async function processFiles(files) {
+            if (!files.length) return;
+            let totalAdded = 0;
+            let totalMerged = 0;
+
+            const clearData = document.getElementById('clear-data-checkbox').checked;
+            if (clearData) {
+                await apiClearAll();
+                properties = [];
+                columnConfig = JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
+            }
+
+            for (const file of files) {
+                try {
+                    const ab = await readFileAsArrayBuffer(file);
+                    const wb = XLSX.read(ab, { type: 'array' });
+                    const ws = wb.Sheets['Master'] || wb.Sheets[wb.SheetNames[0]];
+                    const rawData = XLSX.utils.sheet_to_json(ws, { defval: "" });
+                    const stats = mergeData(rawData);
+                    totalAdded += stats.added;
+                    totalMerged += stats.merged;
+                } catch (err) {
+                    console.error('Error processing file:', err);
+                    showToast('Error reading file. Check console for details.', 'error');
+                }
+            }
+
+            hideUpload();
+            updateColumnConfigFromData();
+            saveData(true);
+            renderAll();
+            const clearMsg = clearData ? ' (cleared existing data)' : '';
+            showToast(`Imported ${totalAdded} new, merged ${totalMerged} duplicates${clearMsg}`, 'success');
+        }
+
+        const HEADER_MAP = {
+            image: 'imageurl',
+            imageurl: 'imageurl',
+            address: 'address',
+            buildingname: 'buildingname',
+            city: 'city',
+            state: 'state',
+            zip: 'zip',
+            postalcode: 'zip',
+            tenant: 'tenant',
+            status: 'status',
+            price: 'price',
+            newsalestatus: 'newsalestatus',
+            currentprice: 'currentprice',
+            daysonmarket: 'daysonmarket',
+            analysisnotes: 'analysisnotes',
+            changedate: 'changedate',
+            om: 'om',
+            costarid: 'costarid',
+            phone1: 'ownerphone',
+            phone2: 'ownerphone2',
+            email: 'owneremail',
+            ownercontact: 'ownercontact',
+            ownerfullname: 'ownerfullname',
+            owner: 'ownerentity',
+            otherowners: 'otherowners',
+            owneraddress: 'owneraddress',
+            contactnotes: 'contactnotes',
+            notes: 'notes',
+        };
+
+        function computeAddressKey(row) {
+            const addr = (row.address || "").toString().toLowerCase().trim();
+            const city = (row.city || "").toString().toLowerCase().trim();
+            const state = (row.state || "").toString().toLowerCase().trim();
+            const zip = (row.zip || "").toString().toLowerCase().trim();
+            return `${addr}|${city}|${state}|${zip}`;
+        }
+
+        function pickOwnerName(row) {
+            const candidates = [row.ownername, row.ownercontact, row.ownerfullname, row.ownerentity, row.owner];
+            for (const c of candidates) {
+                if (c !== undefined && c !== null && String(c).trim() !== '') return String(c).trim();
+            }
+            return '';
+        }
+
+        function normalizeIncomingRow(raw) {
+            const out = {};
+            for (const k of Object.keys(raw)) {
+                if (!k) continue;
+                const nk = normalizeKey(k);
+                if (!nk) continue;
+                const mapped = HEADER_MAP[nk] || nk;
+                const v = raw[k];
+                out[mapped] = v;
+            }
+
+            if (!out.imageurl && out.image) out.imageurl = out.image;
+            if (!out.ownerphone && out.phone) out.ownerphone = out.phone;
+            if (!out.owneremail && out.emailaddress) out.owneremail = out.emailaddress;
+            if (!out.ownername) out.ownername = pickOwnerName(out);
+
+            const costar = (out.costarid || '').toString().trim();
+            const addressKey = computeAddressKey(out);
+            out._addressKey = addressKey;
+            out._id = costar ? `c:${costar}` : `a:${addressKey}`;
+            out._uniqueKey = out._id;
+
+            return out;
+        }
+
+        function mergeData(newRows) {
+            let addedCount = 0;
+            let mergedCount = 0;
+
+            const byId = new Map(properties.map(p => [p._id, p]));
+            const byAddress = new Map(properties.filter(p => p._addressKey).map(p => [p._addressKey, p]));
+
+            for (const raw of newRows) {
+                const normalizedRow = normalizeIncomingRow(raw);
+                const existing = byId.get(normalizedRow._id) || (normalizedRow._addressKey ? byAddress.get(normalizedRow._addressKey) : undefined);
+                if (existing) {
+                    for (const k of Object.keys(normalizedRow)) {
+                        if (k.startsWith('_')) continue;
+                        if (existing[k] === undefined || existing[k] === null || String(existing[k]).trim() === '') {
+                            if (normalizedRow[k] !== undefined && normalizedRow[k] !== null && String(normalizedRow[k]).trim() !== '') {
+                                existing[k] = normalizedRow[k];
+                            }
+                        }
+                    }
+                    if (!existing.ownername) existing.ownername = pickOwnerName(existing);
+                    if (!existing._addressKey) existing._addressKey = normalizedRow._addressKey;
+                    mergedCount++;
+                } else {
+                    const p = { ...normalizedRow };
+                    if (p.status === '' && p.newsalestatus) p.status = p.newsalestatus;
+                    if (p.price === '' && p.currentprice) p.price = p.currentprice;
+                    if (!p.ownername) p.ownername = pickOwnerName(p);
+                    properties.push(p);
+                    byId.set(p._id, p);
+                    if (p._addressKey) byAddress.set(p._addressKey, p);
+                    addedCount++;
+                }
+            }
+
+            return { added: addedCount, merged: mergedCount };
+        }
+
+        function hideUpload() { document.getElementById('upload-overlay').style.display = 'none'; }
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('view-table').classList.toggle('active', view === 'table');
+            document.getElementById('view-cards').classList.toggle('active', view === 'cards');
+            document.getElementById('table-view').classList.toggle('hidden', view !== 'table');
+            document.getElementById('cards-view').classList.toggle('hidden', view !== 'cards');
+            renderAll();
+        }
+
+        function setTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-incomplete').classList.toggle('active', tab === 'incomplete');
+            document.getElementById('tab-complete').classList.toggle('active', tab === 'complete');
+            renderAll();
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('search-input').value.toLowerCase();
+            renderAll();
+        }
+
+        function refreshData() {
+            renderAll();
+            showToast('Refreshed', 'success');
+        }
+
+        function getFilteredProperties() {
+            let result = properties;
+
+            if (currentTab === 'incomplete') {
+                result = result.filter(p => isIncomplete(p));
+            } else {
+                result = result.filter(p => !isIncomplete(p));
+            }
+
+            if (searchQuery) {
+                result = result.filter(p => {
+                    const searchFields = ['address', 'city', 'state', 'ownername', 'ownerphone', 'owneremail', 'tenant', 'buildingname', 'agent', 'notes', 'costarid', 'propertytype', 'status'];
+                    return searchFields.some(f => (p[f] || '').toString().toLowerCase().includes(searchQuery));
+                });
+            }
+
+            if (sortColumn) {
+                result = [...result].sort((a, b) => {
+                    let valA = a[sortColumn] || '';
+                    let valB = b[sortColumn] || '';
+
+                    const numericFields = ['price', 'currentprice', 'daysonmarket', 'withdrawaloccurrences', 'pricereductions'];
+                    if (numericFields.includes(sortColumn)) {
+                        valA = parseFloat(String(valA).replace(/[^0-9.-]/g, '')) || 0;
+                        valB = parseFloat(String(valB).replace(/[^0-9.-]/g, '')) || 0;
+                    } else {
+                        valA = String(valA).toLowerCase();
+                        valB = String(valB).toLowerCase();
+                    }
+
+                    if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                    if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            return result;
+        }
+
+        function handleSort(colId) {
+            if (sortColumn === colId) {
+                // Toggle direction
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = colId;
+                sortDirection = 'asc';
+            }
+            renderAll();
+        }
+
+        function renderAll() {
+            filteredProperties = getFilteredProperties();
+            updateStats();
+
+            if (currentView === 'table') {
+                renderTable();
+            } else {
+                renderCards();
+            }
+        }
+
+        function formatValue(val, key) {
+            if (val === undefined || val === null || val === '') return "";
+            const s = val.toString();
+
+            if (key === 'imageurl' && s) {
+                return `<div class="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex items-center justify-center">
+                    <img src="${s}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<i class=\\'fa-regular fa-image text-gray-300\\'></i>'">
+                </div>`;
+            }
+            if (key === 'price' || key === 'currentprice') {
+                const num = parseFloat(s.toString().replace(/[^0-9.-]/g, ''));
+                if (!isNaN(num)) return '$' + num.toLocaleString();
+            }
+            return s;
+        }
+
+        function renderTable() {
+            const thead = document.querySelector('#data-table thead');
+            const tbody = document.querySelector('#data-table tbody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+
+            const visibleCols = columnConfig.filter(c => c.visible);
+
+            // Header
+            const trHead = document.createElement('tr');
+            visibleCols.forEach(col => {
+                const th = document.createElement('th');
+                th.style.width = col.width;
+                th.style.minWidth = col.width;
+                th.className = 'px-4 py-4 text-left border-b border-gray-200 sortable' + (sortColumn === col.id ? ' sorted' : '');
+                th.onclick = () => handleSort(col.id);
+
+                const sortIcon = sortColumn === col.id
+                    ? (sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down')
+                    : 'fa-sort';
+                th.innerHTML = `<span class="flex items-center gap-2">${col.label}<i class="fa-solid ${sortIcon} sort-icon"></i></span>`;
+                trHead.appendChild(th);
+            });
+            // Actions column
+            const thActions = document.createElement('th');
+            thActions.innerText = 'Actions';
+            thActions.className = 'px-4 py-4 text-left border-b border-gray-200 w-40';
+            trHead.appendChild(thActions);
+            thead.appendChild(trHead);
+
+            // Body
+            filteredProperties.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = `group cursor-pointer transition-colors ${selectedRowKey === row._uniqueKey ? 'selected-row' : ''}`;
+                tr.onclick = () => openDrawer(row);
+
+                visibleCols.forEach(col => {
+                    const td = document.createElement('td');
+                    td.className = "py-3 px-4";
+                    td.style.maxWidth = col.width;
+
+                    const rawVal = row[col.id] || "";
+                    const formattedVal = formatValue(rawVal, col.id);
+
+                    if (col.id === 'imageurl') {
+                        // Image column with proper thumbnail display
+                        if (rawVal) {
+                            td.innerHTML = `<div class="w-14 h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
+                                <img src="${rawVal}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-300\\'><i class=\\'fa-regular fa-image text-sm\\'></i></div>'">
+                            </div>`;
+                        } else {
+                            td.innerHTML = `<div class="w-14 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-sm"></i></div>`;
+                        }
+                    } else if (col.id === 'address') {
+                        td.innerHTML = `<div class="font-semibold text-gray-900 truncate text-base">${formattedVal}</div>`;
+                    } else if (col.id === 'city') {
+                        const state = row['state'] || '';
+                        td.innerHTML = `<div class="truncate text-base">${formattedVal}${state ? `, <span class="text-gray-400">${state}</span>` : ''}</div>`;
+                    } else if (col.id === 'ownername' && !rawVal) {
+                        td.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold badge-incomplete">MISSING</span>`;
+                    } else if (col.id === 'costarid' && !rawVal) {
+                        td.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold badge-incomplete">MISSING</span>`;
+                    } else if (col.id === 'daysonmarket') {
+                        const num = parseInt(rawVal);
+                        if (!isNaN(num) && num > 365) {
+                            td.innerHTML = `<span class="dom-warning px-2.5 py-1.5 rounded text-sm">${num}</span>`;
+                        } else {
+                            td.innerHTML = `<span class="text-base">${formattedVal}</span>`;
+                        }
+                    } else if (col.id === 'status' && rawVal) {
+                        let colorClass = "bg-gray-100 text-gray-600";
+                        if (['Sold', 'Under Contract', 'Still Active'].includes(rawVal)) colorClass = "bg-green-100 text-green-700";
+                        if (['Withdrawn', 'Demolished', 'Still Expired'].includes(rawVal)) colorClass = "bg-red-100 text-red-700";
+                        td.innerHTML = `<span class="px-2.5 py-1.5 rounded-full text-sm font-semibold ${colorClass}">${formattedVal}</span>`;
+                    } else {
+                        td.innerHTML = `<div class="truncate text-gray-600 text-base">${formattedVal}</div>`;
+                    }
+                    tr.appendChild(td);
+                });
+
+                // Actions
+                const tdActions = document.createElement('td');
+                tdActions.className = 'py-3 px-4';
+                tdActions.innerHTML = `
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="event.stopPropagation(); callOwner('${(row.ownerphone || '').replace(/'/g, "\\'")}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors" title="Call">
+                            <i class="fa-solid fa-phone text-sm"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); toggleComplete('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-green-600 transition-colors" title="Mark Complete">
+                            <i class="fa-solid fa-circle-check text-sm"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); skipProperty('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors" title="Skip">
+                            <i class="fa-solid fa-forward text-sm"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); deletePropertyByKey('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors" title="Delete">
+                            <i class="fa-solid fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                `;
+                tr.appendChild(tdActions);
+
+                tbody.appendChild(tr);
+            });
+
+            if (filteredProperties.length === 0) {
+                const trEmpty = document.createElement('tr');
+                trEmpty.innerHTML = `<td colspan="${visibleCols.length + 1}" class="p-16 text-center text-gray-400">
+                    <i class="fa-regular fa-folder-open text-5xl mb-4 block"></i>
+                    <p class="font-medium text-lg">No properties found</p>
+                </td>`;
+                tbody.appendChild(trEmpty);
+            }
+        }
+
+        function renderCards() {
+            const container = document.getElementById('card-container');
+            container.innerHTML = '';
+
+            filteredProperties.forEach((row, idx) => {
+                const card = document.createElement('div');
+                card.className = 'property-card cursor-pointer';
+                card.onclick = () => openDrawer(row);
+
+                const imgUrl = row.imageurl || '';
+                const price = formatValue(row.price, 'price') || '$0';
+                const capRate = '';
+                const priceSf = '-';
+                const rba = '-';
+                const dom = row.daysonmarket || '-';
+                const domWarning = parseInt(dom) > 365;
+                const isIncomp = isIncomplete(row);
+
+                card.innerHTML = `
+                    <div class="relative">
+                        <!-- Image -->
+                        <div class="h-36 bg-gray-100 overflow-hidden relative">
+                            ${imgUrl
+                        ? `<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+                        : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-3xl"></i></div>`
+                    }
+                            <!-- Badge -->
+                            ${isIncomp
+                        ? `<span class="absolute top-3 right-3 badge-incomplete text-xs font-bold uppercase px-2 py-1 rounded-full shadow">Needs Research</span>`
+                        : `<span class="absolute top-3 right-3 badge-complete text-xs font-bold uppercase px-2 py-1 rounded-full shadow">Done</span>`
+                    }
+                            <!-- Price Overlay -->
+                            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end">
+                                <span class="bg-black/75 text-white text-sm font-bold px-3 py-1.5 rounded-lg">${price}</span>
+                                ${capRate ? `<span class="bg-white/90 text-gray-700 text-xs font-semibold px-2 py-1 rounded-lg">${capRate}</span>` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 text-base truncate">${row.buildingname || row.address || 'Unknown'}</h3>
+                            <p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
+                                <i class="fa-solid fa-location-dot"></i>
+                                ${row.city || ''}${row.state ? `, ${row.state}` : ''}
+                            </p>
+                            
+                            <!-- Stats Row -->
+                            <div class="flex items-center gap-3 mt-3 text-sm">
+                                <span class="text-gray-500">$/SF: <span class="font-semibold text-gray-800">${priceSf}</span></span>
+                                <span class="text-gray-300">|</span>
+                                <span class="text-gray-500">RBA: <span class="font-semibold text-gray-800">${rba}</span></span>
+                                <span class="text-gray-300">|</span>
+                                <span class="${domWarning ? 'text-red-500' : 'text-gray-500'}">DOM: <span class="font-semibold ${domWarning ? 'text-red-600' : 'text-gray-800'}">${dom}</span></span>
+                            </div>
+                            
+                            <!-- Owner -->
+                            ${!row.ownername
+                        ? `<div class="mt-3"><span class="bg-red-100 text-red-600 text-xs font-bold uppercase px-2 py-1 rounded">Owner Missing</span></div>`
+                        : `<div class="mt-3 text-sm text-gray-600 truncate">Owner: <span class="font-medium">${row.ownername}</span></div>`
+                    }
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="border-t border-gray-100 px-4 py-3 flex items-center justify-between">
+                            <div class="flex items-center gap-1">
+                                <button onclick="event.stopPropagation(); callOwner('${(row.ownerphone || '').replace(/'/g, "\\'")}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
+                                    <i class="fa-solid fa-phone text-sm"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); toggleComplete('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-green-600 transition-colors">
+                                    <i class="fa-solid fa-circle-check text-sm"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); skipProperty('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors">
+                                    <i class="fa-solid fa-forward text-sm"></i>
+                                </button>
+                            </div>
+                            <button onclick="event.stopPropagation(); deletePropertyByKey('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors">
+                                <i class="fa-solid fa-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            if (filteredProperties.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-24 text-gray-400">
+                        <i class="fa-regular fa-folder-open text-6xl mb-4"></i>
+                        <p class="font-medium text-xl">No properties found</p>
+                    </div>
+                `;
+            }
+        }
+
+        // --- SIDEBAR LOGIC (TWO PANELS) ---
+        function openDrawer(row) {
+            selectedRowKey = row._uniqueKey;
+            tempDrawerData = { ...row };
+            currentViewIndex = filteredProperties.findIndex(p => p._uniqueKey === row._uniqueKey);
+
+            renderAll();
+            updateNavButtons();
+            renderDrawerContent();
+
+            document.getElementById('sidebar-overlay').classList.remove('hidden');
+            document.getElementById('sidebar-left').classList.add('open');
+            document.getElementById('sidebar-right').classList.add('open');
+        }
+
+        function renderDrawerContent() {
+            const leftPanel = document.getElementById('sidebar-left-content');
+            const rightPanel = document.getElementById('sidebar-right-content');
+
+            leftPanel.innerHTML = '';
+            rightPanel.innerHTML = '';
+
+            const row = tempDrawerData;
+            const imgUrl = row.imageurl || '';
+            const fullAddress = [row.address, row.city, row.state, row.zip].filter(Boolean).join(', ');
+            const mapQuery = encodeURIComponent(fullAddress);
+
+            // ========== LEFT PANEL (Property Details - Visuals & Core Info) ==========
+            leftPanel.innerHTML = `
+                <!-- Property Title -->
+                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                    <h2 class="text-lg font-bold text-gray-900">${row.buildingname || row.address || 'Unknown Property'}</h2>
+                    <p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1.5">
+                        <i class="fa-solid fa-location-dot"></i>
+                        ${fullAddress || 'No address'}
+                    </p>
+                </div>
+                
+                <!-- Image -->
+                <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                    <div class="h-44 bg-gray-100 relative">
+                        ${imgUrl
+                    ? `<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                               <div class="hidden absolute inset-0 flex-col items-center justify-center text-gray-400 bg-gray-100"><i class="fa-regular fa-image text-3xl mb-2"></i><span class="text-xs">Image not found</span></div>`
+                    : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-regular fa-image text-3xl mb-2"></i><span class="text-xs">No Image</span></div>`
+                }
+                    </div>
+                </div>
+                
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">Price</div>
+                        <div class="text-xl font-bold text-gray-900">${formatValue(row.price, 'price') || '-'}</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">$/SF</div>
+                        <div class="text-xl font-bold text-gray-900">${formatValue(row.pricepersfgba, 'pricepersfgba') || '-'}</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">Cap Rate</div>
+                        <div class="text-xl font-bold text-gray-900">${row.caprate ? parseFloat(row.caprate).toFixed(2) + '%' : '-'}</div>
+                    </div>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">DOM</div>
+                        <div class="text-xl font-bold ${parseInt(row.daysonmarket) > 365 ? 'text-red-600' : 'text-gray-900'}">${row.daysonmarket || '-'}</div>
+                    </div>
+                </div>
+                
+                <!-- Building Details -->
+                <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-building text-blue-600 text-sm"></i>
+                        <span class="text-xs font-bold text-gray-700 uppercase">Building Details</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-y-1 text-sm">
+                        <div class="text-gray-500">Type:</div>
+                        <div class="font-medium text-gray-900">${row.propertytype || '-'}</div>
+                        <div class="text-gray-500">RBA:</div>
+                        <div class="font-medium text-gray-900">${formatValue(row.rbaorsfgba, 'rbaorsfgba') || '-'} SF</div>
+                        <div class="text-gray-500">Land:</div>
+                        <div class="font-medium text-gray-900">${row.landareagrossac ? row.landareagrossac + ' AC' : '-'}</div>
+                        <div class="text-gray-500">Parcel:</div>
+                        <div class="font-medium text-gray-900">${row.parcel || row.parcelnumber || '-'}</div>
+                    </div>
+                    ${row.propertysubtype ? `<div class="mt-2"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">${row.propertysubtype}</span></div>` : ''}
+                </div>
+                
+                <!-- Google Maps -->
+                <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                    <div class="h-40">
+                        ${fullAddress
+                    ? `<iframe src="https://maps.google.com/maps?q=${mapQuery}&t=k&z=17&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`
+                    : `<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400"><i class="fa-solid fa-map text-2xl"></i></div>`
+                }
+                    </div>
+                    <a href="https://www.google.com/maps/search/?api=1&query=${mapQuery}" target="_blank"
+                        class="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
+                        <i class="fa-solid fa-location-dot"></i> Open in Google Maps
+                    </a>
+                </div>
+            `;
+
+            // ========== RIGHT PANEL (Input Fields) ==========
+            rightPanel.innerHTML = `
+                <!-- Quick Address Paste -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+                    <div class="flex items-center gap-2 mb-2.5">
+                        <i class="fa-solid fa-paste text-blue-600 text-sm"></i>
+                        <span class="text-sm font-bold text-gray-700">Quick Address Paste</span>
+                    </div>
+                    <textarea id="address-paste" rows="2" placeholder="Paste any address format here..."
+                        class="w-full border border-blue-200 rounded-lg p-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none resize-none"
+                        onpaste="setTimeout(() => parseAddressPaste(), 100)"></textarea>
+                    <button onclick="parseAddressPaste()" class="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-800">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Address
+                    </button>
+                </div>
+                
+                <!-- Research Section -->
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
+                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Research</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="input-group">
+                                <label>CoStar ID</label>
+                                <input type="text" value="${row.costarid || ''}" onchange="updateDrawerField('costarid', this.value)" placeholder="Property ID...">
+                            </div>
+                            <div class="input-group">
+                                <label>Tenant</label>
+                                <input type="text" value="${row.tenant || ''}" onchange="updateDrawerField('tenant', this.value)" placeholder="Current tenant...">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Status</label>
+                            <select onchange="updateDrawerField('status', this.value)">
+                                ${STATUS_TYPES.map(t => `<option value="${t}" ${row.status === t ? 'selected' : ''}>${t || 'Select...'}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image URL -->
+                <div class="input-group">
+                    <label>Image URL</label>
+                    <input type="text" value="${row.imageurl || ''}" onchange="updateDrawerField('imageurl', this.value); renderDrawerContent();" placeholder="Paste image URL...">
+                </div>
+                
+                <!-- Location Section -->
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-location-dot text-blue-600 text-sm"></i>
+                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Location</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="input-group">
+                            <label>Address</label>
+                            <input type="text" id="field-address" value="${row.address || ''}" onchange="updateDrawerField('address', this.value)">
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="input-group">
+                                <label>City</label>
+                                <input type="text" id="field-city" value="${row.city || ''}" onchange="updateDrawerField('city', this.value)">
+                            </div>
+                            <div class="input-group">
+                                <label>State</label>
+                                <input type="text" id="field-state" value="${row.state || ''}" onchange="updateDrawerField('state', this.value)" maxlength="2" class="uppercase">
+                            </div>
+                            <div class="input-group">
+                                <label>Zip</label>
+                                <input type="text" id="field-zip" value="${row.zip || ''}" onchange="updateDrawerField('zip', this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Owner Contact Section -->
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-user-tie text-blue-600 text-sm"></i>
+                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Owner Contact</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="input-group">
+                                <label>Owner Name</label>
+                                <input type="text" value="${row.ownername || ''}" onchange="updateDrawerField('ownername', this.value)" placeholder="Owner name...">
+                            </div>
+                            <div class="input-group">
+                                <label>Owner Type</label>
+                                <select onchange="updateDrawerField('ownertype', this.value)">
+                                    ${OWNER_TYPES.map(t => `<option value="${t}" ${row.ownertype === t ? 'selected' : ''}>${t || 'Select...'}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-phone mr-1"></i> Phone</label>
+                                <input type="text" value="${row.ownerphone || ''}" onchange="updateDrawerField('ownerphone', this.value)" placeholder="(555) 555-5555">
+                            </div>
+                            <div class="input-group">
+                                <label><i class="fa-solid fa-envelope mr-1"></i> Email</label>
+                                <input type="email" value="${row.owneremail || ''}" onchange="updateDrawerField('owneremail', this.value)" placeholder="owner@example.com">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes (Auto-resize) -->
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="notes-textarea" oninput="autoResizeTextarea(this)" onchange="updateDrawerField('notes', this.value)" placeholder="Add research notes..." style="min-height: 100px; resize: vertical;">${row.notes || ''}</textarea>
+                </div>
+                
+                <!-- Completion Toggle -->
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full ${!isIncomplete(row) ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'} flex items-center justify-center">
+                                <i class="fa-solid fa-circle-check text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-gray-900 text-sm">Mark as Complete</div>
+                                <div class="text-xs text-gray-500">Move to completed tab</div>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" ${!isIncomplete(row) ? 'checked' : ''} onchange="toggleDrawerComplete(this.checked)" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </label>
+                    </div>
+                </div>
+            `;
+
+            // Update navigation counts
+            document.getElementById('current-index').innerText = currentViewIndex + 1;
+            document.getElementById('total-filtered').innerText = filteredProperties.length;
+        }
+
+        // --- ADDRESS PARSER ---
+        function parseAddressPaste() {
+            const textarea = document.getElementById('address-paste');
+            const raw = textarea.value.trim();
+            if (!raw) return;
+
+            // Clean up the input - remove parentheses, extra spaces
+            let cleaned = raw.replace(/^\(|\)$/g, '').trim();
+
+            // Common state abbreviations
+            const stateAbbreviations = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC'];
+
+            // Patterns to try
+            // Pattern 1: Full address "123 Main St, City, ST 12345"
+            // Pattern 2: Street only "123 Main St"
+            // Pattern 3: City, State Zip "City, ST 12345"
+
+            let address = '';
+            let city = '';
+            let state = '';
+            let zip = '';
+
+            // Try to find zip code
+            const zipMatch = cleaned.match(/\b(\d{5}(?:-\d{4})?)\b/);
+            if (zipMatch) {
+                zip = zipMatch[1];
+                cleaned = cleaned.replace(zipMatch[0], '').trim();
+            }
+
+            // Try to find state abbreviation
+            const stateRegex = new RegExp(`\\b(${stateAbbreviations.join('|')})\\b`, 'i');
+            const stateMatch = cleaned.match(stateRegex);
+            if (stateMatch) {
+                state = stateMatch[1].toUpperCase();
+                cleaned = cleaned.replace(stateMatch[0], '').trim();
+            }
+
+            // Split remaining by comma
+            const parts = cleaned.split(',').map(p => p.trim()).filter(p => p);
+
+            if (parts.length >= 2) {
+                // Assume: Address, City OR just City (if we already have address)
+                address = parts[0];
+                city = parts[1];
+            } else if (parts.length === 1) {
+                // Could be just address or just city
+                // If it looks like a street address (has numbers at start), treat as address
+                if (/^\d+/.test(parts[0])) {
+                    // Check if there's existing city in the field
+                    const existingCity = document.getElementById('field-city').value;
+                    if (existingCity) {
+                        address = parts[0];
+                    } else {
+                        address = parts[0];
+                    }
+                } else {
+                    // Likely just a city
+                    city = parts[0];
+                }
+            }
+
+            // Update fields
+            if (address) {
+                document.getElementById('field-address').value = address;
+                updateDrawerField('address', address);
+            }
+            if (city) {
+                document.getElementById('field-city').value = city;
+                updateDrawerField('city', city);
+            }
+            if (state) {
+                document.getElementById('field-state').value = state;
+                updateDrawerField('state', state);
+            }
+            if (zip) {
+                document.getElementById('field-zip').value = zip;
+                updateDrawerField('zip', zip);
+            }
+
+            // Clear paste area
+            textarea.value = '';
+
+            showToast('Address parsed successfully', 'success');
+        }
+
+        function updateDrawerField(key, value) {
+            tempDrawerData[key] = value;
+            if (['address', 'city', 'state', 'zip', 'costarid', 'ownercontact', 'ownerfullname', 'ownerentity', 'owner'].includes(key)) {
+                tempDrawerData._addressKey = computeAddressKey(tempDrawerData);
+                const costar = (tempDrawerData.costarid || '').toString().trim();
+                const nextId = costar ? `c:${costar}` : `a:${tempDrawerData._addressKey}`;
+                tempDrawerData._id = nextId;
+                tempDrawerData._uniqueKey = nextId;
+                if (!tempDrawerData.ownername) tempDrawerData.ownername = pickOwnerName(tempDrawerData);
+            }
+        }
+
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = Math.max(80, el.scrollHeight) + 'px';
+        }
+
+        function openCoStarPage() {
+            const propertyId = tempDrawerData.costarid;
+            if (!propertyId) {
+                showToast('No CoStar ID available', 'error');
+                return;
+            }
+            window.open(`https://product.costar.com/detail/lookup/${propertyId}/analytic-changes`, '_blank');
+        }
+
+        function toggleDrawerComplete(checked) {
+            tempDrawerData._completed = checked;
+        }
+
+        async function saveDrawer() {
+            const oldId = selectedRowKey;
+            const nextId = tempDrawerData._uniqueKey;
+            const existingIdx = properties.findIndex(p => p._uniqueKey === oldId);
+            if (existingIdx === -1) return;
+            if (!tempDrawerData.ownername) tempDrawerData.ownername = pickOwnerName(tempDrawerData);
+
+            // Sync to API
+            if (tempDrawerData._dbId) {
+                await apiUpdateProperty(tempDrawerData._dbId, tempDrawerData);
+            } else {
+                const result = await apiCreateProperty(tempDrawerData);
+                if (result) tempDrawerData._dbId = result.id;
+            }
+
+            if (oldId !== nextId) {
+                properties.splice(existingIdx, 1);
+                properties.push(tempDrawerData);
+                selectedRowKey = nextId;
+            } else {
+                properties[existingIdx] = tempDrawerData;
+            }
+            renderAll();
+            showToast("Changes saved", 'success');
+        }
+
+        function closeDrawer() {
+            document.getElementById('sidebar-overlay').classList.add('hidden');
+            document.getElementById('sidebar-left').classList.remove('open');
+            document.getElementById('sidebar-right').classList.remove('open');
+            selectedRowKey = null;
+            renderAll();
+        }
+
+        async function deleteProperty() {
+            if (!confirm('Are you sure you want to delete this property?')) return;
+            const idx = properties.findIndex(p => p._uniqueKey === selectedRowKey);
+            if (idx > -1) {
+                const prop = properties[idx];
+                if (prop._dbId) {
+                    await apiDeleteProperty(prop._dbId);
+                }
+                properties.splice(idx, 1);
+                closeDrawer();
+                showToast('Property deleted', 'error');
+            }
+        }
+
+        async function deletePropertyByKey(key) {
+            if (!confirm('Are you sure you want to delete this property?')) return;
+            const idx = properties.findIndex(p => p._uniqueKey === key);
+            if (idx > -1) {
+                const prop = properties[idx];
+                if (prop._dbId) {
+                    await apiDeleteProperty(prop._dbId);
+                }
+                properties.splice(idx, 1);
+                renderAll();
+                showToast('Property deleted', 'error');
+            }
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function navigateRow(dir) {
+            const idx = properties.findIndex(p => p._uniqueKey === selectedRowKey);
+            if (idx > -1) {
+                properties[idx] = tempDrawerData;
+                saveData(true);
+            }
+
+            currentViewIndex += dir;
+            if (currentViewIndex < 0) currentViewIndex = 0;
+            if (currentViewIndex >= filteredProperties.length) currentViewIndex = filteredProperties.length - 1;
+
+            const row = filteredProperties[currentViewIndex];
+            if (row) {
+                selectedRowKey = row._uniqueKey;
+                tempDrawerData = { ...row };
+                renderDrawerContent();
+                updateNavButtons();
+            }
+        }
+
+        function updateNavButtons() {
+            const prev = document.getElementById('btn-prev');
+            const next = document.getElementById('btn-next');
+            prev.disabled = currentViewIndex <= 0;
+            next.disabled = currentViewIndex >= filteredProperties.length - 1;
+            prev.classList.toggle('opacity-30', currentViewIndex <= 0);
+            next.classList.toggle('opacity-30', currentViewIndex >= filteredProperties.length - 1);
+        }
+
+        // --- ACTIONS ---
+        function toggleComplete(key) {
+            const p = properties.find(p => p._uniqueKey === key);
+            if (p) {
+                p._completed = !p._completed;
+                saveData(true);
+                renderAll();
+                showToast(p._completed ? 'Marked complete' : 'Marked incomplete', 'success');
+            }
+        }
+
+        function skipProperty(key) {
+            // Find current index in filtered list
+            const currentIdx = filteredProperties.findIndex(p => p._uniqueKey === key);
+            if (currentIdx < filteredProperties.length - 1) {
+                openDrawer(filteredProperties[currentIdx + 1]);
+            }
+        }
+
+        function callOwner(phone) {
+            if (phone) {
+                window.open(`tel:${phone}`, '_self');
+            } else {
+                showToast('No phone number available', 'error');
+            }
+        }
+
+        // --- COL MANAGER ---
+        function openColumnManager() {
+            const list = document.getElementById('column-list');
+            list.innerHTML = '';
+            columnConfig.forEach((col, idx) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-white';
+                item.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1">
+                        <input type="checkbox" ${col.visible ? 'checked' : ''} onchange="toggleColVis(${idx})" class="accent-blue-600 h-4 w-4">
+                        <span class="text-sm font-medium text-gray-700">${col.label}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="moveCol(${idx}, -1)" class="w-7 h-7 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fa-solid fa-arrow-up text-xs"></i></button>
+                        <button onclick="moveCol(${idx}, 1)" class="w-7 h-7 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600"><i class="fa-solid fa-arrow-down text-xs"></i></button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+            document.getElementById('column-modal').classList.remove('hidden');
+        }
+        function toggleColVis(idx) { columnConfig[idx].visible = !columnConfig[idx].visible; }
+        function moveCol(idx, dir) {
+            const newIdx = idx + dir;
+            if (newIdx < 0 || newIdx >= columnConfig.length) return;
+            [columnConfig[idx], columnConfig[newIdx]] = [columnConfig[newIdx], columnConfig[idx]];
+            openColumnManager();
+        }
+        function applyColumnSettings() { saveConfig(); closeColumnManager(); }
+        function closeColumnManager() { document.getElementById('column-modal').classList.add('hidden'); }
+
+        // --- UTILS ---
+        function autoFillStates() {
+            let count = 0;
+            properties.forEach(p => {
+                if (!p.state || p.state.trim() === "") {
+                    const m = p['market'];
+                    if (m && m.includes(',')) {
+                        const st = m.split(',').pop().trim();
+                        if (/^[A-Z]{2}$/.test(st)) { p.state = st; count++; }
+                    }
+                }
+            });
+            saveData(true); renderAll(); showToast(`Auto-filled ${count} states`, 'success');
+        }
+
+        async function clearAll() {
+            if (confirm("Clear all data? This cannot be undone.")) {
+                await apiClearAll();
+                await kvSet('columnConfig', undefined);
+                location.reload();
+            }
+        }
+
+        function exportData() {
+            if (!properties.length) {
+                showToast('No data to export', 'error');
+                return;
+            }
+            const clean = properties.map(p => {
+                const c = {};
+                columnConfig.forEach(col => c[col.label] = p[col.id] || "");
+                return c;
+            });
+            const ws = XLSX.utils.json_to_sheet(clean);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Properties");
+            XLSX.writeFile(wb, `CoStar_Export_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showToast('Exported successfully', 'success');
+        }
+
+        async function tryBootstrapFromDefaultWorkbook() {
+            try {
+                const res = await fetch(DEFAULT_DATA_URL, { cache: 'no-store' });
+                if (!res.ok) return false;
+                const ab = await res.arrayBuffer();
+                const wb = XLSX.read(ab, { type: 'array' });
+                const ws = wb.Sheets['Master'] || wb.Sheets[wb.SheetNames[0]];
+                const rawData = XLSX.utils.sheet_to_json(ws, { defval: "" });
+                properties = [];
+                mergeData(rawData);
+                updateColumnConfigFromData();
+                saveData(true);
+                showToast('Loaded Master.xlsx', 'success');
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const m = document.getElementById('toast-msg');
+            const icon = document.getElementById('toast-icon');
+            m.innerText = msg;
+
+            if (type === 'error') {
+                icon.className = 'fa-solid fa-circle-exclamation text-red-400';
+            } else {
+                icon.className = 'fa-solid fa-circle-check text-green-400';
+            }
+
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 2500);
+        }
+    </script>
+</body>
+
+</html>
