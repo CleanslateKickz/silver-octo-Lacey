@@ -765,9 +765,9 @@
         }
 
         function isIncomplete(p) {
-            // Property is incomplete if Owner is missing OR if manually marked incomplete
-            if (p._completed === false) return true;
-            if (p._completed === true) return false;
+            // Property is complete if explicitly marked complete OR has owner info
+            if (p._completed === true) return false;  // Explicitly complete
+            // Otherwise check if owner is filled in
             return !p.ownername || p.ownername.toString().trim() === '';
         }
 
