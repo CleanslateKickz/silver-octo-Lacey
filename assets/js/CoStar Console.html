@@ -17,15 +17,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Outfit:wght@100..900&display=swap"
+        rel="stylesheet">
+    <!-- AG Grid -->
+    <script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-quartz.css">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    fontFamily: {
+                        sans: ['"Inter"', 'sans-serif'],
+                        display: ['"Outfit"', 'sans-serif']
+                    },
                     colors: {
                         brand: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' },
+                        slate: { 950: '#020617' }
                     }
                 }
             }
@@ -41,501 +52,421 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .table-container {
-            overflow: auto;
-            height: 100%;
-            position: relative;
+        /* AG Grid Customization - Light Theme (Quartz Override) */
+        .ag-theme-quartz {
+            --ag-background-color: #ffffff;
+            --ag-header-background-color: #f8fafc;
+            --ag-header-foreground-color: #64748b;
+            --ag-row-hover-color: #f1f5f9;
+            --ag-selected-row-background-color: #eff6ff;
+            --ag-font-family: 'Inter', sans-serif;
+            --ag-font-size: 13px;
+            --ag-grid-size: 8px;
+            --ag-header-height: 48px;
+            --ag-row-border-color: #e2e8f0;
+            --ag-header-column-separator-display: none;
+            --ag-data-color: #334155;
+            /* High contrast text */
+            --ag-secondary-foreground-color: #64748b;
         }
 
-        /* Sticky Logic */
-        .sticky-col {
-            position: sticky;
-            z-index: 10;
-            background-color: white;
+        .ag-theme-quartz .ag-header-cell {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.05em;
+            color: #64748b;
         }
 
-        th {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background-color: #f9fafb;
+        .ag-theme-quartz .ag-row {
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        th.sticky-col {
-            z-index: 30;
-            background-color: #f3f4f6;
+        .ag-theme-quartz .ag-row-odd {
+            background-color: #f8fafc;
         }
 
-        /* Row Hover */
-        tbody tr:hover td {
-            background-color: #eff6ff;
+        .ag-theme-quartz .ag-cell {
+            display: flex;
+            align-items: center;
+            color: #334155;
+            font-weight: 500;
         }
 
-        tr.selected-row td {
-            background-color: #dbeafe !important;
+        .ag-theme-quartz .ag-root-wrapper {
+            border: none;
+            border-radius: 0;
+            background: #ffffff;
         }
 
-        /* Custom Scrollbar */
+        .ag-theme-quartz .ag-header {
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .ag-theme-quartz .ag-header-cell-resize::after {
+            height: 50%;
+            top: 25%;
+            background-color: #cbd5e1;
+        }
+
+        /* Drawer/Sidebar Transitions */
+        .sidebar-panel {
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Layout Modes */
+        .layout-standard #sidebar-visuals {
+            right: 360px;
+            /* Width of input sidebar */
+            width: 360px;
+            transform: translateX(200%);
+            /* Hidden */
+        }
+
+        .layout-widescreen #sidebar-visuals {
+            left: 0;
+            width: 45%;
+            right: auto;
+            border-right: 1px solid #e2e8f0;
+            border-left: none;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+            transform: translateX(-100%);
+            /* Hidden */
+        }
+
+        .layout-widescreen #sidebar-inputs {
+            width: 55%;
+        }
+
+        /* Sidebar Visible States */
+        .sidebar-visible #sidebar-inputs {
+            transform: translateX(0) !important;
+        }
+
+        .sidebar-visible.layout-standard #sidebar-visuals {
+            transform: translateX(0) !important;
+        }
+
+        .sidebar-visible.layout-widescreen #sidebar-visuals {
+            transform: translateX(0) !important;
+        }
+
+        /* Scrollbar */
         ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
+            width: 6px;
+            height: 6px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
             background: #cbd5e1;
-            border-radius: 5px;
+            border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
 
-        /* Drawer/Sidebar Transitions */
-        /* Drawer/Sidebar Transitions */
-        .sidebar-left,
-        .sidebar-right,
-        #sidebar-left,
-        #sidebar-right {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* BOTH sidebars are active/open when the drawer is open */
-        .sidebar-left.active,
-        .sidebar-left.open,
-        #sidebar-left.active,
-        #sidebar-left.open {
-            transform: translateX(0) !important;
-        }
-
-        .sidebar-right.active,
-        .sidebar-right.open,
-        #sidebar-right.active,
-        #sidebar-right.open {
-            transform: translateX(0) !important;
-        }
-
-        /* Sortable Headers */
-        th.sortable {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        th.sortable:hover {
-            background-color: #e5e7eb;
-        }
-
-        th .sort-icon {
-            opacity: 0.3;
-            margin-left: 6px;
-            font-size: 12px;
-        }
-
-        th.sorted .sort-icon {
-            opacity: 1;
-            color: #2563eb;
-        }
-
-        /* Subtle scrollbar for right sidebar */
-        #sidebar-right-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #sidebar-right-content::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        #sidebar-right-content::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
         /* Inputs */
-        .input-group label {
+        .input-label {
             display: block;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: #64748b;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .input-field {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            background: #ffffff;
+            color: #1e293b;
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .input-label-compact {
+            display: block;
+            font-size: 9px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 2px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
 
-        .input-group input,
-        .input-group select,
-        .input-group textarea {
+        .input-field-compact {
             width: 100%;
             border: 1px solid #e2e8f0;
-            border-radius: 0.6rem;
-            padding: 0.75rem 1rem;
-            font-size: 0.95rem;
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 12px;
             transition: all 0.2s;
-            background: white;
+            background: #ffffff;
+            color: #1e293b;
         }
 
-        .input-group input:focus,
-        .input-group select:focus,
-        .input-group textarea:focus {
+        .input-field-compact:focus {
             border-color: #3b82f6;
             outline: none;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            background: #f8fafc;
         }
 
-        /* Card Grid - Compact */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-            padding: 1rem;
-        }
-
-        .property-card {
-            background: white;
-            border-radius: 0.75rem;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            transition: all 0.2s;
-            border: 1px solid #e2e8f0;
-        }
-
-        .property-card:hover {
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
-        }
-
-        /* Tab Active State */
-        .tab-btn.active {
-            background: white;
-            color: #1e40af;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        /* View Toggle */
-        .view-btn.active {
-            background: #2563eb;
-            color: white;
-        }
-
-        /* Badge Styles */
-        .badge-incomplete {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-        }
-
-        .badge-complete {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            color: white;
-        }
-
-        /* DOM Warning */
-        .dom-warning {
-            background: #fef2f2;
-            color: #dc2626;
-            font-weight: 700;
-        }
-
-        /* Overlay */
-        .overlay {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-        }
-
-        /* Filter Popover */
-        .filter-popover {
-            position: absolute;
-            background: white;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            border-radius: 0.5rem;
-            z-index: 50;
-            min-width: 220px;
-            max-height: 320px;
-            overflow-y: auto;
-            padding: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .filter-option {
-            display: flex;
+        /* Badges */
+        .badge {
+            display: inline-flex;
             align-items: center;
-            padding: 0.35rem 0.5rem;
-            cursor: pointer;
-            border-radius: 0.25rem;
-            font-size: 0.85rem;
-            color: #475569;
-        }
-
-        .filter-option:hover {
-            background-color: #f1f5f9;
-        }
-
-        .filter-option input {
-            margin-right: 0.5rem;
-            accent-color: #2563eb;
-        }
-
-        .filter-actions {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 0.5rem;
-            border-top: 1px solid #f1f5f9;
-            margin-top: 0.25rem;
-        }
-
-        .filter-btn-sm {
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
             font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
             font-weight: 600;
+            line-height: 1;
+        }
+
+        /* Active Button States */
+        #view-table.active,
+        #view-cards.active,
+        #tab-incomplete.active,
+        #tab-complete.active {
+            background-color: #ffffff;
+            color: #0f172a;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        #view-table:not(.active),
+        #view-cards:not(.active),
+        #tab-incomplete:not(.active),
+        #tab-complete:not(.active) {
+            color: #64748b;
         }
     </style>
 </head>
 
-<body class="h-screen flex flex-col text-gray-800">
+<body class="h-screen flex flex-col text-gray-800 layout-standard overflow-hidden bg-slate-50" id="app-body">
 
     <!-- HEADER -->
     <header
-        class="bg-white border-b border-gray-200 h-20 flex-none z-50 shadow-sm flex items-center justify-between px-8">
-        <div class="flex items-center gap-5">
-            <div class="flex items-center gap-4">
-                <div
-                    class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center text-white shadow-lg">
-                    <i class="fa-solid fa-building text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-bold text-gray-900 leading-tight">CoStar Console</h1>
-                    <p class="text-xs text-gray-500 font-medium tracking-wide uppercase">Property Research Tool</p>
-                </div>
+        class="bg-white border-b border-gray-200 h-16 flex-none z-50 flex items-center justify-between px-6 shadow-sm">
+        <div class="flex items-center gap-4">
+            <div
+                class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                <i class="fa-solid fa-building text-lg"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold text-gray-900 leading-tight font-display tracking-tight">CoStar Console
+                </h1>
+                <p class="text-[10px] text-gray-500 font-semibold tracking-wider uppercase">Research & Analytics</p>
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <!-- View Toggle -->
-            <div class="flex items-center bg-gray-100 rounded-lg p-1.5 border border-gray-200">
+        <!-- Persistant Global Search -->
+        <div class="flex-1 max-w-xl mx-12">
+            <div class="relative group">
+                <i
+                    class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+                <input type="text" id="search-input" placeholder="Search by address, owner, city, ID..."
+                    class="w-full bg-gray-100 border-none rounded-xl py-2.5 pl-11 pr-4 text-sm focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-400"
+                    oninput="handleSearch()">
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <!-- View Toggle (Moved here) -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200">
                 <button onclick="setView('table')" id="view-table"
-                    class="view-btn active px-4 py-2 rounded-md text-sm font-semibold transition-all">
-                    <i class="fa-solid fa-table-list"></i>
+                    class="px-4 py-1.5 rounded-md text-xs font-bold transition-all shadow-sm">
+                    <i class="fa-solid fa-table-list mr-1.5"></i> Table
                 </button>
                 <button onclick="setView('cards')" id="view-cards"
-                    class="view-btn px-4 py-2 rounded-md text-sm font-semibold transition-all">
-                    <i class="fa-solid fa-grip"></i>
+                    class="px-4 py-1.5 rounded-md text-xs font-bold transition-all text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-grip-vertical mr-1.5"></i> Cards
                 </button>
             </div>
 
             <div class="h-8 w-px bg-gray-200"></div>
 
-            <div class="bg-blue-50 text-blue-700 px-5 py-2.5 rounded-lg border border-blue-100 text-base font-bold">
-                <span id="showing-count">0</span> of <span id="total-count">0</span> properties
+            <!-- Layout Toggle -->
+            <div class="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-200" title="Switch Layout">
+                <button onclick="toggleLayout('standard')" id="layout-standard-btn"
+                    class="px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-400 hover:text-gray-900">
+                    <i class="fa-solid fa-columns mr-1"></i> Standard
+                </button>
+                <button onclick="toggleLayout('widescreen')" id="layout-widescreen-btn"
+                    class="px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-400 hover:text-gray-600">
+                    <i class="fa-solid fa-money-check mr-1"></i> Wide
+                </button>
+            </div>
+
+            <div
+                class="bg-slate-900 text-white px-4 py-1.5 rounded-full text-xs font-bold shadow-lg shadow-slate-900/20 tabular-nums">
+                <span id="showing-count">0</span> <span class="text-slate-400 font-medium mx-1">/</span> <span
+                    id="total-count">0</span>
             </div>
         </div>
     </header>
 
     <!-- TOOLBAR -->
-    <div class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-none z-40">
-        <div class="flex items-center gap-4">
+    <div class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-none z-40">
+        <div class="flex items-center gap-3">
             <input type="file" id="file-input" multiple accept=".csv, .xlsx, .xls" style="display:none">
 
             <button onclick="document.getElementById('file-input').click()"
-                class="flex items-center gap-2.5 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all">
-                <i class="fa-solid fa-file-import"></i> Import
+                class="flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-lg shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5">
+                <i class="fa-solid fa-plus"></i> Import Data
             </button>
 
-            <button onclick="openColumnManager()"
-                class="flex items-center gap-2.5 px-4 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-600 text-sm font-bold uppercase tracking-wider rounded-lg transition-all">
-                <i class="fa-solid fa-table-columns"></i> Columns
-            </button>
-
-
-            <div class="h-8 w-px bg-gray-200"></div>
+            <div class="h-6 w-px bg-gray-200"></div>
 
             <!-- Tabs -->
-            <div class="flex items-center bg-gray-100 rounded-lg p-1.5">
+            <div class="flex items-center bg-gray-100 rounded-lg p-1">
                 <button onclick="setTab('incomplete')" id="tab-incomplete"
-                    class="tab-btn active flex items-center gap-2.5 px-5 py-2.5 rounded-md text-sm font-bold transition-all">
-                    <i class="fa-solid fa-circle-exclamation text-amber-500"></i>
-                    Needs Research <span id="incomplete-count"
-                        class="bg-red-500 text-white px-2.5 py-1 rounded-full text-xs ml-1">0</span>
+                    class="px-4 py-1.5 rounded-md text-sm font-bold transition-all bg-white text-gray-900 shadow-sm">
+                    Research Queue <span id="incomplete-count"
+                        class="ml-2 bg-gray-200 text-gray-600 px-2 py-0.5 rounded-md text-[10px]">0</span>
                 </button>
                 <button onclick="setTab('complete')" id="tab-complete"
-                    class="tab-btn flex items-center gap-2.5 px-5 py-2.5 rounded-md text-sm font-bold transition-all">
-                    <i class="fa-solid fa-circle-check text-green-500"></i>
-                    Completed <span id="complete-count"
-                        class="bg-green-500 text-white px-2.5 py-1 rounded-full text-xs ml-1">0</span>
+                    class="px-4 py-1.5 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-gray-700">
+                    Completed <span id="complete-count" class="ml-2 opacity-50">0</span>
                 </button>
             </div>
-        </div>
 
-        <div class="flex items-center gap-4">
-            <!-- Search -->
-            <div class="relative">
-                <i
-                    class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base"></i>
-                <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search properties..."
-                    class="pl-11 pr-4 py-3 border border-gray-300 rounded-lg text-base w-80 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
-            </div>
+            <div class="h-6 w-px bg-gray-200"></div>
 
-            <button onclick="refreshData()"
-                class="text-gray-400 hover:text-gray-600 p-2.5 rounded-lg hover:bg-gray-100 transition-colors"
+            <button onclick="reloadGrid()"
+                class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
                 title="Refresh">
-                <i class="fa-solid fa-arrows-rotate text-base"></i>
-            </button>
-
-            <button onclick="exportData()"
-                class="flex items-center gap-2.5 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold uppercase tracking-wider rounded-lg shadow-sm transition-all">
-                <i class="fa-solid fa-file-excel"></i> Export
-            </button>
-
-            <button onclick="clearAll()" class="text-red-500 hover:bg-red-50 p-3 rounded-lg transition-colors"
-                title="Clear All">
-                <i class="fa-solid fa-trash-can text-base"></i>
+                <i class="fa-solid fa-rotate"></i>
             </button>
         </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="exportData()"
+                class="flex items-center gap-2 px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-bold rounded-lg transition-all">
+                <i class="fa-solid fa-download text-gray-400"></i> Export
+            </button>
+        </div>
+        <!-- Search -->
+        <div class="relative group">
+            <i
+                class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors"></i>
+            <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="Search properties..."
+                class="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm w-64 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all bg-slate-50 focus:bg-white">
+        </div>
+
+        <button onclick="reloadGrid()"
+            class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all"
+            title="Refresh">
+            <i class="fa-solid fa-rotate"></i>
+        </button>
+
+        <button onclick="exportData()"
+            class="w-9 h-9 flex items-center justify-center rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-all"
+            title="Export Excel">
+            <i class="fa-solid fa-file-excel"></i>
+        </button>
+
+        <button onclick="clearAll()"
+            class="w-9 h-9 flex items-center justify-center rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-all"
+            title="Reset All Data">
+            <i class="fa-solid fa-trash-can"></i>
+        </button>
+    </div>
     </div>
 
-    <!-- WORKSPACE -->
-    <main class="flex-1 relative overflow-hidden bg-slate-100 flex">
+    <!-- MAIN WORKSPACE -->
+    <main class="flex-1 relative overflow-hidden flex">
 
         <!-- Upload Overlay -->
         <div id="upload-overlay"
-            class="absolute inset-0 z-[60] bg-white flex flex-col items-center justify-center text-center">
-            <div class="bg-white p-12 rounded-2xl shadow-xl border border-gray-100 max-w-lg w-full transition-transform hover:scale-[1.01] duration-300 cursor-pointer group"
+            class="absolute inset-0 z-[60] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center text-center">
+            <div class="bg-white p-12 rounded-3xl shadow-2xl border border-gray-100 max-w-lg w-full transform hover:scale-105 transition-all duration-300 cursor-pointer group"
                 id="drop-area">
                 <div
-                    class="w-24 h-24 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
+                    class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-6 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-md">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
                 </div>
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Import Your Data</h2>
-                <p class="text-gray-500 mb-6">Drag & Drop Multiple Files to Merge</p>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2 font-display">Drop Files Here</h2>
+                <p class="text-gray-500 mb-8">Import your master Excel or CSV file</p>
 
-                <!-- Clear Data Option -->
-                <div class="flex items-center gap-3 mb-4">
-                    <input type="checkbox" id="clear-data-checkbox" class="w-5 h-5 accent-blue-600 cursor-pointer">
-                    <label for="clear-data-checkbox" class="text-sm text-gray-600 cursor-pointer select-none">Clear
-                        existing data before import</label>
+                <div class="flex flex-col gap-4">
+                    <button onclick="document.getElementById('file-input').click()"
+                        class="w-full py-3.5 bg-gray-900 hover:bg-black text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-xl">
+                        Browse Files
+                    </button>
+                    <!-- Clear Option -->
+                    <div class="flex items-center justify-center gap-2">
+                        <input type="checkbox" id="clear-data-checkbox"
+                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        <label for="clear-data-checkbox" class="text-xs text-gray-500 font-medium">Clear existing
+                            data</label>
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <button onclick="document.getElementById('file-input').click()"
-                    class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors text-sm shadow-lg">
-                    Browse Files
+        <!-- View Containers -->
+        <div id="table-view" class="w-full h-full">
+            <!-- AG Grid Container -->
+            <div id="myGrid" class="ag-theme-quartz w-full h-full"></div>
+        </div>
+
+        <div id="cards-view" class="w-full h-full overflow-y-auto hidden bg-slate-50 p-6">
+            <div id="card-container"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+                <!-- Cards injected here -->
+            </div>
+        </div>
+
+        <!-- SIDEBAR OVERLAY -->
+        <div id="sidebar-overlay"
+            class="fixed inset-0 z-[70] bg-slate-900/20 backdrop-blur-[1px] hidden transition-opacity opacity-0"
+            onclick="closeDrawer()"></div>
+
+        <!-- VISUALS SIDEBAR (Left in Wide mode, Inner Right in Standard) -->
+        <aside id="sidebar-visuals"
+            class="sidebar-panel fixed inset-y-0 bg-white z-[80] flex flex-col pointer-events-auto border-l border-gray-200 transform translate-x-full">
+            <div class="h-full flex flex-col" id="sidebar-visuals-content">
+                <!-- Injected via JS -->
+            </div>
+        </aside>
+
+        <!-- INPUTS SIDEBAR (Always Right) -->
+        <aside id="sidebar-inputs"
+            class="sidebar-panel fixed inset-y-0 right-0 w-[360px] bg-white z-[81] flex flex-col pointer-events-auto border-l border-gray-200 transform translate-x-full shadow-2xl">
+            <!-- Header -->
+            <div class="h-16 border-b border-gray-100 flex items-center justify-between px-4 bg-white flex-none"
+                id="sidebar-header">
+                <!-- Injected via JS -->
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 bg-slate-50" id="sidebar-inputs-content">
+                <!-- Injected via JS -->
+            </div>
+
+            <!-- Footer -->
+            <div class="p-4 border-t border-gray-100 bg-white flex-none">
+                <button onclick="deleteProperty()"
+                    class="w-full py-2 text-xs font-bold text-red-500 hover:bg-red-50 rounded-lg transition-colors border border-red-100">
+                    Delete Property
                 </button>
-                <p class="text-xs text-gray-400 mt-4">Supports .xlsx, .xls, .csv</p>
-            </div>
-        </div>
-
-        <!-- Data Table View -->
-        <div id="table-view" class="table-container bg-white flex-grow shadow-sm">
-            <table class="w-full border-collapse" id="data-table">
-                <thead class="bg-gray-50 text-sm font-bold text-gray-500 uppercase tracking-wider select-none">
-                    <!-- Injected via JS -->
-                </thead>
-                <tbody class="text-base text-gray-700 divide-y divide-gray-100">
-                    <!-- Injected via JS -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Card Gallery View -->
-        <div id="cards-view" class="hidden flex-grow overflow-auto bg-slate-100">
-            <div class="card-grid" id="card-container">
-                <!-- Injected via JS -->
-            </div>
-        </div>
-
-        <!-- Detail Sidebars (Split into Two) -->
-        <!-- Overlay - click to close -->
-        <div id="sidebar-overlay" class="fixed inset-0 z-[65] overlay hidden" onclick="closeDrawer()"></div>
-
-        <!-- "Left" Sidebar -> Now "Visuals" Panel (Inner Right) -->
-        <aside id="sidebar-left" style="right: 320px;"
-            class="fixed inset-y-0 right-[320px] w-[340px] bg-slate-50 shadow-xl transform translate-x-[200%] z-[70] border-l border-gray-200 flex flex-col pointer-events-auto transition-transform duration-300">
-            <!-- Header -->
-            <div
-                class="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-white shrink-0 h-[57px]">
-                <div class="flex items-center gap-2">
-                    <button onclick="navigateRow(-1)" id="btn-prev"
-                        class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <div class="text-xs text-gray-500 font-semibold tabular-nums">
-                        <span id="current-index">1</span> / <span id="total-filtered">1</span>
-                    </div>
-                    <button onclick="navigateRow(1)" id="btn-next"
-                        class="w-8 h-8 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 hover:text-blue-600 hover:border-blue-300 transition-all disabled:opacity-30">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-                </div>
-            </div>
-            <!-- Content -->
-            <div id="sidebar-left-content" class="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-hide">
-                <!-- Injected via JS -->
             </div>
         </aside>
-
-        <!-- Right Sidebar - Input Fields -->
-        <aside id="sidebar-right" style="right: 0;"
-            class="fixed inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform translate-x-full z-[71] border-l border-gray-200 flex flex-col pointer-events-auto transition-transform duration-300">
-            <!-- Header -->
-            <div class="px-5 py-3 border-b border-gray-100 flex flex-col gap-3 bg-white shrink-0">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
-                        <button onclick="openCoStarPage()"
-                            class="flex items-center justify-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 hover:bg-blue-50 hover:border-blue-200 text-slate-600 hover:text-blue-700 rounded-md transition-all group">
-                            <img src="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491"
-                                class="w-4 h-4 object-contain opacity-70 group-hover:opacity-100" alt="CoStar">
-                            <span class="font-semibold text-xs">CoStar</span>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center gap-2">
-                        <button onclick="deleteProperty()" title="Delete"
-                            class="w-8 h-8 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition-all">
-                            <i class="fa-solid fa-trash text-sm"></i>
-                        </button>
-                        <button onclick="saveDrawer()" title="Save"
-                            class="w-8 h-8 rounded-lg bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-all shadow-sm">
-                            <i class="fa-solid fa-check text-sm"></i>
-                        </button>
-                        <button onclick="closeDrawer()"
-                            class="w-8 h-8 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-700 transition-all">
-                            <i class="fa-solid fa-xmark text-base"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <!-- Content -->
-            <div id="sidebar-right-content" class="flex-1 p-5 space-y-5 overflow-y-auto">
-                <!-- Injected via JS -->
-            </div>
-        </aside>
-
     </main>
-
-    <!-- COLUMN MODAL -->
-    <div id="column-modal" class="fixed inset-0 z-[80] overlay hidden flex items-center justify-center">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-800">Column Settings</h3>
-                <button onclick="closeColumnManager()" class="text-gray-400 hover:text-gray-600"><i
-                        class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="p-6 overflow-y-auto space-y-2" id="column-list"></div>
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center rounded-b-2xl">
-                <button onclick="resetColumns()" class="text-xs text-red-500 font-bold hover:underline">Reset to
-                    Defaults</button>
-                <div class="flex gap-2">
-                    <button onclick="closeColumnManager()"
-                        class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-bold rounded-lg hover:bg-gray-50">Cancel</button>
-                    <button onclick="applyColumnSettings()"
-                        class="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 shadow-sm">Apply</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- TOAST -->
     <div id="toast"
@@ -612,7 +543,8 @@
         const OWNER_TYPES = ["", "Institutional", "Corporate", "Private Equity", "Mom & Pop", "Individual", "Unknown", "N/A"];
 
         const DEFAULT_COLUMNS = [
-            { id: 'imageurl', label: 'Image', width: '70px', visible: true },
+            { id: 'imageurl', label: 'Image', width: '150px', visible: true },
+            { id: 'tenant', label: 'Tenant', width: '180px', visible: true },
             { id: 'address', label: 'Address', width: '240px', visible: true },
             { id: 'city', label: 'City', width: '140px', visible: true },
             { id: 'state', label: 'State', width: '70px', visible: true },
@@ -620,13 +552,15 @@
             { id: 'daysonmarket', label: 'DOM', width: '80px', visible: true },
             { id: 'status', label: 'Status', width: '140px', visible: true },
             { id: 'ownername', label: 'Owner', width: '220px', visible: true },
-            { id: 'ownerphone', label: 'Phone', width: '150px', visible: false },
+            { id: 'ownerphone', label: 'Phone 1', width: '150px', visible: false },
+            { id: 'ownerphone2', label: 'Phone 2', width: '150px', visible: false },
             { id: 'owneremail', label: 'Email', width: '220px', visible: false },
-            { id: 'tenant', label: 'Tenant', width: '180px', visible: false },
+            { id: 'ownerfullname', label: 'Owner Full Name', width: '200px', visible: false },
+            { id: 'otherowners', label: 'Other Owners', width: '200px', visible: false },
             { id: 'buildingname', label: 'Building Name', width: '220px', visible: false },
             { id: 'costarid', label: 'CoStar ID', width: '120px', visible: true },
-            { id: 'analysisnotes', label: 'Analysis Notes', width: '260px', visible: false },
-            { id: 'notes', label: 'Notes', width: '260px', visible: false },
+            { id: 'contactnotes', label: 'Contact Notes', width: '260px', visible: false },
+            { id: 'notes', label: 'Internal Notes', width: '260px', visible: false },
         ];
 
         let currentView = 'table';
@@ -816,17 +750,29 @@
         function updateStats() {
             const incomplete = properties.filter(p => isIncomplete(p)).length;
             const complete = properties.length - incomplete;
-            document.getElementById('incomplete-count').innerText = incomplete;
-            document.getElementById('complete-count').innerText = complete;
-            document.getElementById('total-count').innerText = properties.length;
-            document.getElementById('showing-count').innerText = filteredProperties.length;
+
+            const incEl = document.getElementById('incomplete-count');
+            const compEl = document.getElementById('complete-count');
+            const totalEl = document.getElementById('total-count');
+            const showEl = document.getElementById('showing-count');
+
+            if (incEl) incEl.innerText = incomplete;
+            if (compEl) compEl.innerText = complete;
+            if (totalEl) totalEl.innerText = properties.length;
+            if (showEl) showEl.innerText = filteredProperties.length;
         }
 
         function isIncomplete(p) {
-            // Property is complete if explicitly marked complete OR has owner info
-            if (p._completed === true) return false;  // Explicitly complete
-            // Otherwise check if owner is filled in
-            return !p.ownername || p.ownername.toString().trim() === '';
+            // Property is complete if explicitly marked complete
+            if (p._completed === true) return false;
+
+            const name = (p.ownername || '').toString().trim();
+            const phone = (p.ownerphone || '').toString().trim();
+            const email = (p.owneremail || '').toString().trim();
+
+            // Incomplete if missing name AND (phone or email)
+            // (If we have a name plus at least one contact method, it's "complete enough" for now)
+            return !name || (!phone && !email);
         }
 
         function normalizeKey(key) {
@@ -1023,8 +969,21 @@
 
         function setView(view) {
             currentView = view;
-            document.getElementById('view-table').classList.toggle('active', view === 'table');
-            document.getElementById('view-cards').classList.toggle('active', view === 'cards');
+
+            // Update Table Button
+            const tableBtn = document.getElementById('view-table');
+            tableBtn.classList.toggle('active', view === 'table');
+            tableBtn.classList.toggle('bg-white', view === 'table');
+            tableBtn.classList.toggle('text-gray-900', view === 'table');
+            tableBtn.classList.toggle('text-gray-400', view !== 'table');
+
+            // Update Cards Button
+            const cardsBtn = document.getElementById('view-cards');
+            cardsBtn.classList.toggle('active', view === 'cards');
+            cardsBtn.classList.toggle('bg-white', view === 'cards');
+            cardsBtn.classList.toggle('text-gray-900', view === 'cards');
+            cardsBtn.classList.toggle('text-gray-400', view !== 'cards');
+
             document.getElementById('table-view').classList.toggle('hidden', view !== 'table');
             document.getElementById('cards-view').classList.toggle('hidden', view !== 'cards');
             renderAll();
@@ -1032,8 +991,19 @@
 
         function setTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-incomplete').classList.toggle('active', tab === 'incomplete');
-            document.getElementById('tab-complete').classList.toggle('active', tab === 'complete');
+
+            const incBtn = document.getElementById('tab-incomplete');
+            incBtn.classList.toggle('active', tab === 'incomplete');
+            incBtn.classList.toggle('bg-white', tab === 'incomplete');
+            incBtn.classList.toggle('text-gray-900', tab === 'incomplete');
+            incBtn.classList.toggle('text-gray-500', tab !== 'incomplete');
+
+            const comBtn = document.getElementById('tab-complete');
+            comBtn.classList.toggle('active', tab === 'complete');
+            comBtn.classList.toggle('bg-white', tab === 'complete');
+            comBtn.classList.toggle('text-gray-900', tab === 'complete');
+            comBtn.classList.toggle('text-gray-500', tab !== 'complete');
+
             renderAll();
         }
 
@@ -1042,7 +1012,7 @@
             renderAll();
         }
 
-        function refreshData() {
+        function reloadGrid() {
             renderAll();
             showToast('Refreshed', 'success');
         }
@@ -1114,16 +1084,7 @@
             renderAll();
         }
 
-        function renderAll() {
-            filteredProperties = getFilteredProperties();
-            updateStats();
 
-            if (currentView === 'table') {
-                renderTable();
-            } else {
-                renderCards();
-            }
-        }
 
         function formatValue(val, key) {
             if (val === undefined || val === null || val === '') return "";
@@ -1141,279 +1102,108 @@
             return s;
         }
 
-        // --- FILTER UI ---
-        let activeFilterMenu = null;
+        // --- AG GRID SETUP ---
+        let gridApi;
 
-        function toggleFilterMenu(colId, btnEl) {
-            // Close existing
-            const existing = document.getElementById('filter-popover');
-            if (existing) {
-                const wasSame = existing.dataset.col === colId;
-                existing.remove();
-                if (wasSame) return;
-            }
 
-            // Create Popover
-            const popover = document.createElement('div');
-            popover.id = 'filter-popover';
-            popover.className = 'filter-popover';
-            popover.dataset.col = colId;
 
-            // Get unique values from CURRENT filtered set (ignoring this column's filter for list?)
-            // Normally we want values from the *entire* dataset or the *current* dataset?
-            // Let's use entire dataset for options, to avoid disappearing options.
-            // Or use properties filtered by OTHER columns.
-            // Simple approach: Use all unique values in properties for now.
-            const uniqueValues = new Set();
-            properties.forEach(p => {
-                const val = p[colId];
-                if (val === undefined || val === null || val === '') uniqueValues.add('(Missing)');
-                else uniqueValues.add(String(val));
-            });
-            const sortedValues = Array.from(uniqueValues).sort();
-
-            // Render Options
-            const currentFilters = columnFilters[colId] || [];
-
-            // "Select All" / "Clear" buttons?
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'filter-actions';
-            actionsDiv.innerHTML = `
-                <button class="filter-btn-sm text-blue-600 hover:bg-blue-50" onclick="applyFilterAll('${colId}', true)">All</button>
-                <button class="filter-btn-sm text-gray-500 hover:bg-gray-100" onclick="applyFilterAll('${colId}', false)">None</button>
-            `;
-            // Add at bottom or top?
-            // Let's iterate values
-
-            sortedValues.forEach(val => {
-                const label = document.createElement('label');
-                label.className = 'filter-option';
-                const isChecked = currentFilters.length === 0 || currentFilters.includes(val);
-                // If filters are empty, it means "All". But here we want explicit selection?
-                // Logic: If columnFilters[colId] is undefined/empty, we show Checked? 
-                // Wait, if undefined, we haven't filtered. So showing all checked is UI rep of "no filter".
-                // But if user unchecks one, we need to add all OTHERS to the list.
-
-                label.innerHTML = `<input type="checkbox" value="${val}" ${isChecked ? 'checked' : ''} onchange="updateColumnFilter('${colId}', this.value, this.checked)"> ${val}`;
-                popover.appendChild(label);
-            });
-
-            popover.appendChild(actionsDiv);
-
-            // Position
-            const rect = btnEl.getBoundingClientRect();
-            popover.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-            popover.style.left = (rect.left + window.scrollX) + 'px';
-
-            document.body.appendChild(popover);
-
-            // Click outside listener
-            setTimeout(() => {
-                document.addEventListener('click', closeFilterOnClickOutside);
-            }, 0);
-        }
-
-        function closeFilterOnClickOutside(e) {
-            const popover = document.getElementById('filter-popover');
-            if (popover && !popover.contains(e.target) && !e.target.closest('button')) {
-                popover.remove();
-                document.removeEventListener('click', closeFilterOnClickOutside);
-                renderAll(); // Re-render to update filter icon state if needed
-            }
-        }
-
-        function updateColumnFilter(colId, val, checked) {
-            if (!columnFilters[colId]) {
-                // If starting from "All", we need to populate with all EXCEPT the unchecked one?
-                // Or if we check one, does it switch to "Only this"?
-                // Standard: "Select All" is default. Unchecking one creates a filter list of (All - 1).
-                // AND checking one from blank state?
-                // Let's initialize with ALL existing values if it was empty?
-                // Or simpler: If empty, it means ALL. 
-                // If user clicks a checkbox, we need to know the state.
-                // Let's assume we maintain the EXPLICIT list of ALLOWED items.
-                // If empty/undefined, it means ALL.
-
-                // If list is empty, and user UNCHECKS "Val A", we need to add [All - Val A].
-                // If list is empty, and user CHECKS ??? (It's already checked).
-
-                // Better UI approach for "All":
-                // If no filter, all checkboxes are checked.
-                // If user unchecks val, we populate list with ALL values EXCEPT val.
-
-                const uniqueValues = new Set();
-                properties.forEach(p => {
-                    const v = p[colId];
-                    if (v === undefined || v === null || v === '') uniqueValues.add('(Missing)');
-                    else uniqueValues.add(String(v));
-                });
-                const allVals = Array.from(uniqueValues);
-                columnFilters[colId] = allVals;
-            }
-
-            if (checked) {
-                columnFilters[colId].push(val);
-            } else {
-                columnFilters[colId] = columnFilters[colId].filter(v => v !== val);
-            }
-
-            // If all checked, clear filter
-            const uniqueValues = new Set();
-            properties.forEach(p => {
-                const v = p[colId];
-                if (v === undefined || v === null || v === '') uniqueValues.add('(Missing)');
-                else uniqueValues.add(String(v));
-            });
-            if (columnFilters[colId].length === uniqueValues.size) {
-                delete columnFilters[colId];
-            }
-        }
-
-        function applyFilterAll(colId, selectAll) {
-            if (selectAll) {
-                delete columnFilters[colId];
-            } else {
-                columnFilters[colId] = []; // Empty list means nothing allowed
-            }
-            // Update UI checkboxes
-            const popover = document.getElementById('filter-popover');
-            if (popover) {
-                const inputs = popover.querySelectorAll('input[type="checkbox"]');
-                inputs.forEach(inp => inp.checked = selectAll);
-            }
-        }
-        function renderTable() {
-            const thead = document.querySelector('#data-table thead');
-            const tbody = document.querySelector('#data-table tbody');
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
-
-            const visibleCols = columnConfig.filter(c => c.visible);
-
-            // Header
-            const trHead = document.createElement('tr');
-            visibleCols.forEach(col => {
-                const th = document.createElement('th');
-                th.style.width = col.width;
-                th.style.minWidth = col.width;
-                th.className = 'px-4 py-4 text-left border-b border-gray-200 select-none group ' + (sortColumn === col.id ? 'bg-gray-100' : '');
-
-                // Content Container
-                const container = document.createElement('div');
-                container.className = "flex items-center justify-between";
-
-                // Label & Sort
-                const labelSpan = document.createElement('span');
-                labelSpan.className = "flex items-center gap-2 cursor-pointer";
-                labelSpan.onclick = () => handleSort(col.id);
-
-                const sortIcon = sortColumn === col.id
-                    ? (sortDirection === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down')
-                    : 'fa-sort';
-                labelSpan.innerHTML = `${col.label}<i class="fa-solid ${sortIcon} sort-icon"></i>`;
-
-                // Filter Button
-                const isFiltered = columnFilters[col.id] && columnFilters[col.id].length > 0;
-                const filterBtn = document.createElement('button');
-                filterBtn.className = `p-1.5 rounded transition-all ml-2 ${isFiltered ? 'text-blue-600 bg-blue-50 opacity-100' : 'text-gray-400 opacity-0 group-hover:opacity-100 hover:bg-gray-200'}`;
-                filterBtn.innerHTML = '<i class="fa-solid fa-filter text-xs"></i>';
-                filterBtn.onclick = (e) => { e.stopPropagation(); toggleFilterMenu(col.id, e.target.closest('button')); };
-
-                container.appendChild(labelSpan);
-                container.appendChild(filterBtn);
-                th.appendChild(container);
-
-                trHead.appendChild(th);
-            });
-            // Actions column
-            const thActions = document.createElement('th');
-            thActions.innerText = 'Actions';
-            thActions.className = 'px-4 py-4 text-left border-b border-gray-200 w-40';
-            trHead.appendChild(thActions);
-            thead.appendChild(trHead);
-
-            // Body
-            filteredProperties.forEach((row, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = `group cursor-pointer transition-colors ${selectedRowKey === row._uniqueKey ? 'selected-row' : ''}`;
-                tr.onclick = () => openDrawer(row);
-
-                visibleCols.forEach(col => {
-                    const td = document.createElement('td');
-                    td.className = "py-3 px-4";
-                    td.style.maxWidth = col.width;
-
-                    const rawVal = row[col.id] || "";
-                    const formattedVal = formatValue(rawVal, col.id);
-
-                    if (col.id === 'imageurl') {
-                        // Image column with proper thumbnail display
-                        if (rawVal) {
-                            td.innerHTML = `<div class="w-14 h-12 rounded overflow-hidden bg-gray-100 flex-shrink-0">
-                                <img src="${rawVal}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex items-center justify-center text-gray-300\\'><i class=\\'fa-regular fa-image text-sm\\'></i></div>'">
-                            </div>`;
-                        } else {
-                            td.innerHTML = `<div class="w-14 h-12 rounded bg-gray-100 flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-sm"></i></div>`;
-                        }
-                    } else if (col.id === 'address') {
-                        td.innerHTML = `<div class="font-semibold text-gray-900 truncate text-base hover:text-blue-600 cursor-pointer" onclick="event.stopPropagation(); copyToClipboard('${formattedVal.replace(/'/g, "\\'")}')" title="Click to copy">${formattedVal}</div>`;
-                    } else if (col.id === 'city') {
-                        const state = row['state'] || '';
-                        td.innerHTML = `<div class="truncate text-base">${formattedVal}${state ? `, <span class="text-gray-400">${state}</span>` : ''}</div>`;
-                    } else if (col.id === 'ownername' && !rawVal) {
-                        td.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold badge-incomplete">MISSING</span>`;
-                    } else if (col.id === 'costarid' && !rawVal) {
-                        td.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold badge-incomplete">MISSING</span>`;
-                    } else if (col.id === 'daysonmarket') {
-                        const num = parseInt(rawVal);
-                        if (!isNaN(num) && num > 365) {
-                            td.innerHTML = `<span class="dom-warning px-2.5 py-1.5 rounded text-sm">${num}</span>`;
-                        } else {
-                            td.innerHTML = `<span class="text-base">${formattedVal}</span>`;
-                        }
-                    } else if (col.id === 'status' && rawVal) {
-                        let colorClass = "bg-gray-100 text-gray-600";
-                        if (['Sold', 'Under Contract', 'Still Active'].includes(rawVal)) colorClass = "bg-green-100 text-green-700";
-                        if (['Withdrawn', 'Demolished', 'Still Expired'].includes(rawVal)) colorClass = "bg-red-100 text-red-700";
-                        td.innerHTML = `<span class="px-2.5 py-1.5 rounded-full text-sm font-semibold ${colorClass}">${formattedVal}</span>`;
-                    } else {
-                        td.innerHTML = `<div class="truncate text-gray-600 text-base">${formattedVal}</div>`;
+        const gridOptions = {
+            rowData: [],
+            defaultColDef: {
+                sortable: true,
+                filter: true,
+                resizable: true,
+                flex: 1,
+                minWidth: 100
+            },
+            columnDefs: [
+                {
+                    field: "imageurl",
+                    headerName: "",
+                    width: 150,
+                    minWidth: 150,
+                    maxWidth: 150,
+                    flex: 0,
+                    cellRenderer: params => {
+                        const url = params.value;
+                        if (!url) return `<div class="w-full h-24 bg-slate-800 rounded-lg flex items-center justify-center text-slate-700 border border-slate-700/50"><i class="fa-regular fa-image text-3xl"></i></div>`;
+                        return `<div class="w-full h-24 bg-slate-800 rounded-lg overflow-hidden border border-slate-700/50 shadow-lg"><img src="${url}" class="w-full h-full object-cover"></div>`;
                     }
-                    tr.appendChild(td);
-                });
+                },
+                { field: "tenant", headerName: "Tenant", minWidth: 150 },
+                { field: "address", headerName: "Address", minWidth: 180, flex: 2 },
+                { field: "city", headerName: "City", width: 120 },
+                { field: "state", headerName: "State", width: 80, maxWidth: 80 },
+                { field: "price", headerName: "Price", valueFormatter: p => p.value ? '$' + parseFloat(String(p.value).replace(/[^0-9.]/g, '')).toLocaleString() : '' },
+                {
+                    field: "status", headerName: "Status", width: 120, cellRenderer: params => {
+                        const val = params.value || '';
+                        let colorClass = "bg-gray-100/10 text-gray-400";
+                        if (['Sold', 'Under Contract', 'Still Active'].includes(val)) colorClass = "bg-green-500/20 text-green-400";
+                        if (['Withdrawn', 'Demolished', 'Still Expired'].includes(val)) colorClass = "bg-red-500/20 text-red-400";
+                        return `<span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${colorClass}">${val}</span>`;
+                    }
+                },
+                { field: "ownername", headerName: "Owner", minWidth: 150 },
+                { field: "daysonmarket", headerName: "DOM", width: 80, maxWidth: 80 },
+                {
+                    headerName: "Actions",
+                    width: 90,
+                    maxWidth: 90,
+                    minWidth: 90,
+                    flex: 0,
+                    cellRenderer: params => {
+                        if (!params.data) return '';
+                        return `<button class="text-blue-400 hover:text-blue-300 px-2" onclick="openDrawer(window.currentRowData['${params.data._uniqueKey}'])"><i class="fa-solid fa-pen-to-square"></i></button>`;
+                    }
+                }
+            ],
+            rowSelection: 'single',
+            rowHeight: 120,
+            onRowClicked: event => openDrawer(event.data),
+            getRowId: params => params.data._uniqueKey || Math.random().toString()
+        };
 
-                // Actions
-                const tdActions = document.createElement('td');
-                tdActions.className = 'py-3 px-4';
-                tdActions.innerHTML = `
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="event.stopPropagation(); callOwner('${(row.ownerphone || '').replace(/'/g, "\\'")}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors" title="Call">
-                            <i class="fa-solid fa-phone text-sm"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); toggleComplete('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-green-600 transition-colors" title="Mark Complete">
-                            <i class="fa-solid fa-circle-check text-sm"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); skipProperty('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors" title="Skip">
-                            <i class="fa-solid fa-forward text-sm"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); deletePropertyByKey('${row._uniqueKey}');" class="w-9 h-9 rounded-lg hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors" title="Delete">
-                            <i class="fa-solid fa-trash text-sm"></i>
-                        </button>
-                    </div>
-                `;
-                tr.appendChild(tdActions);
+        function initAgGrid() {
+            const gridDiv = document.querySelector('#myGrid');
+            gridApi = agGrid.createGrid(gridDiv, gridOptions);
+            gridDiv.classList.add('ag-theme-quartz');
+        }
 
-                tbody.appendChild(tr);
-            });
+        // --- LAYOUT LOGIC ---
+        function toggleLayout(mode) {
+            document.getElementById('app-body').classList.remove('layout-standard', 'layout-widescreen');
+            document.getElementById('app-body').classList.add(`layout-${mode}`);
 
-            if (filteredProperties.length === 0) {
-                const trEmpty = document.createElement('tr');
-                trEmpty.innerHTML = `<td colspan="${visibleCols.length + 1}" class="p-16 text-center text-gray-400">
-                    <i class="fa-regular fa-folder-open text-5xl mb-4 block"></i>
-                    <p class="font-medium text-lg">No properties found</p>
-                </td>`;
-                tbody.appendChild(trEmpty);
-                tbody.appendChild(trEmpty);
+            document.getElementById('layout-standard-btn').className = mode === 'standard'
+                ? 'px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-900 bg-white shadow-sm'
+                : 'px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-500 hover:text-gray-700';
+
+            document.getElementById('layout-widescreen-btn').className = mode === 'widescreen'
+                ? 'px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-900 bg-white shadow-sm'
+                : 'px-3 py-1.5 rounded-md text-xs font-bold transition-all text-gray-500 hover:text-gray-700';
+
+            closeDrawer();
+        }
+
+        // Overwrite renderAll to update Grid
+        function renderAll() {
+            filteredProperties = getFilteredProperties();
+            updateStats();
+
+            // Expose for global access if needed (helper for string onclicks)
+            window.currentRowData = {};
+            filteredProperties.forEach(p => window.currentRowData[p._uniqueKey] = p);
+
+            if (currentView === 'table') {
+                if (gridApi) {
+                    gridApi.setGridOption('rowData', filteredProperties);
+                } else {
+                    initAgGrid();
+                    gridApi.setGridOption('rowData', filteredProperties);
+                }
+            } else {
+                renderCards();
             }
         }
 
@@ -1428,77 +1218,41 @@
 
                 const imgUrl = row.imageurl || '';
                 const price = formatValue(row.price, 'price') || '$0';
-                const capRate = '';
-                const priceSf = '-';
-                const rba = '-';
                 const dom = row.daysonmarket || '-';
-                const domWarning = parseInt(dom) > 365;
                 const isIncomp = isIncomplete(row);
 
                 card.innerHTML = `
-                    <div class="relative">
-                        <!-- Image -->
-                        <div class="h-36 bg-gray-100 overflow-hidden relative">
-                            ${imgUrl
-                        ? `<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.style.display='none'">`
+                     <div class="relative bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all">
+                         <div class="h-48 bg-gray-100 overflow-hidden relative border-b border-gray-100">
+                             ${imgUrl
+                        ? `<img src="${imgUrl}" class="w-full h-full object-cover">`
                         : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fa-regular fa-image text-3xl"></i></div>`
                     }
-                            <!-- Badge -->
-                            ${isIncomp
-                        ? `<span class="absolute top-3 right-3 badge-incomplete text-xs font-bold uppercase px-2 py-1 rounded-full shadow">Needs Research</span>`
-                        : `<span class="absolute top-3 right-3 badge-complete text-xs font-bold uppercase px-2 py-1 rounded-full shadow">Done</span>`
+                             ${isIncomp
+                        ? `<span class="absolute top-3 right-3 badge-incomplete text-xs font-bold uppercase px-2 py-1 rounded-full shadow bg-white/90 text-gray-600 backdrop-blur-sm">Needs Research</span>`
+                        : `<span class="absolute top-3 right-3 badge-complete text-xs font-bold uppercase px-2 py-1 rounded-full shadow bg-emerald-500 text-white backdrop-blur-sm">Done</span>`
                     }
-                            <!-- Price Overlay -->
-                            <div class="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-                                <span class="bg-black/75 text-white text-sm font-bold px-3 py-1.5 rounded-lg">${price}</span>
-                                ${capRate ? `<span class="bg-white/90 text-gray-700 text-xs font-semibold px-2 py-1 rounded-lg">${capRate}</span>` : ''}
-                            </div>
-                        </div>
-                        
-                        <!-- Content -->
-                        <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 text-base truncate">${row.buildingname || row.address || 'Unknown'}</h3>
-                            <p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1">
-                                <i class="fa-solid fa-location-dot"></i>
-                                ${row.city || ''}${row.state ? `, ${row.state}` : ''}
-                            </p>
-                            
-                            <!-- Stats Row -->
-                            <div class="flex items-center gap-3 mt-3 text-sm">
-                                <span class="text-gray-500">$/SF: <span class="font-semibold text-gray-800">${priceSf}</span></span>
-                                <span class="text-gray-300">|</span>
-                                <span class="text-gray-500">RBA: <span class="font-semibold text-gray-800">${rba}</span></span>
-                                <span class="text-gray-300">|</span>
-                                <span class="${domWarning ? 'text-red-500' : 'text-gray-500'}">DOM: <span class="font-semibold ${domWarning ? 'text-red-600' : 'text-gray-800'}">${dom}</span></span>
-                            </div>
-                            
-                            <!-- Owner -->
-                            ${!row.ownername
-                        ? `<div class="mt-3"><span class="bg-red-100 text-red-600 text-xs font-bold uppercase px-2 py-1 rounded">Owner Missing</span></div>`
-                        : `<div class="mt-3 text-sm text-gray-600 truncate">Owner: <span class="font-medium">${row.ownername}</span></div>`
-                    }
-                        </div>
-                        
-                        <!-- Actions -->
-                        <div class="border-t border-gray-100 px-4 py-3 flex items-center justify-between">
-                            <div class="flex items-center gap-1">
-                                <button onclick="event.stopPropagation(); callOwner('${(row.ownerphone || '').replace(/'/g, "\\'")}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
-                                    <i class="fa-solid fa-phone text-sm"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); toggleComplete('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-green-600 transition-colors">
-                                    <i class="fa-solid fa-circle-check text-sm"></i>
-                                </button>
-                                <button onclick="event.stopPropagation(); skipProperty('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-blue-600 transition-colors">
-                                    <i class="fa-solid fa-forward text-sm"></i>
-                                </button>
-                            </div>
-                            <button onclick="event.stopPropagation(); deletePropertyByKey('${row._uniqueKey}');" class="w-9 h-9 rounded hover:bg-red-50 flex items-center justify-center text-gray-400 hover:text-red-600 transition-colors">
-                                <i class="fa-solid fa-trash text-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-
+                             <div class="absolute bottom-3 left-3">
+                                 <span class="bg-slate-900/90 backdrop-blur-md text-white text-xs font-bold px-3 py-1.5 rounded-lg border border-white/10 shadow-lg">${price}</span>
+                             </div>
+                         </div>
+                         <div class="p-4">
+                             <h3 class="font-bold text-slate-800 text-lg truncate mb-1" title="${row.buildingname || row.address || 'Unknown'}">${row.buildingname || row.address || 'Unknown'}</h3>
+                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-slate-300"></i> ${row.city || ''}${row.state ? `, ${row.state}` : ''}</p>
+                             
+                             <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-medium text-slate-500">
+                                 <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-300 uppercase font-bold tracking-wider">DOM</span>
+                                    <span class="text-slate-700 font-bold">${dom}</span>
+                                 </div>
+                                 <div class="flex flex-col items-end">
+                                    <span class="text-[10px] text-slate-300 uppercase font-bold tracking-wider">Owner</span>
+                                    <span class="text-slate-700 font-bold max-w-[120px] truncate" title="${row.ownername || 'N/A'}">${row.ownername || 'N/A'}</span>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 `;
                 container.appendChild(card);
             });
 
@@ -1519,242 +1273,269 @@
             currentViewIndex = filteredProperties.findIndex(p => p._uniqueKey === row._uniqueKey);
 
             renderAll();
-            updateNavButtons();
             renderDrawerContent();
+            updateNavButtons();
 
             document.getElementById('sidebar-overlay').classList.remove('hidden');
             // Add active class to trigger slide-in
             setTimeout(() => {
-                document.getElementById('sidebar-left').classList.add('active');
-                document.getElementById('sidebar-right').classList.add('active');
+                document.getElementById('sidebar-visuals').classList.add('active');
+                document.getElementById('sidebar-inputs').classList.add('active');
+                document.getElementById('app-body').classList.add('sidebar-visible');
             }, 10);
         }
 
-        function renderDrawerContent() {
-            const leftPanel = document.getElementById('sidebar-left-content');
-            const rightPanel = document.getElementById('sidebar-right-content');
+        // --- NEW DRAWER FUNCTIONS ---
+        function toggleCompletedState() {
+            if (!tempDrawerData) return;
+            const isComp = !isIncomplete(tempDrawerData);
+            tempDrawerData._completed = !isComp;
 
-            leftPanel.innerHTML = '';
-            rightPanel.innerHTML = '';
+            // Re-render only buttons/sidebar UI
+            renderDrawerContent();
+        }
+
+        function renderDrawerContent() {
+            const leftPanel = document.getElementById('sidebar-visuals-content');
+            const rightPanel = document.getElementById('sidebar-inputs-content');
+            const headerPanel = document.getElementById('sidebar-header');
+
+            if (leftPanel) leftPanel.innerHTML = '';
+            if (rightPanel) rightPanel.innerHTML = '';
 
             const row = tempDrawerData;
+            const isComplete = !isIncomplete(row);
+
+            // Update Header
+            if (headerPanel) {
+                headerPanel.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <button onclick="closeDrawer()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                        <div class="flex items-center gap-1.5 ml-1 border-l border-gray-200 pl-3">
+                            <button id="btn-prev" onclick="navigateRow(-1)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-all ${currentViewIndex <= 0 ? 'opacity-30 pointer-events-none' : ''}">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider w-16 text-center">
+                                <span class="text-gray-900">${currentViewIndex + 1}</span> / ${filteredProperties.length}
+                            </span>
+                            <button id="btn-next" onclick="navigateRow(1)" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-500 transition-all ${currentViewIndex >= filteredProperties.length - 1 ? 'opacity-30 pointer-events-none' : ''}">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="openCoStarPage()" title="Open CoStar" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 border border-transparent hover:border-blue-100 transition-all group grayscale hover:grayscale-0">
+                            <img src="https://companieslogo.com/img/orig/CSGP-5955041b.png?t=1720244491" class="w-4 h-4 object-contain opacity-60 group-hover:opacity-100 transition-opacity">
+                        </button>
+
+                        <div class="h-6 w-px bg-gray-100"></div>
+
+                        <div class="flex items-center" title="Toggle Completed">
+                            <button onclick="toggleCompletedState()" id="complete-toggle-btn" 
+                                class="w-8 h-4 rounded-full relative transition-all duration-300 ${isComplete ? 'bg-green-500' : 'bg-gray-200'}">
+                                <div class="absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-transform duration-300 ${isComplete ? 'translate-x-4' : ''}"></div>
+                            </button>
+                        </div>
+
+                        <button onclick="saveDrawer()" class="w-8 h-8 flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm transition-all shadow-blue-500/10" title="Save Changes">
+                            <i class="fa-solid fa-floppy-disk text-xs"></i>
+                        </button>
+                    </div>
+                `;
+            }
+
             const imgUrl = row.imageurl || '';
-            const fullAddress = [row.address, row.city, row.state, row.zip].filter(Boolean).join(', ');
+
+            // Fix Address Format: No comma after state
+            const cityStateZip = [row.city, row.state, row.zip].filter(Boolean).join(' ');
+            const fullAddress = row.address ? `${row.address}, ${cityStateZip}` : cityStateZip;
             const mapQuery = encodeURIComponent(fullAddress);
 
-            // ========== LEFT PANEL (Property Details - Visuals & Core Info) ==========
-            leftPanel.innerHTML = `
-                <!-- Property Title -->
-                <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-                    <h2 class="text-lg font-bold text-gray-900">${row.buildingname || row.address || 'Unknown Property'}</h2>
-                    <p class="text-sm text-gray-500 flex items-center gap-1.5 mt-1.5">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span class="cursor-pointer hover:text-blue-600 transition-colors" onclick="copyToClipboard('${fullAddress.replace(/'/g, "\\'")}')" title="Click to copy">${fullAddress || 'No address'}</span>
-                    </p>
-                </div>
-                
-                <!-- Image -->
-                <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                    <div class="h-44 bg-gray-100 relative">
-                        ${imgUrl
-                    ? `<img src="${imgUrl}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                               <div class="hidden absolute inset-0 flex-col items-center justify-center text-gray-400 bg-gray-100"><i class="fa-regular fa-image text-3xl mb-2"></i><span class="text-xs">Image not found</span></div>`
-                    : `<div class="w-full h-full flex flex-col items-center justify-center text-gray-400"><i class="fa-regular fa-image text-3xl mb-2"></i><span class="text-xs">No Image</span></div>`
-                }
-                    </div>
-                </div>
-                
-                <!-- Key Metrics -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                        <div class="text-xs text-gray-400 font-semibold uppercase">Price</div>
-                        <div class="text-xl font-bold text-gray-900">${formatValue(row.price, 'price') || '-'}</div>
-                    </div>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                        <div class="text-xs text-gray-400 font-semibold uppercase">$/SF</div>
-                        <div class="text-xl font-bold text-gray-900">${formatValue(row.pricepersfgba, 'pricepersfgba') || '-'}</div>
-                    </div>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                        <div class="text-xs text-gray-400 font-semibold uppercase">Cap Rate</div>
-                        <div class="text-xl font-bold text-gray-900">${row.caprate ? parseFloat(row.caprate).toFixed(2) + '%' : '-'}</div>
-                    </div>
-                    <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                        <div class="text-xs text-gray-400 font-semibold uppercase">DOM</div>
-                        <div class="text-xl font-bold ${parseInt(row.daysonmarket) > 365 ? 'text-red-600' : 'text-gray-900'}">${row.daysonmarket || '-'}</div>
-                    </div>
-                </div>
-                
-                <!-- Building Details -->
-                <div class="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
-                    <div class="flex items-center gap-2 mb-2">
-                        <i class="fa-solid fa-building text-blue-600 text-sm"></i>
-                        <span class="text-xs font-bold text-gray-700 uppercase">Building Details</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-y-1 text-sm">
-                        <div class="text-gray-500">Type:</div>
-                        <div class="font-medium text-gray-900">${row.propertytype || '-'}</div>
-                        <div class="text-gray-500">RBA:</div>
-                        <div class="font-medium text-gray-900">${formatValue(row.rbaorsfgba, 'rbaorsfgba') || '-'} SF</div>
-                        <div class="text-gray-500">Land:</div>
-                        <div class="font-medium text-gray-900">${row.landareagrossac ? row.landareagrossac + ' AC' : '-'}</div>
-                        <div class="text-gray-500">Parcel:</div>
-                        <div class="font-medium text-gray-900">${row.parcel || row.parcelnumber || '-'}</div>
-                    </div>
-                    ${row.propertysubtype ? `<div class="mt-2"><span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">${row.propertysubtype}</span></div>` : ''}
-                </div>
-                
-                <!-- Google Maps -->
-                <div class="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
-                    <div class="h-40">
-                        ${fullAddress
-                    ? `<iframe src="https://maps.google.com/maps?q=${mapQuery}&t=k&z=17&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`
-                    : `<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400"><i class="fa-solid fa-map text-2xl"></i></div>`
-                }
-                    </div>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${mapQuery}" target="_blank"
-                        class="flex items-center justify-center gap-1.5 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100">
-                        <i class="fa-solid fa-location-dot"></i> Open in Google Maps
-                    </a>
-                </div>
-            `;
+            // ========== LEFT PANEL (Property Details & Financials) ==========
+            if (leftPanel) {
+                leftPanel.innerHTML = `
+                    <div class="h-full flex flex-col overflow-hidden">
+                        <div class="p-4 flex-none space-y-4">
+                            <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+                                <h2 class="text-base font-bold text-gray-900 truncate" title="${row.buildingname || row.address || 'Unknown'}">${row.buildingname || row.address || 'Unknown Property'}</h2>
+                                <p class="text-[11px] text-gray-500 flex items-center gap-1.5 mt-1 truncate">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                    <span class="cursor-pointer hover:text-blue-600" onclick="copyToClipboard('${fullAddress.replace(/'/g, "\\'")}')">${fullAddress || 'No address'}</span>
+                                </p>
+                            </div>
+                            
+                            <div class="bg-gray-100 rounded-xl overflow-hidden border border-gray-200 shadow-sm h-52">
+                                ${imgUrl
+                        ? `<img src="${imgUrl}" class="w-full h-full object-cover">`
+                        : `<div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fa-regular fa-image text-3xl"></i></div>`
+                    }
+                            </div>
+                            
+                            <!-- Financials (Moved Here) -->
+                            <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-100 space-y-4 shadow-inner">
+                                <h4 class="text-[10px] font-bold text-blue-600 uppercase tracking-widest flex items-center gap-2">
+                                    <i class="fa-solid fa-chart-line"></i> Financials & Details
+                                </h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                                        <label class="input-label-compact">Price</label>
+                                        <input id="field-price" class="input-field-compact font-bold text-blue-700" value="${row.price || ''}" onchange="updateDrawerField('price', this.value)">
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                                        <label class="input-label-compact">Cap Rate (%)</label>
+                                        <input id="field-caprate" class="input-field-compact font-bold text-blue-700" value="${row.caprate || ''}" onchange="updateDrawerField('caprate', this.value)">
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                                        <label class="input-label-compact">DOM</label>
+                                        <div class="text-lg font-bold mt-1 ${parseInt(row.daysonmarket) > 365 ? 'text-red-600' : 'text-gray-900'}">${row.daysonmarket || '-'}</div>
+                                    </div>
+                                    <div class="bg-white rounded-lg p-3 border border-blue-100 shadow-sm">
+                                        <label class="input-label-compact">CoStar ID</label>
+                                        <input id="field-costarid" class="input-field-compact" value="${row.costarid || ''}" onchange="updateDrawerField('costarid', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            // ========== RIGHT PANEL (Input Fields) ==========
-            rightPanel.innerHTML = `
-                <!-- Quick Address Paste -->
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
-                    <div class="flex items-center gap-2 mb-2.5">
-                        <i class="fa-solid fa-paste text-blue-600 text-sm"></i>
-                        <span class="text-sm font-bold text-gray-700">Quick Address Paste</span>
-                    </div>
-                    <textarea id="address-paste" rows="2" placeholder="Paste any address format here..."
-                        class="w-full border border-blue-200 rounded-lg p-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none resize-none"
-                        onpaste="setTimeout(() => parseAddressPaste(), 100)"></textarea>
-                    <button onclick="parseAddressPaste()" class="mt-2 text-xs font-semibold text-blue-600 hover:text-blue-800">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Parse Address
-                    </button>
-                </div>
-                
-                <!-- Research Section -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i class="fa-solid fa-clipboard-check text-blue-600 text-sm"></i>
-                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Research</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="input-group">
-                                <label>CoStar ID</label>
-                                <input type="text" value="${row.costarid || ''}" onchange="updateDrawerField('costarid', this.value)" placeholder="Property ID...">
-                            </div>
-                            <div class="input-group">
-                                <label>Tenant</label>
-                                <input type="text" value="${row.tenant || ''}" onchange="updateDrawerField('tenant', this.value)" placeholder="Current tenant...">
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label>Status</label>
-                            <select onchange="updateDrawerField('status', this.value)">
-                                ${STATUS_TYPES.map(t => `<option value="${t}" ${row.status === t ? 'selected' : ''}>${t || 'Select...'}</option>`).join('')}
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Image URL -->
-                <div class="input-group">
-                    <label>Image URL</label>
-                    <input type="text" value="${row.imageurl || ''}" onchange="updateDrawerField('imageurl', this.value); renderDrawerContent();" placeholder="Paste image URL...">
-                </div>
-                
-                <!-- Location Section -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i class="fa-solid fa-location-dot text-blue-600 text-sm"></i>
-                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Location</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="input-group">
-                            <label>Address</label>
-                            <input type="text" id="field-address" value="${row.address || ''}" onchange="updateDrawerField('address', this.value)">
-                        </div>
-                        <div class="grid grid-cols-3 gap-3">
-                            <div class="input-group">
-                                <label>City</label>
-                                <input type="text" id="field-city" value="${row.city || ''}" onchange="updateDrawerField('city', this.value)">
-                            </div>
-                            <div class="input-group">
-                                <label>State</label>
-                                <input type="text" id="field-state" value="${row.state || ''}" onchange="updateDrawerField('state', this.value)" maxlength="2" class="uppercase">
-                            </div>
-                            <div class="input-group">
-                                <label>Zip</label>
-                                <input type="text" id="field-zip" value="${row.zip || ''}" onchange="updateDrawerField('zip', this.value)">
+                        <!-- Google Maps -->
+                        <div class="px-4 pb-4">
+                            <div class="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+                                <div class="h-44">
+                                    ${fullAddress
+                        ? `<iframe src="https://maps.google.com/maps?q=${mapQuery}&t=k&z=17&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>`
+                        : `<div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400"><i class="fa-solid fa-map text-2xl"></i></div>`
+                    }
+                                </div>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${mapQuery}" target="_blank"
+                                    class="flex items-center justify-center gap-1.5 py-2 text-[11px] font-bold text-blue-600 hover:bg-blue-50 transition-colors border-t border-gray-100 uppercase tracking-wider">
+                                    <i class="fa-solid fa-location-dot"></i> Open in Google Maps
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Owner Contact Section -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <div class="flex items-center gap-2 mb-3">
-                        <i class="fa-solid fa-user-tie text-blue-600 text-sm"></i>
-                        <span class="text-xs font-bold text-gray-700 uppercase tracking-wide">Owner Contact</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="input-group">
-                                <label>Owner Name</label>
-                                <input type="text" value="${row.ownername || ''}" onchange="updateDrawerField('ownername', this.value)" placeholder="Owner name...">
-                            </div>
-                            <div class="input-group">
-                                <label>Owner Type</label>
-                                <select onchange="updateDrawerField('ownertype', this.value)">
-                                    ${OWNER_TYPES.map(t => `<option value="${t}" ${row.ownertype === t ? 'selected' : ''}>${t || 'Select...'}</option>`).join('')}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div class="input-group">
-                                <label><i class="fa-solid fa-phone mr-1"></i> Phone</label>
-                                <input type="text" value="${row.ownerphone || ''}" onchange="updateDrawerField('ownerphone', this.value)" placeholder="(555) 555-5555">
-                            </div>
-                            <div class="input-group">
-                                <label><i class="fa-solid fa-envelope mr-1"></i> Email</label>
-                                <input type="email" value="${row.owneremail || ''}" onchange="updateDrawerField('owneremail', this.value)" placeholder="owner@example.com">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Notes (Auto-resize) -->
-                <div class="input-group">
-                    <label>Notes</label>
-                    <textarea id="notes-textarea" oninput="autoResizeTextarea(this)" onchange="updateDrawerField('notes', this.value)" placeholder="Add research notes..." style="min-height: 100px; resize: vertical;">${row.notes || ''}</textarea>
-                </div>
-                
-                <!-- Completion Toggle -->
-                <div class="bg-white rounded-lg p-4 border border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-full ${!isIncomplete(row) ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'} flex items-center justify-center">
-                                <i class="fa-solid fa-circle-check text-sm"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-gray-900 text-sm">Mark as Complete</div>
-                                <div class="text-xs text-gray-500">Move to completed tab</div>
-                            </div>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" ${!isIncomplete(row) ? 'checked' : ''} onchange="toggleDrawerComplete(this.checked)" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                        </label>
-                    </div>
-                </div>
-            `;
+                `;
+            }
 
-            // Update navigation counts
-            document.getElementById('current-index').innerText = currentViewIndex + 1;
-            document.getElementById('total-filtered').innerText = filteredProperties.length;
+            // ========== RIGHT PANEL (Owner Data & General) ==========
+            if (rightPanel) {
+                const isComplete = !isIncomplete(row);
+                rightPanel.innerHTML = `
+                     <div class="flex flex-col h-full">
+                        <!-- Quick Paste (Collapsible) -->
+                        <details class="bg-slate-900 mb-4 rounded-xl shadow-inner border border-slate-800 group">
+                            <summary class="p-3 cursor-pointer list-none flex items-center justify-between text-[10px] text-slate-400 font-bold uppercase tracking-widest hover:text-white transition-colors">
+                                <span>Quick Property Import</span>
+                                <i class="fa-solid fa-chevron-down transition-transform group-open:rotate-180"></i>
+                            </summary>
+                            <div class="p-3 pt-0">
+                                <textarea id="address-paste" rows="1" placeholder="Paste data block here..." 
+                                    class="w-full text-xs p-2.5 rounded-lg border-none bg-slate-800 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 transition-all text-center" 
+                                    onpaste="setTimeout(() => parseAddressPaste(), 100)"></textarea>
+                            </div>
+                        </details>
+
+                        <div class="flex-1 space-y-4 pr-1">
+                             <!-- General Info Section -->
+                            <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-info text-blue-500"></i> General Info
+                                </h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact">Building Name / Title</label>
+                                        <input id="field-buildingname" class="input-field-compact" value="${row.buildingname || ''}" onchange="updateDrawerField('buildingname', this.value)">
+                                    </div>
+                                    <div>
+                                        <label class="input-label-compact">Status</label>
+                                        <select id="field-status" class="input-field-compact" onchange="updateDrawerField('status', this.value)">
+                                            ${STATUS_TYPES.map(t => `<option value="${t}" ${row.status === t ? 'selected' : ''}>${t}</option>`).join('')}
+                                        </select>
+                                    </div>
+                                    <div class="col-span-1">
+                                         <label class="input-label-compact">Image URL</label>
+                                         <input id="field-imageurl" class="input-field-compact" value="${row.imageurl || ''}" onchange="updateDrawerField('imageurl', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Owner Info Section -->
+                            <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-tie text-blue-500"></i> Owner Data
+                                </h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="col-span-1">
+                                        <label class="input-label-compact">Contact Name</label>
+                                        <input id="field-ownername" class="input-field-compact" value="${row.ownername || ''}" onchange="updateDrawerField('ownername', this.value)">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="input-label-compact">Owner Full Name</label>
+                                        <input id="field-ownerfullname" class="input-field-compact" value="${row.ownerfullname || ''}" onchange="updateDrawerField('ownerfullname', this.value)">
+                                    </div>
+                                    <div>
+                                        <label class="input-label-compact">Phone 1</label>
+                                        <input id="field-ownerphone" class="input-field-compact" value="${row.ownerphone || ''}" onchange="updateDrawerField('ownerphone', this.value)">
+                                    </div>
+                                    <div>
+                                        <label class="input-label-compact">Phone 2</label>
+                                        <input id="field-ownerphone2" class="input-field-compact" value="${row.ownerphone2 || ''}" onchange="updateDrawerField('ownerphone2', this.value)">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact">Email</label>
+                                        <input id="field-owneremail" class="input-field-compact" value="${row.owneremail || ''}" onchange="updateDrawerField('owneremail', this.value)">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact text-red-700">Owner Entity</label>
+                                        <div class="flex gap-2">
+                                            <input id="field-ownerentity" class="input-field-compact bg-red-50 border-red-200 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500" value="${row.ownerentity || ''}" onchange="updateDrawerField('ownerentity', this.value)">
+                                            
+                                            <button onclick="handleBusinessSearch('${(row.ownerentity || '').replace(/'/g, "\\'")}')" 
+                                                title="Search Entity in SOS Database (Copies to Clipboard)"
+                                                class="px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 border border-red-200 rounded-md transition-colors flex items-center justify-center">
+                                                <i class="fa-solid fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact text-red-700">Owner Address</label>
+                                        <input id="field-owneraddress" class="input-field-compact bg-red-50 border-red-200 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500" value="${row.owneraddress || ''}" onchange="updateDrawerField('owneraddress', this.value)">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact">Other Owners / Partners</label>
+                                        <input id="field-otherowners" class="input-field-compact" value="${row.otherowners || ''}" onchange="updateDrawerField('otherowners', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="grid grid-cols-1 gap-4 pb-4">
+                                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-blue-200">
+                                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-note-sticky text-blue-500"></i> Internal Notes
+                                    </h4>
+                                    <textarea id="field-notes" class="input-field-compact min-h-[50px] bg-slate-50" onchange="updateDrawerField('notes', this.value)">${row.notes || ''}</textarea>
+                                </div>
+                                <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm transition-all hover:border-amber-200">
+                                    <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 flex items-center gap-2">
+                                        <i class="fa-solid fa-address-book text-amber-500"></i> Contact Notes
+                                    </h4>
+                                    <textarea id="field-contactnotes" class="input-field-compact min-h-[50px] bg-amber-50/30" onchange="updateDrawerField('contactnotes', this.value)">${row.contactnotes || ''}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden Address Fields for Parser -->
+                        <input type="hidden" id="field-address" value="${row.address || ''}">
+                        <input type="hidden" id="field-city" value="${row.city || ''}">
+                        <input type="hidden" id="field-state" value="${row.state || ''}">
+                        <input type="hidden" id="field-zip" value="${row.zip || ''}">
+                    </div>
+                `;
+
+            }
         }
 
         // --- ADDRESS PARSER ---
@@ -1874,17 +1655,13 @@
             window.open(`https://product.costar.com/detail/lookup/${propertyId}/analytic-changes`, '_blank');
         }
 
-        function closeDrawer() {
-            document.getElementById('sidebar-overlay').classList.add('hidden');
-            // Remove open class from both
-            document.getElementById('sidebar-left').classList.remove('active');
-            document.getElementById('sidebar-right').classList.remove('active');
-            selectedRowKey = null;
-            renderAll();
-        }
+
         function toggleDrawerComplete(checked) {
             tempDrawerData._completed = checked;
         }
+
+        // --- OBSOLETE: Replaced by toggleCompletedState ---
+        // function toggleDrawerComplete(checked) { ... }
 
         async function saveDrawer() {
             const oldId = selectedRowKey;
@@ -1914,8 +1691,9 @@
 
         function closeDrawer() {
             document.getElementById('sidebar-overlay').classList.add('hidden');
-            document.getElementById('sidebar-left').classList.remove('active');
-            document.getElementById('sidebar-right').classList.remove('active');
+            document.getElementById('sidebar-visuals').classList.remove('active');
+            document.getElementById('sidebar-inputs').classList.remove('active');
+            document.getElementById('app-body').classList.remove('sidebar-visible');
             selectedRowKey = null;
             renderAll();
         }
@@ -2002,6 +1780,134 @@
                 window.open(`tel:${phone}`, '_self');
             } else {
                 showToast('No phone number available', 'error');
+            }
+        }
+
+        // --- BUSINESS SEARCH INTEGRATION ---
+        const stateData = {
+            'ALABAMA': { sosUrl: 'https://arc-sos.state.al.us/CGI/CORPNAME.MBR/INPUT' },
+            'ALASKA': { sosUrl: 'https://www.commerce.alaska.gov/cbp/main/search/entities' },
+            'ARIZONA': {
+                multi: true,
+                links: [
+                    { label: 'AZ Business Center', url: 'https://arizonabusinesscenter.azcc.gov/businesssearch', param: 'SearchTerm' },
+                    { label: 'AZ Trademarks/Names', url: 'https://apps.azsos.gov/apps/tntp/se.html', param: 'SearchTerm' }
+                ]
+            },
+            'ARKANSAS': { sosUrl: 'https://www.sos.arkansas.gov/corps/search_all.php' },
+            'CALIFORNIA': { sosUrl: 'https://bizfileonline.sos.ca.gov/search/business' },
+            'COLORADO': { sosUrl: 'https://www.sos.state.co.us/biz/BusinessEntityCriteriaExt.do?resetTransTyp=Y' },
+            'CONNECTICUT': { sosUrl: 'https://www.concord-sots.ct.gov/CONCORD/online?sn=WebBusinessExternal' },
+            'DELAWARE': { sosUrl: 'https://icis.corp.delaware.gov/Ecorp/EntitySearch/NameSearch.aspx' },
+            'DISTRICT OF COLUMBIA': { sosUrl: 'https://corponline.dcra.dc.gov/Home.aspx' },
+            'FLORIDA': { sosUrl: 'https://search.sunbiz.org/Inquiry/CorporationSearch/ByName' },
+            'GEORGIA': { sosUrl: 'https://ecorp.sos.ga.gov/BusinessSearch' },
+            'HAWAII': { sosUrl: 'https://hbe.ehawaii.gov/documents/search.html' },
+            'IDAHO': { sosUrl: 'https://sosbiz.idaho.gov/search/business' },
+            'ILLINOIS': { sosUrl: 'https://www.ilsos.gov/corporatellc/' },
+            'INDIANA': { sosUrl: 'https://bsd.sos.in.gov/publicbusinesssearch' },
+            'IOWA': { sosUrl: 'https://sos.iowa.gov/search/business/search.aspx' },
+            'KANSAS': { sosUrl: 'https://www.sos.ks.gov/eforms/BusinessEntity/Search.aspx' },
+            'KENTUCKY': { sosUrl: 'https://sosbes.sos.ky.gov/BusSearchNProfile/search.aspx' },
+            'LOUISIANA': { sosUrl: 'https://coraweb.sos.la.gov/CommercialSearch/CommercialSearch.aspx' },
+            'MAINE': { sosUrl: 'https://www10.informe.org/bdl/online/entity' },
+            'MARYLAND': { sosUrl: 'https://egov.maryland.gov/BusinessExpress/EntitySearch' },
+            'MASSACHUSETTS': { sosUrl: 'https://corp.sec.state.ma.us/Corp/CorpSearch/CorpSearch.aspx' },
+            'MICHIGAN': { sosUrl: 'https://mibusinessregistry.lara.state.mi.us/search/business' },
+            'MINNESOTA': { sosUrl: 'https://mblsportal.sos.state.mn.us/Business/Search' },
+            'MISSISSIPPI': { sosUrl: 'https://corp.sos.ms.gov/corp/portal/c/page/corpBusinessIdSearch/portal.aspx' },
+            'MISSOURI': { sosUrl: 'https://bsd.sos.mo.gov/BusinessEntity/BESearch.aspx' },
+            'MONTANA': { sosUrl: 'https://biz.sosmt.gov/search/business' },
+            'NEBRASKA': { sosUrl: 'https://www.nebraska.gov/sos/corp/corpsearch.cgi' },
+            'NEVADA': { sosUrl: 'https://esos.nv.gov/EntitySearch/OnlineEntitySearch' },
+            'NEW HAMPSHIRE': { sosUrl: 'https://quickstart.sos.nh.gov/online/BusinessInquire' },
+            'NEW JERSEY': { sosUrl: 'https://www.njportal.com/DOR/BusinessNameSearch/Search/BusinessName' },
+            'NEW MEXICO': { sosUrl: 'https://portal.sos.state.nm.us/BFS/online/Account/SearchBusiness' },
+            'NEW YORK': { sosUrl: 'https://apps.dos.ny.gov/publicInquiry/' },
+            'NORTH CAROLINA': { sosUrl: 'https://www.sosnc.gov/search/index/corp' },
+            'NORTH DAKOTA': { sosUrl: 'https://firststop.sos.nd.gov/search/business' },
+            'OHIO': { sosUrl: 'https://businesssearch.ohiosos.gov/' },
+            'OKLAHOMA': { sosUrl: 'https://www.sos.ok.gov/corp/corpinquiryfind.aspx' },
+            'OREGON': { sosUrl: 'https://egov.sos.state.or.us/br/pkg_web_name_srch_inq.do_name_srch' },
+            'PENNSYLVANIA': { sosUrl: 'https://file.dos.pa.gov/search/business' },
+            'RHODE ISLAND': { sosUrl: 'https://business.sos.ri.gov/CorpWeb/CorpSearch/CorpSearch.aspx' },
+            'SOUTH CAROLINA': { sosUrl: 'https://businessfilings.sc.gov/BusinessFiling/Entity/Search' },
+            'SOUTH DAKOTA': { sosUrl: 'https://sosenterprise.sd.gov/BusinessServices/Business/FilingSearch.aspx', directLink: true },
+            'TENNESSEE': { sosUrl: 'https://tncab.tnsos.gov/business-entity-search' },
+            'TEXAS': { sosUrl: 'https://mycpa.cpa.state.tx.us/coa/' },
+            'UTAH': { sosUrl: 'https://secure.utah.gov/bes/' },
+            'VERMONT': { sosUrl: 'https://sos.vermont.gov/corporations/search/' },
+            'VIRGINIA': { sosUrl: 'https://cis.scc.virginia.gov/' },
+            'WASHINGTON': { sosUrl: 'https://ccfs.sos.wa.gov/#/' },
+            'WEST VIRGINIA': { sosUrl: 'https://apps.sos.wv.gov/business/corporations/' },
+            'WISCONSIN': { sosUrl: 'https://www.wdfi.org/apps/CorpSearch/Search.aspx' },
+            'WYOMING': { sosUrl: 'https://wyobiz.wyo.gov/Business/FilingSearch.aspx' }
+        };
+
+        const abbreviations = {
+            'AL': 'ALABAMA', 'AK': 'ALASKA', 'AZ': 'ARIZONA', 'AR': 'ARKANSAS', 'CA': 'CALIFORNIA',
+            'CO': 'COLORADO', 'CT': 'CONNECTICUT', 'DE': 'DELAWARE', 'DC': 'DISTRICT OF COLUMBIA',
+            'FL': 'FLORIDA', 'GA': 'GEORGIA', 'HI': 'HAWAII', 'ID': 'IDAHO', 'IL': 'ILLINOIS',
+            'IN': 'INDIANA', 'IA': 'IOWA', 'KS': 'KANSAS', 'KY': 'KENTUCKY', 'LA': 'LOUISIANA',
+            'ME': 'MAINE', 'MD': 'MARYLAND', 'MA': 'MASSACHUSETTS', 'MI': 'MICHIGAN', 'MN': 'MINNESOTA',
+            'MS': 'MISSISSIPPI', 'MO': 'MISSOURI', 'MT': 'MONTANA', 'NE': 'NEBRASKA', 'NV': 'NEVADA',
+            'NH': 'NEW HAMPSHIRE', 'NJ': 'NEW JERSEY', 'NM': 'NEW MEXICO', 'NY': 'NEW YORK',
+            'NC': 'NORTH CAROLINA', 'ND': 'NORTH DAKOTA', 'OH': 'OHIO', 'OK': 'OKLAHOMA',
+            'OR': 'OREGON', 'PA': 'PENNSYLVANIA', 'RI': 'RHODE ISLAND', 'SC': 'SOUTH CAROLINA',
+            'SD': 'SOUTH DAKOTA', 'TN': 'TENNESSEE', 'TX': 'TEXAS', 'UT': 'UTAH', 'VT': 'VERMONT',
+            'VA': 'VIRGINIA', 'WA': 'WASHINGTON', 'WV': 'WEST VIRGINIA', 'WI': 'WISCONSIN',
+            'WY': 'WYOMING'
+        };
+
+        function findState(addr) {
+            if (!addr) return null;
+            const upper = addr.toUpperCase();
+            // 1. Check Abbreviations with word boundaries
+            for (const abbr in abbreviations) {
+                const regex = new RegExp(`\\b${abbr}\\b`);
+                if (regex.test(upper)) return abbreviations[abbr];
+            }
+            // 2. Check Full Names
+            for (const key in stateData) {
+                if (upper.includes(key)) return key;
+            }
+            return null;
+        }
+
+        function handleBusinessSearch(entityName) {
+            if (!entityName) {
+                showToast('No Owner Entity to search', 'error');
+                return;
+            }
+
+            // Get address from current drawer data
+            const ownerAddr = document.getElementById('field-owneraddress').value || '';
+            const stateKey = findState(ownerAddr);
+
+            if (!stateKey) {
+                showToast('Could not detect State from Owner Address', 'error');
+                return;
+            }
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(entityName).then(() => {
+                showToast(`Copied "${entityName}" to clipboard`, 'success');
+            }).catch(err => console.error('Clipboard failed', err));
+
+            // Open URL
+            const data = stateData[stateKey];
+            if (data.multi) {
+                // For multi-link states (AZ), default to first one for now or open both? 
+                // Let's open the first one.
+                let url = data.links[0].url;
+                if (!url.includes('?')) url += `?${data.links[0].param}=${encodeURIComponent(entityName)}`;
+                window.open(url, '_blank');
+            } else {
+                let url = data.sosUrl;
+                if (!data.directLink && !url.includes('?')) {
+                    url += `?search_term=${encodeURIComponent(entityName)}`;
+                }
+                window.open(url, '_blank');
             }
         }
 
