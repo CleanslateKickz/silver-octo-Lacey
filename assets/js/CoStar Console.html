@@ -504,6 +504,7 @@
             contactnotes: 'contact_notes',
             withdrawaloccurrences: 'withdrawal_occurrences',
             pricereductions: 'price_reductions',
+            propertytype: 'property_type',
             _completed: 'completed'
         };
 
@@ -542,6 +543,23 @@
         const STATUS_TYPES = ["", "Still Active", "Still Expired", "Sold", "Under Contract", "Unknown", "Demolished", "Withdrawn"];
         const OWNER_TYPES = ["", "Institutional", "Corporate", "Private Equity", "Mom & Pop", "Individual", "Unknown", "N/A"];
 
+        const PROPERTY_TYPE_EMOJIS = {
+            'Bank': '🏦',
+            'Coffee': '🍵',
+            'Fast Food': '🍔',
+            'Restaurant': '🍽️',
+            'Department': '🏬',
+            'Supermarket': '🛒',
+            'Pharmacy': '💊',
+            'Auto Repair': '🚗',
+            'Gas Station': '⛽',
+            'Truck Stop': '🛻',
+            'Car Wash': '🫧',
+            'Gym': '🏃‍♂️',
+            'Big Box': '📦',
+            'Center': 'Center'
+        };
+
         const DEFAULT_COLUMNS = [
             { id: 'imageurl', label: 'Image', width: '150px', visible: true },
             { id: 'tenant', label: 'Tenant', width: '180px', visible: true },
@@ -559,6 +577,7 @@
             { id: 'otherowners', label: 'Other Owners', width: '200px', visible: false },
             { id: 'buildingname', label: 'Building Name', width: '220px', visible: false },
             { id: 'costarid', label: 'CoStar ID', width: '120px', visible: true },
+            { id: 'propertytype', label: 'Type', width: '140px', visible: true },
             { id: 'contactnotes', label: 'Contact Notes', width: '260px', visible: false },
             { id: 'notes', label: 'Internal Notes', width: '260px', visible: false },
         ];
@@ -1147,6 +1166,19 @@
                 { field: "ownername", headerName: "Owner", minWidth: 150 },
                 { field: "daysonmarket", headerName: "DOM", width: 80, maxWidth: 80 },
                 {
+                    field: "propertytype",
+                    headerName: "Type",
+                    width: 130,
+                    cellRenderer: params => {
+                        if (!params.value) return '';
+                        const emoji = PROPERTY_TYPE_EMOJIS[params.value] || '';
+                        // Special handling for 'Center' which has no emoji in the spec but was listed as 'Center'
+                        if (params.value === 'Center') return '<span class="px-2 py-1 bg-gray-100 rounded text-xs font-bold text-gray-600">Center</span>';
+
+                        return `<span class="text-base" title="${params.value}">${emoji} <span class="text-xs font-medium text-gray-600 ml-1">${params.value}</span></span>`;
+                    }
+                },
+                {
                     headerName: "Actions",
                     width: 90,
                     maxWidth: 90,
@@ -1438,7 +1470,7 @@
                         </details>
 
                         <div class="flex-1 space-y-4 pr-1">
-                             <!-- General Info Section -->
+                            <!-- General Info Section -->
                             <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
                                 <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
                                     <i class="fa-solid fa-circle-info text-blue-500"></i> General Info
@@ -1448,6 +1480,10 @@
                                         <label class="input-label-compact">Building Name / Title</label>
                                         <input id="field-buildingname" class="input-field-compact" value="${row.buildingname || ''}" onchange="updateDrawerField('buildingname', this.value)">
                                     </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact">Tenant</label>
+                                        <input id="field-tenant" class="input-field-compact" value="${row.tenant || ''}" onchange="updateDrawerField('tenant', this.value)">
+                                    </div>
                                     <div>
                                         <label class="input-label-compact">Status</label>
                                         <select id="field-status" class="input-field-compact" onchange="updateDrawerField('status', this.value)">
@@ -1455,8 +1491,44 @@
                                         </select>
                                     </div>
                                     <div class="col-span-1">
+                                        <label class="input-label-compact">Property Type</label>
+                                        <select id="field-propertytype" class="input-field-compact" onchange="updateDrawerField('propertytype', this.value)">
+                                            <option value="">(Select Type)</option>
+                                            ${Object.keys(PROPERTY_TYPE_EMOJIS).map(k => {
+                    const emoji = k === 'Center' ? '' : PROPERTY_TYPE_EMOJIS[k];
+                    const display = k === 'Center' ? 'Center' : `${emoji} ${k}`;
+                    return `<option value="${k}" ${row.propertytype === k ? 'selected' : ''}>${display}</option>`;
+                }).join('')}
+                                        </select>
+                                    </div>
+                                    <div class="col-span-2">
                                          <label class="input-label-compact">Image URL</label>
                                          <input id="field-imageurl" class="input-field-compact" value="${row.imageurl || ''}" onchange="updateDrawerField('imageurl', this.value)">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Address Section -->
+                            <div class="bg-white p-3.5 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-blue-500"></i> Property Address
+                                </h4>
+                                <div class="grid grid-cols-6 gap-3">
+                                    <div class="col-span-6">
+                                        <label class="input-label-compact">Street Address</label>
+                                        <input id="field-address" class="input-field-compact" value="${row.address || ''}" onchange="updateDrawerField('address', this.value)">
+                                    </div>
+                                    <div class="col-span-3">
+                                        <label class="input-label-compact">City</label>
+                                        <input id="field-city" class="input-field-compact" value="${row.city || ''}" onchange="updateDrawerField('city', this.value)">
+                                    </div>
+                                    <div class="col-span-1">
+                                        <label class="input-label-compact">State</label>
+                                        <input id="field-state" class="input-field-compact" value="${row.state || ''}" onchange="updateDrawerField('state', this.value)">
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="input-label-compact">Zip</label>
+                                        <input id="field-zip" class="input-field-compact" value="${row.zip || ''}" onchange="updateDrawerField('zip', this.value)">
                                     </div>
                                 </div>
                             </div>
@@ -1526,12 +1598,6 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Hidden Address Fields for Parser -->
-                        <input type="hidden" id="field-address" value="${row.address || ''}">
-                        <input type="hidden" id="field-city" value="${row.city || ''}">
-                        <input type="hidden" id="field-state" value="${row.state || ''}">
-                        <input type="hidden" id="field-zip" value="${row.zip || ''}">
                     </div>
                 `;
 
@@ -1586,13 +1652,7 @@
                 // Could be just address or just city
                 // If it looks like a street address (has numbers at start), treat as address
                 if (/^\d+/.test(parts[0])) {
-                    // Check if there's existing city in the field
-                    const existingCity = document.getElementById('field-city').value;
-                    if (existingCity) {
-                        address = parts[0];
-                    } else {
-                        address = parts[0];
-                    }
+                    address = parts[0];
                 } else {
                     // Likely just a city
                     city = parts[0];
@@ -1686,6 +1746,7 @@
                 properties[existingIdx] = tempDrawerData;
             }
             renderAll();
+            renderDrawerContent(); // Refresh the sidebar to show updated images/maps
             showToast("Changes saved", 'success');
         }
 
