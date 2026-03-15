@@ -1,0 +1,1604 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Coding Stack — Ultimate 2026 Decision Guide</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --orange: #f0883e;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --pink: #f778ba;
+    --teal: #39d353;
+    --gold: #e3b341;
+    --gradient1: linear-gradient(135deg, #58a6ff 0%, #bc8cff 100%);
+    --gradient2: linear-gradient(135deg, #3fb950 0%, #39d353 100%);
+    --gradient3: linear-gradient(135deg, #f0883e 0%, #f85149 100%);
+    --gradient4: linear-gradient(135deg, #e3b341 0%, #f0883e 100%);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: rgba(13,17,23,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 56px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav .logo { font-weight: 700; font-size: 1rem; background: var(--gradient1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; white-space: nowrap; margin-right: 1rem; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 0.82rem; white-space: nowrap; transition: color .2s; padding: 4px 8px; border-radius: 6px; }
+  nav a:hover { color: var(--text); background: var(--surface); }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 4rem 2rem 3rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(88,166,255,0.08) 0%, transparent 70%);
+  }
+  .hero h1 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; position: relative; }
+  .hero h1 span { background: var(--gradient1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--muted); font-size: 1.05rem; margin-top: 0.75rem; max-width: 620px; margin-left: auto; margin-right: auto; position: relative; }
+  .hero-pills { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.25rem; flex-wrap: wrap; position: relative; }
+  .pill { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; border: 1px solid; }
+  .pill-blue { background: rgba(88,166,255,0.1); border-color: rgba(88,166,255,0.3); color: var(--accent); }
+  .pill-green { background: rgba(63,185,80,0.1); border-color: rgba(63,185,80,0.3); color: var(--green); }
+  .pill-purple { background: rgba(188,140,255,0.1); border-color: rgba(188,140,255,0.3); color: var(--purple); }
+  .pill-orange { background: rgba(240,136,62,0.1); border-color: rgba(240,136,62,0.3); color: var(--orange); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .section { margin-bottom: 3.5rem; }
+  .section-header { margin-bottom: 1.5rem; }
+  .section-title { font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.6rem; }
+  .section-title .icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+  .icon-blue { background: rgba(88,166,255,0.15); }
+  .icon-green { background: rgba(63,185,80,0.15); }
+  .icon-purple { background: rgba(188,140,255,0.15); }
+  .icon-orange { background: rgba(240,136,62,0.15); }
+  .icon-gold { background: rgba(227,179,65,0.15); }
+  .section-sub { color: var(--muted); font-size: 0.88rem; margin-top: 0.3rem; }
+
+  /* ── FLOWCHART ── */
+  .flowchart-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    overflow-x: auto;
+  }
+  .flowchart {
+    min-width: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    font-size: 0.82rem;
+  }
+  .fc-row { display: flex; align-items: center; justify-content: center; gap: 0; width: 100%; margin: 0; }
+  .fc-col { display: flex; flex-direction: column; align-items: center; }
+
+  .fc-node {
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.3;
+    position: relative;
+    min-width: 130px;
+    max-width: 200px;
+    border: 2px solid;
+  }
+  .fc-start {
+    background: var(--gradient1);
+    border-color: transparent;
+    color: #0d1117;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    padding: 12px 28px;
+    min-width: 160px;
+  }
+  .fc-diamond {
+    background: var(--surface2);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: none;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    width: 160px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    border: none;
+    background: linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.05));
+    border-radius: 0;
+    padding: 0;
+    font-weight: 700;
+    min-width: unset;
+    max-width: unset;
+  }
+  .fc-result {
+    border-radius: 12px;
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+    min-width: 140px;
+    max-width: 180px;
+    line-height: 1.4;
+    border: 2px solid;
+  }
+  .fc-result-blue { background: rgba(88,166,255,0.12); border-color: var(--accent); color: var(--accent); }
+  .fc-result-green { background: rgba(63,185,80,0.12); border-color: var(--green); color: var(--green); }
+  .fc-result-purple { background: rgba(188,140,255,0.12); border-color: var(--purple); color: var(--purple); }
+  .fc-result-orange { background: rgba(240,136,62,0.12); border-color: var(--orange); color: var(--orange); }
+  .fc-result-gold { background: rgba(227,179,65,0.12); border-color: var(--gold); color: var(--gold); }
+  .fc-result-teal { background: rgba(57,211,83,0.12); border-color: var(--teal); color: var(--teal); }
+
+  .fc-sub { font-size: 0.7rem; font-weight: 400; color: var(--muted); margin-top: 4px; }
+  .fc-arrow { color: var(--border); font-size: 1.2rem; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 2px 4px; }
+  .fc-v-arrow { width: 2px; height: 24px; background: var(--border); margin: 0 auto; }
+  .fc-h-line { height: 2px; background: var(--border); flex: 1; }
+  .fc-branch-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); padding: 2px 6px; background: var(--surface2); border-radius: 4px; white-space: nowrap; }
+
+  /* ── CARDS GRID ── */
+  .cards-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .cards-grid-3 { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.4rem;
+    transition: border-color .2s, transform .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover { border-color: #58a6ff55; transform: translateY(-2px); }
+  .card-accent-blue { border-left: 3px solid var(--accent); }
+  .card-accent-green { border-left: 3px solid var(--green); }
+  .card-accent-purple { border-left: 3px solid var(--purple); }
+  .card-accent-orange { border-left: 3px solid var(--orange); }
+  .card-accent-gold { border-left: 3px solid var(--gold); }
+  .card-accent-teal { border-left: 3px solid var(--teal); }
+  .card-accent-pink { border-left: 3px solid var(--pink); }
+  .card-accent-red { border-left: 3px solid var(--red); }
+
+  .card-title { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+  .card-badge { font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .badge-rec { background: rgba(63,185,80,0.2); color: var(--green); border: 1px solid rgba(63,185,80,0.35); }
+  .badge-new { background: rgba(88,166,255,0.2); color: var(--accent); border: 1px solid rgba(88,166,255,0.35); }
+  .badge-hot { background: rgba(240,136,62,0.2); color: var(--orange); border: 1px solid rgba(240,136,62,0.35); }
+  .badge-free { background: rgba(63,185,80,0.15); color: var(--teal); border: 1px solid rgba(63,185,80,0.25); }
+  .badge-fast { background: rgba(188,140,255,0.2); color: var(--purple); border: 1px solid rgba(188,140,255,0.35); }
+  .badge-budget { background: rgba(227,179,65,0.2); color: var(--gold); border: 1px solid rgba(227,179,65,0.35); }
+  .badge-drop { background: rgba(248,81,73,0.15); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+
+  .card-url { font-size: 0.72rem; color: var(--muted); margin-bottom: 0.7rem; }
+  .card-url a { color: var(--accent); text-decoration: none; }
+  .card-url a:hover { text-decoration: underline; }
+  .card-price { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.6rem; }
+  .card-price .per { font-size: 0.8rem; font-weight: 400; color: var(--muted); }
+  .card-features { list-style: none; font-size: 0.82rem; }
+  .card-features li { padding: 3px 0; color: var(--muted); display: flex; align-items: flex-start; gap: 6px; }
+  .card-features li::before { content: '✓'; color: var(--green); flex-shrink: 0; font-weight: 700; margin-top: 1px; }
+  .card-features li.x::before { content: '✗'; color: var(--red); }
+  .card-features li.w::before { content: '⚡'; color: var(--gold); }
+  .card-features li.s::before { content: '★'; color: var(--gold); }
+  .card-divider { height: 1px; background: var(--border); margin: 0.8rem 0; }
+  .card-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.7rem; }
+  .tag { font-size: 0.68rem; padding: 2px 8px; border-radius: 6px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .tag-blue { background: rgba(88,166,255,0.08); color: var(--accent); border-color: rgba(88,166,255,0.2); }
+  .tag-green { background: rgba(63,185,80,0.08); color: var(--green); border-color: rgba(63,185,80,0.2); }
+  .tag-purple { background: rgba(188,140,255,0.08); color: var(--purple); border-color: rgba(188,140,255,0.2); }
+  .tag-orange { background: rgba(240,136,62,0.08); color: var(--orange); border-color: rgba(240,136,62,0.2); }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  th { background: var(--surface2); padding: 10px 14px; text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(88,166,255,0.03); }
+  .td-name { font-weight: 600; color: var(--text); }
+  .td-price { font-weight: 700; color: var(--accent); white-space: nowrap; }
+  .td-check-y { color: var(--green); font-weight: 700; }
+  .td-check-n { color: var(--red); }
+  .td-check-p { color: var(--gold); font-size: 0.75rem; }
+  .td-link a { color: var(--accent); text-decoration: none; font-size: 0.75rem; }
+  .td-link a:hover { text-decoration: underline; }
+  .row-rec { background: rgba(63,185,80,0.04); }
+  .row-hot { background: rgba(240,136,62,0.04); }
+
+  /* ── RECOMMENDATION STACK ── */
+  .rec-stack { display: grid; gap: 1rem; }
+  .rec-tier { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.2rem 1.5rem; }
+  .rec-tier-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .rec-tier-badge { padding: 5px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+  .tier-1 { background: linear-gradient(135deg, rgba(63,185,80,0.2), rgba(57,211,83,0.1)); color: var(--green); border: 1px solid rgba(63,185,80,0.35); }
+  .tier-2 { background: linear-gradient(135deg, rgba(88,166,255,0.2), rgba(88,166,255,0.08)); color: var(--accent); border: 1px solid rgba(88,166,255,0.35); }
+  .tier-3 { background: linear-gradient(135deg, rgba(248,81,73,0.15), rgba(248,81,73,0.05)); color: var(--red); border: 1px solid rgba(248,81,73,0.3); }
+  .rec-tier-title { font-weight: 700; font-size: 1rem; }
+  .rec-tier-cost { margin-left: auto; font-size: 1.1rem; font-weight: 800; }
+  .rec-items { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  .rec-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+  .rec-item-icon { font-size: 1.3rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; background: var(--bg); flex-shrink: 0; }
+  .rec-item-info { flex: 1; min-width: 0; }
+  .rec-item-name { font-weight: 700; font-size: 0.9rem; }
+  .rec-item-detail { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+  .rec-item-price { font-weight: 800; font-size: 0.95rem; white-space: nowrap; }
+
+  /* ── BUDGET SUMMARY ── */
+  .budget-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media (max-width: 600px) { .budget-box { grid-template-columns: 1fr; } }
+  .budget-col-title { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; margin-bottom: 0.8rem; }
+  .budget-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-total { font-weight: 800; font-size: 1rem; color: var(--green); }
+  .budget-strike { text-decoration: line-through; color: var(--red); }
+  .budget-new { color: var(--green); font-weight: 700; }
+
+  /* ── USE CASE MAP ── */
+  .use-case-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+  .uc-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.2rem; }
+  .uc-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .uc-flow { display: flex; flex-direction: column; gap: 4px; font-size: 0.78rem; }
+  .uc-step { display: flex; align-items: center; gap: 8px; padding: 4px 8px; border-radius: 6px; }
+  .uc-step-tool { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-weight: 600; font-size: 0.72rem; white-space: nowrap; }
+  .uc-step-desc { color: var(--muted); font-size: 0.72rem; }
+  .uc-arrow { color: var(--muted); font-size: 0.7rem; }
+
+  /* ── RESOURCES ── */
+  .resources-grid { display: grid; gap: 0.7rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .res-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1rem; display: flex; align-items: center; gap: 0.8rem; transition: border-color .2s; }
+  .res-card:hover { border-color: var(--accent); }
+  .res-icon { font-size: 1.2rem; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; background: var(--surface2); flex-shrink: 0; }
+  .res-info { flex: 1; min-width: 0; }
+  .res-name { font-weight: 600; font-size: 0.85rem; }
+  .res-desc { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .res-link { font-size: 0.7rem; }
+  .res-link a { color: var(--accent); text-decoration: none; }
+
+  /* ── MISC ── */
+  .alert {
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid;
+  }
+  .alert-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .alert-blue { background: rgba(88,166,255,0.07); border-color: rgba(88,166,255,0.25); color: var(--text); }
+  .alert-green { background: rgba(63,185,80,0.07); border-color: rgba(63,185,80,0.25); color: var(--text); }
+  .alert-orange { background: rgba(240,136,62,0.07); border-color: rgba(240,136,62,0.25); color: var(--text); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+  footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 2rem; }
+
+  /* Sticky cost counter */
+  .cost-counter {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    z-index: 50;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .cost-counter .label { color: var(--muted); font-size: 0.7rem; }
+  .cost-counter .amount { font-size: 1.1rem; font-weight: 800; color: var(--green); }
+
+  @media (max-width: 768px) {
+    .cards-grid { grid-template-columns: 1fr; }
+    .rec-items { grid-template-columns: 1fr; }
+    .use-case-grid { grid-template-columns: 1fr; }
+    .cost-counter { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="logo">⚡ AI Coding Stack 2026</span>
+  <a href="#flowchart">Flowchart</a>
+  <a href="#recommendation">My Stack</a>
+  <a href="#ides">IDEs</a>
+  <a href="#api-plans">API Plans</a>
+  <a href="#budget-apis">Budget APIs</a>
+  <a href="#use-cases">Use Cases</a>
+  <a href="#full-table">Full Table</a>
+  <a href="#resources">Resources</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>AI Coding Stack <span>2026</span></h1>
+  <p>Decision guide for autonomous agents, vibe coding, and API-first development. Updated March 2026.</p>
+  <div class="hero-pills">
+    <span class="pill pill-blue">🤖 Autonomous Agents</span>
+    <span class="pill pill-green">⚡ OpenClaw Ready</span>
+    <span class="pill pill-purple">🔑 BYOK Optimized</span>
+    <span class="pill pill-orange">💰 Budget Consolidated</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ════════════════════════════════════════
+     FLOWCHART
+════════════════════════════════════════ -->
+<section class="section" id="flowchart">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-blue">🔀</span>
+      Decision Flowchart — Which Tool for Which Task?
+    </div>
+    <div class="section-sub">Start at the top and follow your task type to the ideal tool(s)</div>
+  </div>
+
+  <div class="flowchart-wrap">
+    <div class="flowchart">
+
+      <!-- START -->
+      <div class="fc-node fc-start">🚀 New AI Coding Task</div>
+      <div class="fc-v-arrow"></div>
+
+      <!-- Q1 -->
+      <div class="fc-diamond">What's the<br>task scope?</div>
+
+      <!-- 3-way branch from diamond -->
+      <div style="display:flex; align-items:stretch; width:100%; max-width:900px; margin:0;">
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center;">
+          <div class="fc-v-arrow"></div>
+          <div class="fc-branch-label">⚡ Quick Fix / Q&amp;A</div>
+          <div class="fc-v-arrow"></div>
+          <div class="fc-diamond" style="width:140px;height:70px;font-size:0.72rem;">Need web<br>context?</div>
+          <div class="fc-v-arrow"></div>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Yes</div>
+              <div class="fc-result fc-result-blue">🌐 Antigravity<br>Free Tier<br><span class="fc-sub">Gemini 3.1 Pro<br>+ Web grounded</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">No</div>
+              <div class="fc-result fc-result-teal">🪟 Windsurf<br>Free / Cursor<br><span class="fc-sub">Tab complete +<br>inline chat</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:2px; background: var(--border); margin: 8px 0;"></div>
+
+        <div style="flex:1.2; display:flex; flex-direction:column; align-items:center;">
+          <div class="fc-v-arrow"></div>
+          <div class="fc-branch-label">🏗️ Full Feature Build</div>
+          <div class="fc-v-arrow"></div>
+          <div class="fc-diamond" style="width:150px;height:75px;font-size:0.72rem;">Multi-file<br>agentic?</div>
+          <div class="fc-v-arrow"></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Just IDE</div>
+              <div class="fc-result fc-result-purple">🖱️ Cursor Pro<br>$20/mo<br><span class="fc-sub">VS Code fork<br>best ecosystem</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Agentic</div>
+              <div class="fc-result fc-result-green">⌨️ Claude Code<br>Pro $20/mo<br><span class="fc-sub">Best reasoning<br>+ autonomy</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Spec-First</div>
+              <div class="fc-result fc-result-blue">📋 Kiro<br>Free/Pro<br><span class="fc-sub">Spec → Story<br>→ Code</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="width:2px; background: var(--border); margin: 8px 0;"></div>
+
+        <div style="flex:1.2; display:flex; flex-direction:column; align-items:center;">
+          <div class="fc-v-arrow"></div>
+          <div class="fc-branch-label">🤖 Autonomous Agent</div>
+          <div class="fc-v-arrow"></div>
+          <div class="fc-diamond" style="width:155px;height:75px;font-size:0.72rem;">Budget or<br>best quality?</div>
+          <div class="fc-v-arrow"></div>
+          <div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Best Quality</div>
+              <div class="fc-result fc-result-green">🧠 Claude Code<br>+ Z.ai Pro<br><span class="fc-sub">Claude brain +<br>GLM backend</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Budget</div>
+              <div class="fc-result fc-result-gold">💸 Z.ai Lite<br>$9/mo<br><span class="fc-sub">GLM-5 via<br>RooCode/Cline</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+              <div class="fc-branch-label" style="font-size:0.62rem;">Fastest</div>
+              <div class="fc-result fc-result-purple">⚡ Cerebras<br>Code Pro $50<br><span class="fc-sub">2000 TPS<br>24M tok/day</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer of flowchart: common next step -->
+      <div class="fc-v-arrow" style="height:36px;"></div>
+      <div style="background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:12px;padding:10px 20px;text-align:center;max-width:500px;font-size:0.8rem;">
+        🔑 <strong>For BYOK tools (RooCode, Cline, OpenClaw, OpenCode):</strong><br>
+        Use <span style="color:var(--accent)">Z.ai Pro API</span> as budget backend · <span style="color:var(--purple)">OpenRouter</span> for model variety · <span style="color:var(--green)">Claude API</span> for quality
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     MY RECOMMENDED STACK
+════════════════════════════════════════ -->
+<section class="section" id="recommendation">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-green">⭐</span>
+      Recommended Personal Stack
+    </div>
+    <div class="section-sub">Optimized for autonomous agents, consolidation, and max value — updated March 2026</div>
+  </div>
+
+  <div class="alert alert-green">
+    <span class="alert-icon">💡</span>
+    <div>You currently max out Cursor, Windsurf, and Antigravity free tiers while under-utilizing your paid Z.ai Lite plan (no web search, no vision). The stack below fixes all of that for <strong>~$45–50/mo total</strong> — upgrading only what counts, keeping the rest free.</div>
+  </div>
+
+  <div class="rec-stack">
+    <!-- TIER 1 -->
+    <div class="rec-tier">
+      <div class="rec-tier-header">
+        <span class="rec-tier-badge tier-1">✅ Tier 1 — Pay For These</span>
+        <div class="rec-tier-title">Core investments — worth every dollar</div>
+        <div class="rec-tier-cost" style="color:var(--green)">$35/mo</div>
+      </div>
+      <div class="rec-items">
+        <div class="rec-item">
+          <div class="rec-item-icon">🧠</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Claude Code Pro</div>
+            <div class="rec-item-detail">Terminal autonomous agent · Sonnet + Opus 4.6 · Powers OpenClaw/RooCode/Cline · Best reasoning for multi-step tasks</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--green)">$20/mo</div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-item-icon">⚡</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Z.ai GLM Pro ↑ Upgrade</div>
+            <div class="rec-item-detail">Unlock web search + Vision · 40–60% faster than Lite · Compatible with 20+ tools (Cursor, Claude Code, Cline, Trae, Kilo)</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--green)">$27/mo</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 2 -->
+    <div class="rec-tier">
+      <div class="rec-tier-header">
+        <span class="rec-tier-badge tier-2">🆓 Tier 2 — Keep Free</span>
+        <div class="rec-tier-title">Powerful free tiers that complement your paid stack</div>
+        <div class="rec-tier-cost" style="color:var(--accent)">$0/mo</div>
+      </div>
+      <div class="rec-items">
+        <div class="rec-item">
+          <div class="rec-item-icon">🔮</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Google Antigravity Free</div>
+            <div class="rec-item-detail">Gemini 3.1 Pro + Claude Sonnet/Opus 4.6 + GPT-OSS-120B · Unlimited Tab completions · Weekly rate limits apply</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--teal)">Free</div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-item-icon">🌊</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Windsurf Free</div>
+            <div class="rec-item-detail">Unlimited tab completions · Cascade agentic flow · Great secondary IDE for visual UI work</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--teal)">Free</div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-item-icon">📋</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Kiro Free</div>
+            <div class="rec-item-detail">50 credits/mo · Spec-driven development · AWS-backed · Best for project kickoffs with auto-generated requirements</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--teal)">Free</div>
+        </div>
+        <div class="rec-item">
+          <div class="rec-item-icon">🧊</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Groq Free Tier</div>
+            <div class="rec-item-detail">1000 TPS ultra-fast inference · Great for BYOK testing · Llama 4, Qwen3, GPT-OSS models · Free API key</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--teal)">Free</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIER 3 -->
+    <div class="rec-tier">
+      <div class="rec-tier-header">
+        <span class="rec-tier-badge tier-3">🔧 Tier 3 — Optimize / Drop</span>
+        <div class="rec-tier-title">Reduce, cap, or cut</div>
+        <div class="rec-tier-cost" style="color:var(--orange)">~$10–15/mo</div>
+      </div>
+      <div class="rec-items">
+        <div class="rec-item">
+          <div class="rec-item-icon">🔀</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">OpenRouter — Cap at $10–15/mo</div>
+            <div class="rec-item-detail">Keep for model variety in RooCode experiments · 300+ models via one API · 5.5% fee · BYOK for niche use cases</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--orange)">Budget</div>
+        </div>
+        <div class="rec-item" style="opacity:0.7;">
+          <div class="rec-item-icon">❌</div>
+          <div class="rec-item-info">
+            <div class="rec-item-name">Trae AI Paid → Downgrade to Free</div>
+            <div class="rec-item-detail">New token-based pricing is unpredictable (community backlash). Free tier = $3/mo usage budget. Claude Code replaces the agentic need.</div>
+          </div>
+          <div class="rec-item-price" style="color:var(--red)">Drop</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Summary -->
+  <div class="budget-box" style="margin-top:1.2rem;">
+    <div>
+      <div class="budget-col-title">Before (Current)</div>
+      <div class="budget-row"><span>Z.ai GLM Lite</span><span class="budget-strike">~$6/mo (underutilized)</span></div>
+      <div class="budget-row"><span>Trae AI Pro (old)</span><span class="budget-strike">~$10/mo</span></div>
+      <div class="budget-row"><span>OpenRouter PAYG</span><span>~$15–20/mo</span></div>
+      <div class="budget-row"><span>Free tier frustration ×3</span><span style="color:var(--red)">Hitting limits</span></div>
+      <div class="budget-row"><span style="font-weight:700;">Total</span><span class="budget-strike" style="font-weight:700;">~$31–36/mo</span></div>
+    </div>
+    <div>
+      <div class="budget-col-title">After (Recommended)</div>
+      <div class="budget-row"><span>Z.ai GLM Pro ↑</span><span class="budget-new">$27/mo ✓ web+vision</span></div>
+      <div class="budget-row"><span>Claude Code Pro</span><span class="budget-new">$20/mo ✓ best agent</span></div>
+      <div class="budget-row"><span>OpenRouter (capped)</span><span class="budget-new">~$10/mo</span></div>
+      <div class="budget-row"><span>Trae / Antigravity / Windsurf / Kiro / Groq</span><span class="budget-new">$0 (free tiers)</span></div>
+      <div class="budget-row"><span style="font-weight:700;">Total</span><span class="budget-total">~$57/mo ← Full power</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     IDE / CODING AGENT PLANS
+════════════════════════════════════════ -->
+<section class="section" id="ides">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-blue">🖥️</span>
+      IDE & Coding Agent Plans
+    </div>
+    <div class="section-sub">Full-featured coding environments with built-in AI agents</div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="card card-accent-green">
+      <div class="card-title">🧠 Claude Code <span class="card-badge badge-rec">⭐ Recommended</span></div>
+      <div class="card-url"><a href="https://claude.ai/upgrade" target="_blank">claude.ai/upgrade</a></div>
+      <div class="card-price" style="color:var(--green)">$20<span class="per">/mo ($17 annual)</span></div>
+      <ul class="card-features">
+        <li class="s">Best autonomous multi-step coding agent 2026</li>
+        <li>Terminal-based CLI — "build X" and walk away</li>
+        <li>Claude Sonnet 4.6 + Opus 4.6 included</li>
+        <li>Works as BYOK backend for RooCode, Cline, OpenClaw</li>
+        <li>Max 5x = $100/mo · Max 20x = $200/mo</li>
+        <li class="w">⚠️ Heavy use ~$100–200/dev/mo on Sonnet</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Autonomous</span><span class="tag tag-blue">BYOK</span><span class="tag tag-purple">Best Reasoning</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🖱️ Cursor <span class="card-badge badge-hot">Popular</span></div>
+      <div class="card-url"><a href="https://cursor.com/pricing" target="_blank">cursor.com/pricing</a></div>
+      <div class="card-price" style="color:var(--accent)">$20<span class="per">/mo Pro</span></div>
+      <ul class="card-features">
+        <li>VS Code fork — familiar UX, largest community</li>
+        <li>Agent mode, Background Agents, MCPs, hooks</li>
+        <li>All frontier models (OpenAI, Claude, Gemini)</li>
+        <li>Pro+ $60 = 3x usage · Ultra $200 = 20x usage</li>
+        <li>200K context window (vs Windsurf 100K)</li>
+        <li class="w">Free tier = limited agents + limited tabs</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-blue">VS Code</span><span class="tag tag-blue">Best Ecosystem</span><span class="tag">200K Context</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-purple">
+      <div class="card-title">🌊 Windsurf <span class="card-badge badge-free">Free ✓</span></div>
+      <div class="card-url"><a href="https://windsurf.com/pricing" target="_blank">windsurf.com/pricing</a></div>
+      <div class="card-price" style="color:var(--purple)">$0<span class="per"> Free · Pro $15/mo</span></div>
+      <ul class="card-features">
+        <li class="s">Free tier = unlimited Tab completions</li>
+        <li>Cascade agentic flow — great for UI work</li>
+        <li>Pro: 500 credits/mo, all premium models</li>
+        <li>SWE-1.5 model access (Pro+)</li>
+        <li>Add-on credits $10 / 250 credits</li>
+        <li class="w">100K context window (less than Cursor)</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Tier</span><span class="tag tag-purple">Agentic</span><span class="tag">UI Focus</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-orange">
+      <div class="card-title">🔮 Google Antigravity <span class="card-badge badge-free">Free ✓</span></div>
+      <div class="card-url"><a href="https://antigravity.google/pricing" target="_blank">antigravity.google/pricing</a></div>
+      <div class="card-price" style="color:var(--orange)">$0<span class="per"> Individual · Dev via Google One</span></div>
+      <ul class="card-features">
+        <li class="s">Free: Gemini 3.1 Pro + Claude Sonnet & Opus 4.6 + GPT-OSS-120B</li>
+        <li>Unlimited Tab completions (free)</li>
+        <li>Unlimited Command requests (free)</li>
+        <li>Jules async background agent (Google AI Pro)</li>
+        <li>Developer plan: via Google AI Pro ($19.99/mo) or Ultra ($249.99/mo)</li>
+        <li class="w">Free quotas were recently nerfed (March 2026)</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Tier</span><span class="tag tag-orange">Gemini</span><span class="tag">Google One</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-gold">
+      <div class="card-title">📋 Kiro <span class="card-badge badge-new">AWS-backed</span></div>
+      <div class="card-url"><a href="https://kiro.dev/docs/billing/" target="_blank">kiro.dev/docs/billing</a></div>
+      <div class="card-price" style="color:var(--gold)">$0<span class="per"> Free · Pro $20/mo · Pro+ $40/mo</span></div>
+      <ul class="card-features">
+        <li>Free: 50 credits/mo (Vibe requests)</li>
+        <li class="s">Spec-driven development = auto-generates requirements &amp; user stories</li>
+        <li>Hooks: auto-run tests/docs on save</li>
+        <li>Pro: 1,000 credits · Pro+: 3,000 credits</li>
+        <li>AWS Startup Credits program (1yr Pro+ free)</li>
+        <li class="w">Free preview just ended — paid plans launched</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Tier</span><span class="tag">Spec-Driven</span><span class="tag tag-blue">AWS</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-teal">
+      <div class="card-title">🐙 GitHub Copilot <span class="card-badge badge-budget">$10/mo</span></div>
+      <div class="card-url"><a href="https://github.com/features/copilot/plans" target="_blank">github.com/features/copilot/plans</a></div>
+      <div class="card-price" style="color:var(--teal)">$10<span class="per">/mo Pro</span></div>
+      <ul class="card-features">
+        <li>Free: 2,000 completions/mo + 50 chat requests</li>
+        <li>Pro+: $39/mo — o3, Claude Sonnet 4.6, Gemini 3.1 Pro</li>
+        <li>Tightest GitHub integration (PRs, Issues, Actions)</li>
+        <li>Works in VS Code, JetBrains, Neovim, Xcode</li>
+        <li>Business: $19/user — Workspace, Copilot Enterprise: $39</li>
+        <li class="w">Less autonomous than Claude Code</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Tier</span><span class="tag">GitHub Native</span><span class="tag">Multi-IDE</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🧩 Trae AI <span class="card-badge badge-drop">⚠️ Pricing Warning</span></div>
+      <div class="card-url"><a href="https://www.trae.ai/pricing" target="_blank">trae.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--muted)">$3<span class="per">/mo Lite · $10 Pro · $30 Pro+ · $100 Ultra</span></div>
+      <ul class="card-features">
+        <li>Free tier: $3/mo usage budget included</li>
+        <li>Token-based billing since Feb 24, 2026</li>
+        <li>Pro: $10/mo → Pro+: $30/mo → Ultra: $100/mo</li>
+        <li>Works as a VS Code-like IDE with agent mode</li>
+        <li class="x">New token-based system widely criticized as unpredictable</li>
+        <li class="x">Community calling it a "budget black hole"</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-orange">Token-Based</span><span class="tag">VS Code Fork</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-purple">
+      <div class="card-title">🏗️ OpenHands <span class="card-badge badge-new">Open Source</span></div>
+      <div class="card-url"><a href="https://openhands.dev/" target="_blank">openhands.dev</a></div>
+      <div class="card-price" style="color:var(--purple)">Free<span class="per"> Self-hosted</span></div>
+      <ul class="card-features">
+        <li class="s">Open-source Devin alternative — runs in browser sandbox</li>
+        <li>Multi-step agentic coding, shell access, web browsing</li>
+        <li>Works with any BYOK API (Claude, OpenRouter, Z.ai)</li>
+        <li>Active development, large community</li>
+        <li>Cloud hosted option available</li>
+        <li class="w">Requires your own API keys / compute</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free</span><span class="tag">BYOK</span><span class="tag tag-purple">Autonomous</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     API / CODING PLANS
+════════════════════════════════════════ -->
+<section class="section" id="api-plans">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-purple">🔑</span>
+      API & Coding Plans — Subscription Model
+    </div>
+    <div class="section-sub">Flat-rate subscriptions with generous token/request pools — ideal for BYOK tools and autonomous agents</div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="card card-accent-green">
+      <div class="card-title">⚡ Z.ai GLM Coding Plan <span class="card-badge badge-rec">⭐ Upgrade Now</span></div>
+      <div class="card-url"><a href="https://z.ai/subscribe" target="_blank">z.ai/subscribe</a></div>
+      <div class="card-price" style="color:var(--green)">$9<span class="per">/mo Lite · $27 Pro · $72 Max</span></div>
+      <ul class="card-features">
+        <li class="s">Pro unlocks: Web Search, Vision/Image, Web Reader, Zread MCP</li>
+        <li>GLM-5 / GLM-5-Code — strong agentic coding</li>
+        <li>Compatible with 20+ tools: Cursor, Claude Code, Cline, Trae, Kilo, Roocode</li>
+        <li>40–60% faster than Lite</li>
+        <li>$1/$3.2 per 1M tokens (GLM-5) via direct API</li>
+        <li class="w">Note: Z.ai recently updated pricing; verify at sign-up</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Web Search</span><span class="tag tag-green">Vision</span><span class="tag tag-blue">20+ Tools</span><span class="tag">BYOK</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-orange">
+      <div class="card-title">🌐 Perplexity Pro <span class="card-badge badge-hot">Unique</span></div>
+      <div class="card-url"><a href="https://www.perplexity.ai/pro" target="_blank">perplexity.ai/pro</a></div>
+      <div class="card-price" style="color:var(--orange)">$17<span class="per">/mo</span></div>
+      <ul class="card-features">
+        <li class="s">Best-in-class web search grounding for AI</li>
+        <li>Sonar API: search + reasoning in one call</li>
+        <li>Image understanding supported</li>
+        <li>Agent search with multi-step reasoning</li>
+        <li>$5/mo API credit included</li>
+        <li class="w">Not a coding IDE — complement tool for research</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Web Search</span><span class="tag tag-green">Vision</span><span class="tag tag-orange">Sonar API</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🐦 Grok / xAI <span class="card-badge badge-new">xAI API</span></div>
+      <div class="card-url"><a href="https://grok.com/plans" target="_blank">grok.com/plans</a></div>
+      <div class="card-price" style="color:var(--accent)">$25<span class="per">/mo</span></div>
+      <ul class="card-features">
+        <li>Web search + Image understanding</li>
+        <li>Grok 4 API: $3/$15 per 1M tokens</li>
+        <li>xAI API BYOK for coding tools</li>
+        <li>Long context + reasoning model</li>
+        <li class="w">Premium subscription primarily for chat</li>
+        <li class="w">API access separate from subscription</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Web Search</span><span class="tag tag-green">Vision</span><span class="tag tag-blue">xAI API</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-gold">
+      <div class="card-title">🀄 Qwen / Model Studio <span class="card-badge badge-budget">Budget</span></div>
+      <div class="card-url"><a href="https://modelstudio.console.alibabacloud.com/" target="_blank">modelstudio.alibabacloud.com</a></div>
+      <div class="card-price" style="color:var(--gold)">$10<span class="per">/mo Lite · $50 Pro</span></div>
+      <ul class="card-features">
+        <li>Qwen3 — top open-weight coding model</li>
+        <li>Web search supported in Pro</li>
+        <li>Free quota for new users ("millions of free tokens")</div>
+        <li>Lite: often sold out (restocked daily 9:30 AM)</li>
+        <li class="w">No image input listed</li>
+        <li class="w">China-based — latency may vary</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Web Search</span><span class="tag tag-gold">Budget</span><span class="tag">Free New Users</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-pink">
+      <div class="card-title">🤖 Kimi / Moonshot <span class="card-badge badge-budget">$15/mo</span></div>
+      <div class="card-url"><a href="https://www.kimi.com/membership/pricing" target="_blank">kimi.com/membership/pricing</a></div>
+      <div class="card-price" style="color:var(--pink)">$15<span class="per">/mo Moderato</span></div>
+      <ul class="card-features">
+        <li>Kimi K2 — strong open-source MoE model</li>
+        <li>Long context window (up to 1M tokens)</li>
+        <li>Moonshot Platform API: platform.moonshot.ai</li>
+        <li>Growing coding capabilities</li>
+        <li class="w">Web search/vision support varies by tier</li>
+        <li class="w">Primarily Chinese market focused</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag">1M Context</span><span class="tag tag-purple">K2 Model</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-purple">
+      <div class="card-title">🃏 ChatGPT / Codex <span class="card-badge badge-hot">OpenAI</span></div>
+      <div class="card-url"><a href="https://chatgpt.com/pricing" target="_blank">chatgpt.com/pricing</a></div>
+      <div class="card-price" style="color:var(--purple)">$20<span class="per">/mo Plus · Go $8/mo</span></div>
+      <ul class="card-features">
+        <li>Codex included in Plus ($20) + Pro ($200)</li>
+        <li>Agentic: runs tasks asynchronously in sandboxed env</li>
+        <li>Codex CLI: terminal-based agent (like Claude Code)</li>
+        <li>GPT-5.3 Codex-Spark via Cerebras = 1000+ TPS</li>
+        <li>Go plan: $8/mo for basic access</li>
+        <li class="w">Business $30/user · Pro $200/mo for heavy use</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-purple">Codex CLI</span><span class="tag">Sandboxed</span><span class="tag tag-blue">Async Agent</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-teal">
+      <div class="card-title">🌿 Minimax Coding Plan <span class="card-badge badge-new">Vision+Search</span></div>
+      <div class="card-url"><a href="https://platform.minimax.io/subscribe/coding-plan" target="_blank">platform.minimax.io</a></div>
+      <div class="card-price" style="color:var(--teal)">$10<span class="per">/mo Starter · $20 Plus · $50 Max</span></div>
+      <ul class="card-features">
+        <li class="s">Both web search AND image/vision supported</li>
+        <li>High-speed tiers: Plus HS $40 · Max HS $80 · Ultra HS $150</li>
+        <li>Strong Chinese language support</li>
+        <li>Video/audio generation API also available</li>
+        <li class="w">Previously $100 Starter minimum — now reduced</li>
+        <li class="w">Primarily suited to Asian market developers</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Web Search</span><span class="tag tag-green">Vision</span><span class="tag">High-Speed</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-red">
+      <div class="card-title">🎯 Manus <span class="card-badge badge-hot">Autonomous</span></div>
+      <div class="card-url"><a href="https://manus.im/pricing" target="_blank">manus.im/pricing</a></div>
+      <div class="card-price" style="color:var(--red)">$20<span class="per">/mo</span></div>
+      <ul class="card-features">
+        <li class="s">Fully autonomous computer-use agent</li>
+        <li>Can browse web, write code, run scripts end-to-end</li>
+        <li>API available for integration</li>
+        <li>No-code task automation built in</li>
+        <li class="w">Not a coding IDE — task automation agent</li>
+        <li class="w">API usage billed separately from subscription</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-red">Autonomous</span><span class="tag">Computer Use</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     BUDGET / FAST INFERENCE APIs
+════════════════════════════════════════ -->
+<section class="section" id="budget-apis">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-gold">💸</span>
+      Budget & Fast Inference APIs
+    </div>
+    <div class="section-sub">PAYG providers — use as BYOK backends for RooCode, Cline, OpenClaw, OpenCode</div>
+  </div>
+  <div class="cards-grid cards-grid-3">
+
+    <div class="card card-accent-purple">
+      <div class="card-title">⚡ Cerebras Code <span class="card-badge badge-fast">2000 TPS</span></div>
+      <div class="card-url"><a href="https://www.cerebras.ai/pricing" target="_blank">cerebras.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--purple)">$50<span class="per">/mo Pro · $200 Max</span></div>
+      <ul class="card-features">
+        <li class="s">Fastest inference on planet — 20× faster than OpenAI/Anthropic</li>
+        <li>Pro: 24M tokens/day · Max: 120M tokens/day</li>
+        <li>GPT-5.3-Codex-Spark powered by Cerebras hardware</li>
+        <li>Works with Cline, RooCode, OpenCode out of box</li>
+        <li>Free tier: all models, community support</li>
+        <li class="w">$50+ is premium tier — overkill for casual use</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-purple">Ultra-Fast</span><span class="tag">BYOK</span><span class="tag">Multi-Agent</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-green">
+      <div class="card-title">🧊 Groq <span class="card-badge badge-free">Free API</span></div>
+      <div class="card-url"><a href="https://groq.com/pricing" target="_blank">groq.com/pricing</a></div>
+      <div class="card-price" style="color:var(--green)">Free<span class="per"> + PAYG from $0.05/1M tokens</span></div>
+      <ul class="card-features">
+        <li class="s">1,000 TPS on GPT-OSS-20B — real-time code generation</li>
+        <li>Free API key, PAYG with no platform fee</li>
+        <li>Llama 4 Scout, Qwen3 32B, Kimi K2 available</li>
+        <li>Built-in tools: web search $5/1K req, code exec $0.18/hr</li>
+        <li>Batch API: 50% discount for async workloads</li>
+        <li>Developer tier: 10× rate limits, 25% cost discount</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Tier</span><span class="tag tag-purple">1000 TPS</span><span class="tag">BYOK</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🔀 OpenRouter <span class="card-badge badge-budget">300+ Models</span></div>
+      <div class="card-url"><a href="https://openrouter.ai/pricing" target="_blank">openrouter.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--accent)">Free<span class="per"> + PAYG + 5.5% fee</span></div>
+      <ul class="card-features">
+        <li class="s">Single API for 300+ models, 60+ providers</li>
+        <li>Free: 25+ models, ~50 req/day</li>
+        <li>BYOK: 1M free req/mo on supported models</li>
+        <li>Zero Data Retention mode, SOC 2 Type I</li>
+        <li>OpenAI-compatible API — just change base URL</li>
+        <li class="w">5.5% markup over native model prices</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-blue">Model Hub</span><span class="tag">BYOK</span><span class="tag">300+ Models</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-teal">
+      <div class="card-title">🌊 DeepSeek API <span class="card-badge badge-budget">95% Cheaper</span></div>
+      <div class="card-url"><a href="https://platform.deepseek.com/api-docs" target="_blank">platform.deepseek.com</a></div>
+      <div class="card-price" style="color:var(--teal)">$0.028<span class="per">–$0.28/1M input tokens</span></div>
+      <ul class="card-features">
+        <li class="s">$12.60/mo for volume that costs $400 on Claude Opus — 30× cheaper</li>
+        <li>DeepSeek V3.2 + R1 — strong coding + reasoning</li>
+        <li>PAYG, no subscription required</li>
+        <li>Free access to V3.2 for chat</li>
+        <li>OpenAI-compatible API endpoint</li>
+        <li class="w">No flat-rate "coding plan" — pure PAYG</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Cheapest</span><span class="tag">BYOK</span><span class="tag">R1 Reasoning</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-orange">
+      <div class="card-title">🍃 Chutes.ai <span class="card-badge badge-budget">$3/mo</span></div>
+      <div class="card-url"><a href="https://chutes.ai/pricing" target="_blank">chutes.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--orange)">$3<span class="per">/mo Base · $15/mo expanded</span></div>
+      <ul class="card-features">
+        <li class="s">Ultra budget: $3/mo for 300 req/day base</li>
+        <li>$15/mo = 600 requests per 5-hour cycle</li>
+        <li>Good for OpenCode, Cline, SillyTavern</li>
+        <li>Community favorite for low-cost agentic coding</li>
+        <li class="w">Less polished than major providers</li>
+        <li class="w">Model selection more limited</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-gold">Ultra Budget</span><span class="tag">BYOK</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🌐 Mistral AI <span class="card-badge badge-new">European</span></div>
+      <div class="card-url"><a href="https://mistral.ai/pricing" target="_blank">mistral.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--accent)">$0–$25<span class="per">/mo Le Chat Sub</span></div>
+      <ul class="card-features">
+        <li>Le Chat: free tier, Pro $14.99/mo, Team $24.99/mo</li>
+        <li>API: Large 3 $2/$6 · Medium 3 $1/$3 · Small 3.1 $0.20/$0.60 per 1M</li>
+        <li>Mistral AI Studio — enterprise orchestration</li>
+        <li>Up to $30K startup credits available</li>
+        <li>European data residency option</li>
+        <li class="w">Coding specialization less than Claude/DeepSeek</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-blue">EU Data</span><span class="tag">API PAYG</span><span class="tag">Startup Credits</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-gold">
+      <div class="card-title">🔥 Fireworks AI <span class="card-badge badge-fast">Low Latency</span></div>
+      <div class="card-url"><a href="https://fireworks.ai/pricing" target="_blank">fireworks.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--gold)">$0.10<span class="per">–$0.90/1M tokens</span></div>
+      <ul class="card-features">
+        <li>&lt;4B params: $0.10 · 4–16B: $0.20 · &gt;16B: $0.90/1M</li>
+        <li>Fine-tuning at $0.50/1M tokens</li>
+        <li>Blazing fast inference — open source models</li>
+        <li>Llama 4, Qwen3, DeepSeek available</li>
+        <li>GPU cluster rental: H100 from $1.75/hr</li>
+        <li class="w">No flat coding plan — pure PAYG</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-gold">Fast</span><span class="tag">Fine-Tuning</span><span class="tag">Open Models</span>
+      </div>
+    </div>
+
+    <div class="card card-accent-teal">
+      <div class="card-title">🌐 Together AI <span class="card-badge badge-budget">Open Source</span></div>
+      <div class="card-url"><a href="https://www.together.ai/pricing" target="_blank">together.ai/pricing</a></div>
+      <div class="card-price" style="color:var(--teal)">From $0.10<span class="per">/1M tokens · $5 free</span></div>
+      <ul class="card-features">
+        <li>$5 free credit to start, no card required</li>
+        <li>Llama 3 70B at $0.90/1M — competitive pricing</li>
+        <li>Batch API: 30B tokens per model at scale</li>
+        <li>Code interpreter: execute LLM-generated code via API</li>
+        <li>Private fine-tuning deployments</li>
+        <li class="w">No flat coding subscription plan</li>
+      </ul>
+      <div class="card-tags">
+        <span class="tag tag-green">Free Trial</span><span class="tag">Code Exec</span><span class="tag">Batch API</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     USE CASE MAP
+════════════════════════════════════════ -->
+<section class="section" id="use-cases">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-orange">🗺️</span>
+      Use Case → Tool Mapping
+    </div>
+    <div class="section-sub">Which tool to reach for based on what you're doing</div>
+  </div>
+  <div class="use-case-grid">
+
+    <div class="uc-card">
+      <div class="uc-title">⚡ Quick Bug Fix / Inline Edit</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--purple)">Windsurf Free</span><span class="uc-step-desc">Tab complete, inline suggestion</span></div>
+        <div class="uc-arrow">↓ or</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--orange)">Antigravity Free</span><span class="uc-step-desc">Gemini 3.1 Pro inline</span></div>
+        <div class="uc-arrow">↓ for context-heavy</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--accent)">Cursor Free</span><span class="uc-step-desc">200K context window</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">🏗️ Full Feature / Multi-file Build</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Claude Code Pro</span><span class="uc-step-desc">Terminal agent, "build X"</span></div>
+        <div class="uc-arrow">↓ or if VS Code focused</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--accent)">Cursor Pro $20</span><span class="uc-step-desc">Background agents, 200K ctx</span></div>
+        <div class="uc-arrow">↓ for spec-first approach</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--gold)">Kiro Pro $20</span><span class="uc-step-desc">Auto-generate specs &amp; stories</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">🤖 Autonomous Agent (OpenClaw / RooCode)</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Claude API</span><span class="uc-step-desc">Best reasoning for agent tasks</span></div>
+        <div class="uc-arrow">↓ as budget backend</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Z.ai Pro API</span><span class="uc-step-desc">GLM-5-Code, $1/1M tokens</span></div>
+        <div class="uc-arrow">↓ for ultra-fast iteration</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--purple)">Cerebras Pro $50</span><span class="uc-step-desc">24M tokens/day @ 2000 TPS</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">🔍 Research + Grounded Coding</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--orange)">Antigravity Free</span><span class="uc-step-desc">Gemini web-grounded answers</span></div>
+        <div class="uc-arrow">↓ for deep web research</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--orange)">Perplexity Pro $17</span><span class="uc-step-desc">Sonar API, grounded reasoning</span></div>
+        <div class="uc-arrow">↓ via Z.ai agent</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Z.ai Pro Zread MCP</span><span class="uc-step-desc">Web reader in coding context</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">💸 Budget Vibe Coding / Prototyping</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--gold)">Z.ai Lite $9/mo</span><span class="uc-step-desc">GLM-5, strong for budget dev</span></div>
+        <div class="uc-arrow">↓ or even cheaper</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--orange)">Chutes.ai $3/mo</span><span class="uc-step-desc">300 req/day base plan</span></div>
+        <div class="uc-arrow">↓ for free PAYG</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--teal)">DeepSeek PAYG</span><span class="uc-step-desc">$0.028/1M — 30× cheaper than Claude</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">🌊 Image / Vision in Code Context</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Z.ai Pro Vision</span><span class="uc-step-desc">Image analysis + coding context</span></div>
+        <div class="uc-arrow">↓ or from chat interface</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--orange)">Antigravity Free</span><span class="uc-step-desc">Gemini vision, free</span></div>
+        <div class="uc-arrow">↓ for UI-to-code</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--teal)">Minimax Plus $20</span><span class="uc-step-desc">Vision + search combo plan</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">🧪 Model Experimentation / BYOK Testing</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--accent)">OpenRouter Free</span><span class="uc-step-desc">25+ models, no cost</span></div>
+        <div class="uc-arrow">↓ for speed testing</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Groq Free</span><span class="uc-step-desc">1000 TPS, free API key</span></div>
+        <div class="uc-arrow">↓ for open model fine-tuning</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--gold)">Fireworks / Together</span><span class="uc-step-desc">$5 free credit to start</span></div>
+      </div>
+    </div>
+
+    <div class="uc-card">
+      <div class="uc-title">📋 Project Kickoff / Architecture Planning</div>
+      <div class="uc-flow">
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--gold)">Kiro Free</span><span class="uc-step-desc">Spec → User stories → Tasks</span></div>
+        <div class="uc-arrow">↓ then hand off to</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Claude Code Pro</span><span class="uc-step-desc">Execute spec autonomously</span></div>
+        <div class="uc-arrow">↓ with backend via</div>
+        <div class="uc-step"><span class="uc-step-tool" style="color:var(--green)">Z.ai Pro API</span><span class="uc-step-desc">GLM-5 for context-heavy work</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FULL COMPARISON TABLE
+════════════════════════════════════════ -->
+<section class="section" id="full-table">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-purple">📊</span>
+      Full Comparison Table
+    </div>
+    <div class="section-sub">All providers at a glance — March 2026</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Provider</th>
+          <th>Type</th>
+          <th>Entry Price</th>
+          <th>Web Search</th>
+          <th>Vision</th>
+          <th>BYOK / API</th>
+          <th>Autonomous</th>
+          <th>Free Tier</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-rec">
+          <td class="td-name">⭐ Claude Code</td>
+          <td>IDE+Agent</td>
+          <td class="td-price">$20/mo</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ API</td>
+          <td class="td-check-y">✓ Best</td>
+          <td class="td-check-n">Limited</td>
+          <td class="td-link"><a href="https://claude.ai/upgrade" target="_blank">claude.ai</a></td>
+        </tr>
+        <tr class="row-rec">
+          <td class="td-name">⭐ Z.ai GLM Pro</td>
+          <td>API Plan</td>
+          <td class="td-price">$27/mo</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ 20+ tools</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Lite $9</td>
+          <td class="td-link"><a href="https://z.ai/subscribe" target="_blank">z.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Cursor</td>
+          <td>IDE</td>
+          <td class="td-price">$20/mo Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via IDE</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ Limited</td>
+          <td class="td-link"><a href="https://cursor.com/pricing" target="_blank">cursor.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Windsurf</td>
+          <td>IDE</td>
+          <td class="td-price">Free / $15 Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via IDE</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ Unlimited tabs</td>
+          <td class="td-link"><a href="https://windsurf.com/pricing" target="_blank">windsurf.com</a></td>
+        </tr>
+        <tr class="row-rec">
+          <td class="td-name">Google Antigravity</td>
+          <td>IDE</td>
+          <td class="td-price">Free / Google One</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via API</td>
+          <td class="td-check-y">✓ Jules</td>
+          <td class="td-check-y">✓ Generous</td>
+          <td class="td-link"><a href="https://antigravity.google/pricing" target="_blank">antigravity.google</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">GitHub Copilot</td>
+          <td>IDE Plugin</td>
+          <td class="td-price">Free / $10 Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via IDE</td>
+          <td class="td-check-p">Basic</td>
+          <td class="td-check-y">✓ 2K completions</td>
+          <td class="td-link"><a href="https://github.com/features/copilot/plans" target="_blank">github.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Kiro</td>
+          <td>IDE</td>
+          <td class="td-price">Free / $20 Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via IDE</td>
+          <td class="td-check-y">✓ Spec-Driven</td>
+          <td class="td-check-y">✓ 50 credits</td>
+          <td class="td-link"><a href="https://kiro.dev/docs/billing/" target="_blank">kiro.dev</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Trae AI</td>
+          <td>IDE</td>
+          <td class="td-price">Free / $10 Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via IDE</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ $3 budget</td>
+          <td class="td-link"><a href="https://www.trae.ai/pricing" target="_blank">trae.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">ChatGPT / Codex</td>
+          <td>Agent+Chat</td>
+          <td class="td-price">$8 Go / $20 Plus</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ Codex CLI</td>
+          <td class="td-check-y">✓ Sandbox</td>
+          <td class="td-check-y">✓ Limited</td>
+          <td class="td-link"><a href="https://chatgpt.com/pricing" target="_blank">chatgpt.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Perplexity Pro</td>
+          <td>Search+API</td>
+          <td class="td-price">$17/mo</td>
+          <td class="td-check-y">✓ Best</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ Sonar API</td>
+          <td class="td-check-p">Sonar Agent</td>
+          <td class="td-check-p">Limited</td>
+          <td class="td-link"><a href="https://www.perplexity.ai/pro" target="_blank">perplexity.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Grok / xAI</td>
+          <td>Chat+API</td>
+          <td class="td-price">$25/mo</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ xAI API</td>
+          <td class="td-check-p">Grok 4</td>
+          <td class="td-check-p">Limited</td>
+          <td class="td-link"><a href="https://grok.com/plans" target="_blank">grok.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Qwen / Model Studio</td>
+          <td>API Plan</td>
+          <td class="td-price">$10 Lite / $50 Pro</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓ New users</td>
+          <td class="td-link"><a href="https://modelstudio.console.alibabacloud.com/" target="_blank">alibabacloud.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Kimi / Moonshot</td>
+          <td>API Plan</td>
+          <td class="td-price">$15/mo</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Limited</td>
+          <td class="td-check-p">Limited</td>
+          <td class="td-link"><a href="https://www.kimi.com/membership/pricing" target="_blank">kimi.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Minimax</td>
+          <td>API Plan</td>
+          <td class="td-price">$10 Starter</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-link"><a href="https://platform.minimax.io/subscribe/coding-plan" target="_blank">minimax.io</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Manus</td>
+          <td>Agent</td>
+          <td class="td-price">$20/mo</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">API separate</td>
+          <td class="td-check-y">✓ Full auto</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-link"><a href="https://manus.im/pricing" target="_blank">manus.im</a></td>
+        </tr>
+        <tr class="row-hot">
+          <td class="td-name">⚡ Cerebras Code</td>
+          <td>API Plan</td>
+          <td class="td-price">$50 Pro / $200 Max</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓ BYOK</td>
+          <td class="td-check-y">✓ Multi-agent</td>
+          <td class="td-check-y">✓ Free tier</td>
+          <td class="td-link"><a href="https://www.cerebras.ai/pricing" target="_blank">cerebras.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Groq</td>
+          <td>Inference API</td>
+          <td class="td-price">Free + PAYG</td>
+          <td class="td-check-p">$5/1K req</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via tools</td>
+          <td class="td-check-y">✓ Free API</td>
+          <td class="td-link"><a href="https://groq.com/pricing" target="_blank">groq.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">OpenRouter</td>
+          <td>Model Hub</td>
+          <td class="td-price">Free + 5.5% fee</td>
+          <td class="td-check-p">Via models</td>
+          <td class="td-check-p">Via models</td>
+          <td class="td-check-y">✓ 300+ models</td>
+          <td class="td-check-p">Via models</td>
+          <td class="td-check-y">✓ 25+ models</td>
+          <td class="td-link"><a href="https://openrouter.ai/pricing" target="_blank">openrouter.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">DeepSeek API</td>
+          <td>Inference API</td>
+          <td class="td-price">$0.028/1M tokens</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via R1</td>
+          <td class="td-check-y">✓ Chat free</td>
+          <td class="td-link"><a href="https://platform.deepseek.com/api-docs" target="_blank">deepseek.com</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Chutes.ai</td>
+          <td>API Plan</td>
+          <td class="td-price">$3/mo Base</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via tools</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-link"><a href="https://chutes.ai/pricing" target="_blank">chutes.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Mistral AI</td>
+          <td>API+Chat</td>
+          <td class="td-price">Free / $14.99 Pro</td>
+          <td class="td-check-p">Via API tools</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via agents</td>
+          <td class="td-check-y">✓ Le Chat</td>
+          <td class="td-link"><a href="https://mistral.ai/pricing" target="_blank">mistral.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Fireworks AI</td>
+          <td>Inference API</td>
+          <td class="td-price">$0.10/1M tokens</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-p">Some models</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Via models</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-link"><a href="https://fireworks.ai/pricing" target="_blank">fireworks.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">Together AI</td>
+          <td>Inference API</td>
+          <td class="td-price">$0.10/1M + $5 free</td>
+          <td class="td-check-n">✗</td>
+          <td class="td-check-p">Some models</td>
+          <td class="td-check-y">✓</td>
+          <td class="td-check-p">Code exec</td>
+          <td class="td-check-y">✓ $5 credit</td>
+          <td class="td-link"><a href="https://www.together.ai/pricing" target="_blank">together.ai</a></td>
+        </tr>
+        <tr>
+          <td class="td-name">OpenHands</td>
+          <td>Agent (OSS)</td>
+          <td class="td-price">Free (self-hosted)</td>
+          <td class="td-check-p">Via BYOK</td>
+          <td class="td-check-p">Via BYOK</td>
+          <td class="td-check-y">✓ Required</td>
+          <td class="td-check-y">✓ Full</td>
+          <td class="td-check-y">✓ OSS</td>
+          <td class="td-link"><a href="https://openhands.dev/" target="_blank">openhands.dev</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:0.6rem;font-size:0.73rem;color:var(--muted);">
+    ✓ = Supported &nbsp;|&nbsp; ✗ = Not available &nbsp;|&nbsp; ⚡ = Partial/via add-on &nbsp;|&nbsp; ⭐ = Recommended &nbsp;|&nbsp; Prices verified March 2026 — always check provider pages for latest.
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     OPEN SOURCE / SELF-HOSTED TOOLS
+════════════════════════════════════════ -->
+<section class="section">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-green">🔓</span>
+      Open Source & Self-Hosted Tools Worth Checking Out
+    </div>
+    <div class="section-sub">Run with your own API keys — zero subscription cost</div>
+  </div>
+  <div class="cards-grid cards-grid-3">
+
+    <div class="card card-accent-green">
+      <div class="card-title">🦾 OpenClaw <span class="card-badge badge-new">Viral 2026</span></div>
+      <div class="card-url"><a href="https://www.digitalocean.com/resources/articles/what-is-openclaw" target="_blank">GitHub / OpenClaw</a></div>
+      <ul class="card-features">
+        <li class="s">Self-hosted, model-agnostic autonomous AI assistant</li>
+        <li>Connects to local files, messaging, and tools</li>
+        <li>Works with Claude API, Z.ai, Gemini, any BYOK</li>
+        <li>MIT licensed — fully private and self-hosted</li>
+        <li class="w">Requires API keys to use cloud models</li>
+        <li class="w">Security considerations for local file access</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free</span><span class="tag tag-purple">BYOK</span><span class="tag">Autonomous</span></div>
+    </div>
+
+    <div class="card card-accent-blue">
+      <div class="card-title">🙌 OpenHands (Devin OSS) <span class="card-badge badge-new">OSS</span></div>
+      <div class="card-url"><a href="https://openhands.dev/" target="_blank">openhands.dev</a></div>
+      <ul class="card-features">
+        <li class="s">Open-source Devin alternative in browser sandbox</li>
+        <li>Shell access, web browsing, multi-step tasks</li>
+        <li>Bring any API key — Claude, OpenRouter, Z.ai</li>
+        <li>Cloud version also available</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free</span><span class="tag tag-purple">BYOK</span><span class="tag">Sandbox</span></div>
+    </div>
+
+    <div class="card card-accent-teal">
+      <div class="card-title">💻 Opencode <span class="card-badge badge-new">Terminal-First</span></div>
+      <div class="card-url"><a href="https://opencode.ai/" target="_blank">opencode.ai</a></div>
+      <ul class="card-features">
+        <li>Terminal-based coding agent (like Claude Code, but OSS)</li>
+        <li>Model-agnostic BYOK — plug in Z.ai, Claude, etc.</li>
+        <li>Works well with budget plans (Chutes, DeepSeek)</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free</span><span class="tag">Terminal</span><span class="tag">BYOK</span></div>
+    </div>
+
+    <div class="card card-accent-orange">
+      <div class="card-title">🌱 agenticSeek <span class="card-badge badge-free">Fully Local</span></div>
+      <div class="card-url"><a href="https://fosowl.github.io/agenticSeek.html" target="_blank">fosowl.github.io/agenticSeek</a></div>
+      <ul class="card-features">
+        <li class="s">Fully local Manus alternative — no API cost</li>
+        <li>Runs on local LLMs (Ollama, LM Studio)</li>
+        <li>Voice input, web browsing, code execution</li>
+        <li class="w">Needs capable local hardware (16GB+ VRAM)</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free</span><span class="tag">Local LLM</span><span class="tag">No API Cost</span></div>
+    </div>
+
+    <div class="card card-accent-gold">
+      <div class="card-title">🤿 Kilo Code <span class="card-badge badge-new">Preview</span></div>
+      <div class="card-url"><a href="https://kilo.ai/open" target="_blank">kilo.ai/open</a></div>
+      <ul class="card-features">
+        <li>BYOK agentic coding tool — free during preview</li>
+        <li>App builder + CLI + API integration</li>
+        <li>Add now before pricing kicks in</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free Preview</span><span class="tag">BYOK</span></div>
+    </div>
+
+    <div class="card card-accent-purple">
+      <div class="card-title">🦌 DeerFlow <span class="card-badge badge-new">ByteDance OSS</span></div>
+      <div class="card-url"><a href="https://github.com/bytedance/deer-flow" target="_blank">github.com/bytedance/deer-flow</a></div>
+      <ul class="card-features">
+        <li>Open-source deep research + coding agent</li>
+        <li>Multi-agent workflow by ByteDance</li>
+        <li>Self-hostable, any LLM backend</li>
+      </ul>
+      <div class="card-tags"><span class="tag tag-green">Free</span><span class="tag">Multi-Agent</span><span class="tag">ByteDance</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     PRICING RESOURCES
+════════════════════════════════════════ -->
+<section class="section" id="resources">
+  <div class="section-header">
+    <div class="section-title">
+      <span class="icon icon-gold">🛠️</span>
+      Pricing Calculators & Research Resources
+    </div>
+    <div class="section-sub">Keep your costs in check with these tools</div>
+  </div>
+  <div class="resources-grid">
+    <div class="res-card"><div class="res-icon">💰</div><div class="res-info"><div class="res-name">LLM Cost Calculator</div><div class="res-desc">Compare token costs across all major providers</div><div class="res-link"><a href="https://www.helicone.ai/llm-cost" target="_blank">helicone.ai/llm-cost</a></div></div></div>
+    <div class="res-card"><div class="res-icon">📊</div><div class="res-info"><div class="res-name">Price Per Token</div><div class="res-desc">Subscription vs API calculator, cheapest LLM finder</div><div class="res-link"><a href="https://pricepertoken.com/" target="_blank">pricepertoken.com</a></div></div></div>
+    <div class="res-card"><div class="res-icon">🧮</div><div class="res-info"><div class="res-name">Sub vs API Calculator</div><div class="res-desc">Break-even analysis for subscriptions</div><div class="res-link"><a href="https://pricepertoken.com/subscription-calculator" target="_blank">pricepertoken.com/sub-calc</a></div></div></div>
+    <div class="res-card"><div class="res-icon">🏷️</div><div class="res-info"><div class="res-name">Cheapest LLM APIs</div><div class="res-desc">Live-updated cheapest model pricing</div><div class="res-link"><a href="https://pricepertoken.com/cheapest" target="_blank">pricepertoken.com/cheapest</a></div></div></div>
+    <div class="res-card"><div class="res-icon">📐</div><div class="res-info"><div class="res-name">CostGoat OpenRouter Calc</div><div class="res-desc">OpenRouter pricing calculator with daily updates</div><div class="res-link"><a href="https://costgoat.com/pricing/openrouter" target="_blank">costgoat.com</a></div></div></div>
+    <div class="res-card"><div class="res-icon">🤖</div><div class="res-info"><div class="res-name">AI Agent Frameworks Dir.</div><div class="res-desc">Best agent frameworks of 2026</div><div class="res-link"><a href="https://pricepertoken.com/directory/ai-agent-frameworks" target="_blank">pricepertoken.com/directory</a></div></div></div>
+    <div class="res-card"><div class="res-icon">📝</div><div class="res-info"><div class="res-name">AI Coding Costs 2026</div><div class="res-desc">$12 to $2,300/mo — the 183x breakdown</div><div class="res-link"><a href="https://tuaregsai.com/blog/2026/02-ai-coding-costs-2026/" target="_blank">tuaregsai.com/blog</a></div></div></div>
+    <div class="res-card"><div class="res-icon">🏆</div><div class="res-info"><div class="res-name">Top Coding Plans 2026</div><div class="res-desc">Verified pricing — Claude, Codex, Cerebras, GLM, Minimax</div><div class="res-link"><a href="https://serenitiesai.com/articles/top-coding-plans-vibe-coding-2026" target="_blank">serenitiesai.com</a></div></div></div>
+    <div class="res-card"><div class="res-icon">🔍</div><div class="res-info"><div class="res-name">Squeezing Free AI Subs</div><div class="res-desc">How to maximize Chutes, Z.ai, OpenCode on a budget</div><div class="res-link"><a href="https://blog.patshead.com/2026/01/squeezing-value-from-free-and-low-cost-ai-coding-subscriptions.html" target="_blank">patshead.com/blog</a></div></div></div>
+  </div>
+</section>
+
+</div><!-- /container -->
+
+<!-- STICKY COST COUNTER -->
+<div class="cost-counter">
+  <div class="label">Recommended Monthly Stack</div>
+  <div class="amount">~$57/mo</div>
+  <div style="font-size:0.68rem;color:var(--muted);margin-top:2px;">Claude $20 + Z.ai Pro $27 + OR ~$10</div>
+</div>
+
+<footer>
+  <div>⚡ AI Coding Stack 2026 &nbsp;|&nbsp; Data compiled from provider pages &amp; community research &nbsp;|&nbsp; Updated March 2026</div>
+  <div style="margin-top:0.4rem;">Prices change frequently — always verify at the source before subscribing.</div>
+</footer>
+
+</body>
+</html>
