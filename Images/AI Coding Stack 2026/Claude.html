@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Coding Plans & APIs — 2026 Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:       #1a1814;
+  --ink2:      #3d3a35;
+  --ink3:      #6b6760;
+  --ink4:      #9b9790;
+  --paper:     #faf8f4;
+  --paper2:    #f3f0ea;
+  --paper3:    #ebe7df;
+  --rule:      #d8d3c9;
+  --rule-hi:   #bfb9af;
+  --red:       #c94f2a;
+  --red-light: #fdf0eb;
+  --red-mid:   #f0d2c4;
+  --blue:      #1d5fa8;
+  --blue-light:#ebf2fb;
+  --green:     #2a7a4b;
+  --green-light:#ebf5ef;
+  --amber:     #b5660d;
+  --amber-light:#fef5e7;
+  --serif:     'Playfair Display', Georgia, serif;
+  --mono:      'IBM Plex Mono', 'Courier New', monospace;
+  --sans:      'Instrument Sans', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.masthead-left { color: var(--paper3); }
+.masthead-right { display: flex; gap: 24px; color: var(--ink4); }
+.masthead-right span { color: var(--paper); }
+
+/* ── HEADER ── */
+header {
+  padding: 56px 48px 48px;
+  border-bottom: 2px solid var(--ink);
+  position: relative;
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-kicker {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: var(--red);
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(42px, 6vw, 80px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin-bottom: 28px;
+}
+
+h1 em {
+  font-style: italic;
+  color: var(--red);
+}
+
+.header-deck {
+  font-family: var(--sans);
+  font-size: 16px;
+  color: var(--ink2);
+  max-width: 580px;
+  line-height: 1.65;
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-top: 28px;
+  border-top: 1px solid var(--rule);
+}
+
+.meta-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-right: 4px;
+}
+
+.stack-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 3px 10px;
+  border: 1px solid;
+  border-radius: 2px;
+}
+.stack-tag.paying  { border-color: var(--red-mid); background: var(--red-light); color: var(--red); }
+.stack-tag.free-t  { border-color: var(--rule); background: var(--paper2); color: var(--ink3); }
+.stack-tag.using   { border-color: #c5d9f0; background: var(--blue-light); color: var(--blue); }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ── SIDEBAR ── */
+aside {
+  border-right: 1px solid var(--rule);
+  padding: 32px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--paper);
+}
+aside::-webkit-scrollbar { width: 4px; }
+aside::-webkit-scrollbar-thumb { background: var(--rule); }
+
+.sidebar-section {
+  padding: 0 28px;
+  margin-bottom: 28px;
+}
+
+.sidebar-rule {
+  height: 1px;
+  background: var(--rule);
+  margin: 0 28px 24px;
+}
+
+.sidebar-head {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-bottom: 10px;
+}
+
+.filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 6px 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink3);
+  cursor: pointer;
+  transition: color 0.12s;
+  text-align: left;
+}
+.filter-btn:hover { color: var(--ink); }
+.filter-btn.active { color: var(--red); font-weight: 600; }
+.filter-btn.active .f-count { background: var(--red); color: #fff; border-color: var(--red); }
+
+.f-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 6px;
+  border: 1px solid var(--rule);
+  background: var(--paper2);
+  color: var(--ink4);
+  border-radius: 2px;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ── MAIN ── */
+main {
+  padding: 36px 44px;
+  min-width: 0;
+}
+
+/* ── TOOLBAR ── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.result-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink4);
+  letter-spacing: 0.04em;
+}
+.result-label b { color: var(--ink); font-weight: 500; }
+
+.sort-group {
+  display: flex;
+  gap: 2px;
+  border: 1px solid var(--rule);
+  padding: 2px;
+  background: var(--paper2);
+  border-radius: 3px;
+}
+.sort-btn {
+  background: none;
+  border: none;
+  padding: 4px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: var(--ink3);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.12s;
+}
+.sort-btn:hover { color: var(--ink); background: var(--paper3); }
+.sort-btn.active { background: var(--ink); color: var(--paper); }
+
+/* ── ALERT BANNER ── */
+.alert {
+  background: var(--red-light);
+  border: 1px solid var(--red-mid);
+  border-left: 3px solid var(--red);
+  padding: 14px 18px;
+  margin-bottom: 28px;
+  font-size: 13px;
+  color: var(--ink2);
+  line-height: 1.65;
+}
+.alert strong { color: var(--red); font-weight: 600; }
+
+/* ── GRID ── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--paper);
+  padding: 22px 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  position: relative;
+  transition: background 0.12s;
+}
+.card:hover { background: #fffdf9; }
+
+.card.is-pick { border-top: 3px solid var(--ink); }
+.card.is-pick .card-name::after {
+  content: '★';
+  font-size: 10px;
+  color: var(--amber);
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.card.is-current { border-top: 3px solid var(--red); }
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-name {
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.card-cat {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  margin-top: 4px;
+}
+
+.price-col { text-align: right; flex-shrink: 0; }
+.price-main {
+  font-family: var(--serif);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+.price-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--ink4);
+  margin-top: 4px;
+  letter-spacing: 0.02em;
+}
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 1px;
+  border: 1px solid;
+}
+.t-pick   { background: #fffbf0; border-color: #e8d08a; color: var(--amber); }
+.t-cur    { background: var(--red-light); border-color: var(--red-mid); color: var(--red); }
+.t-search { background: var(--green-light); border-color: #b4ddc3; color: var(--green); }
+.t-img    { background: var(--blue-light); border-color: #b8d3ee; color: var(--blue); }
+.t-byok   { background: var(--paper2); border-color: var(--rule); color: var(--ink3); }
+.t-agent  { background: #f5eeff; border-color: #d5b8f5; color: #6b2fa0; }
+.t-plan   { background: #eef3ff; border-color: #b8c8f0; color: #2245a0; }
+.t-free   { background: var(--green-light); border-color: #b4ddc3; color: var(--green); }
+.t-warn   { background: var(--amber-light); border-color: #f0d08a; color: var(--amber); }
+
+/* Description */
+.card-desc {
+  font-size: 12.5px;
+  color: var(--ink2);
+  line-height: 1.7;
+  flex: 1;
+}
+
+/* Note */
+.card-note {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink3);
+  line-height: 1.6;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  letter-spacing: 0.01em;
+}
+.card-note.is-red { color: var(--red); border-color: var(--red-mid); }
+.card-note.is-amber { color: var(--amber); border-color: #e8d08a; }
+.card-note.is-blue { color: var(--blue); border-color: #b8d3ee; }
+
+/* Footer */
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.caps {
+  display: flex;
+  gap: 10px;
+}
+.cap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink4);
+}
+.cap-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cap-dot.y { background: var(--green); }
+.cap-dot.n { background: var(--rule); }
+
+.card-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--red);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  opacity: 0.8;
+  transition: opacity 0.12s;
+}
+.card-link:hover { opacity: 1; }
+
+/* ── RESOURCES ── */
+.section {
+  margin-top: 52px;
+  padding-top: 40px;
+  border-top: 2px solid var(--ink);
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.section-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink4);
+  letter-spacing: 0.08em;
+}
+
+.res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin-bottom: 40px;
+}
+
+.res-card {
+  background: var(--paper);
+  padding: 18px 20px;
+  transition: background 0.12s;
+}
+.res-card:hover { background: var(--paper2); }
+
+.res-name {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.res-desc {
+  font-size: 12px;
+  color: var(--ink3);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+
+.res-link {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--red);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.12s;
+}
+.res-link:hover { opacity: 1; }
+
+/* Free tools */
+.pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pill-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  color: var(--ink2);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.12s;
+}
+.pill-link:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--paper2);
+}
+.pill-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+/* API Table */
+.table-wrap {
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  margin-top: 24px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+thead th {
+  background: var(--paper2);
+  padding: 9px 16px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink4);
+  border-bottom: 1px solid var(--rule);
+  white-space: nowrap;
+}
+tbody td {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--paper3);
+  color: var(--ink2);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--paper2); }
+
+.td-name { font-weight: 600; color: var(--ink); font-family: var(--sans); }
+.td-mono { font-family: var(--mono); font-size: 11px; color: var(--green); }
+.td-link { font-family: var(--mono); font-size: 10px; color: var(--red); text-decoration: none; letter-spacing: 0.04em; }
+.td-link:hover { text-decoration: underline; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--ink);
+  color: var(--paper2);
+  padding: 28px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 64px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+footer a { color: var(--paper3); }
+
+/* ── HIDDEN ── */
+.hidden { display: none !important; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--paper2); }
+::-webkit-scrollbar-thumb { background: var(--rule-hi); }
+
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+  aside { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--rule); }
+  header, .masthead { padding-left: 24px; padding-right: 24px; }
+  main { padding: 24px; }
+  footer { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <span class="masthead-left">AI TOOLS DIRECTORY &nbsp;/&nbsp; CODING PLANS, APIS & AGENTS</span>
+  <span class="masthead-right">
+    Updated <span>March 2026</span> &nbsp;·&nbsp; <span id="tool-total">0</span> tools
+  </span>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="header-kicker">2026 Buyer's Guide</div>
+    <h1>Coding Plans,<br>APIs &amp; <em>Agents</em></h1>
+    <p class="header-deck">Every paid AI coding plan, API subscription, and autonomous agent platform worth considering — with honest notes on value, restrictions, and what to actually buy.</p>
+
+    <div class="header-meta">
+      <span class="meta-label">Your stack —</span>
+      <span class="stack-tag paying">Trae AI $10/mo ↯</span>
+      <span class="stack-tag paying">Z Chat GLM Basic (no web/img)</span>
+      <span class="stack-tag using">OpenRouter PAYG ✓</span>
+      <span class="stack-tag free-t">Cursor free (maxed)</span>
+      <span class="stack-tag free-t">Windsurf free (maxed)</span>
+      <span class="stack-tag free-t">Antigravity free (maxed)</span>
+    </div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="sidebar-section">
+      <div class="sidebar-head">Show</div>
+      <button class="filter-btn active" onclick="setFilter('all',this)">All tools <span class="f-count" id="c-all">0</span></button>
+      <button class="filter-btn" onclick="setFilter('pick',this)">★ Top picks <span class="f-count" id="c-pick">0</span></button>
+      <button class="filter-btn" onclick="setFilter('current',this)">Your stack <span class="f-count" id="c-current">0</span></button>
+    </div>
+
+    <div class="sidebar-rule"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-head">Category</div>
+      <button class="filter-btn" onclick="setFilter('claude',this)">Claude plans <span class="f-count" id="c-claude">0</span></button>
+      <button class="filter-btn" onclick="setFilter('coding-plan',this)">Coding plans <span class="f-count" id="c-coding-plan">0</span></button>
+      <button class="filter-btn" onclick="setFilter('api-router',this)">API routers <span class="f-count" id="c-api-router">0</span></button>
+      <button class="filter-btn" onclick="setFilter('agent',this)">Agents <span class="f-count" id="c-agent">0</span></button>
+      <button class="filter-btn" onclick="setFilter('ide',this)">IDE tools <span class="f-count" id="c-ide">0</span></button>
+      <button class="filter-btn" onclick="setFilter('subscription',this)">AI subscriptions <span class="f-count" id="c-subscription">0</span></button>
+    </div>
+
+    <div class="sidebar-rule"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-head">Price</div>
+      <button class="filter-btn" onclick="setFilter('free',this)">Free tier <span class="f-count" id="c-free">0</span></button>
+      <button class="filter-btn" onclick="setFilter('under20',this)">Under $20 <span class="f-count" id="c-under20">0</span></button>
+      <button class="filter-btn" onclick="setFilter('over50',this)">$50+ <span class="f-count" id="c-over50">0</span></button>
+    </div>
+
+    <div class="sidebar-rule"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-head">Features</div>
+      <button class="filter-btn" onclick="setFilter('websearch',this)">Web search <span class="f-count" id="c-websearch">0</span></button>
+      <button class="filter-btn" onclick="setFilter('imageInput',this)">Image input <span class="f-count" id="c-imageInput">0</span></button>
+      <button class="filter-btn" onclick="setFilter('byok',this)">BYOK / PAYG <span class="f-count" id="c-byok">0</span></button>
+      <button class="filter-btn" onclick="setFilter('restricted',this)">⚠ Coding-only API <span class="f-count" id="c-restricted">0</span></button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <div class="alert">
+      <strong>Action items:</strong> Drop Trae AI — Claude Pro + Claude Code replaces it entirely. Upgrade Z Chat to Pro ($30) to unlock web search &amp; image, or drop it and use OpenRouter for GLM access. Consolidate your three maxed free IDEs into one paid tool.
+    </div>
+
+    <div class="toolbar">
+      <span class="result-label">Showing <b id="shown">0</b> of <b id="total">0</b> tools</span>
+      <div class="sort-group">
+        <button class="sort-btn active" onclick="setSort('default',this)">Default</button>
+        <button class="sort-btn" onclick="setSort('price-asc',this)">Price ↑</button>
+        <button class="sort-btn" onclick="setSort('price-desc',this)">Price ↓</button>
+        <button class="sort-btn" onclick="setSort('name',this)">A – Z</button>
+      </div>
+    </div>
+
+    <div class="cards-grid" id="grid"></div>
+
+    <!-- RESOURCES -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-title">Calculators &amp; Research</span>
+        <span class="section-num">6 RESOURCES</span>
+      </div>
+      <div class="res-grid">
+        <div class="res-card"><div class="res-name">Helicone LLM Cost Calculator</div><div class="res-desc">Compare token costs across every major provider in one place.</div><a href="https://www.helicone.ai/llm-cost" class="res-link" target="_blank">helicone.ai/llm-cost ↗</a></div>
+        <div class="res-card"><div class="res-name">Price Per Token</div><div class="res-desc">Subscription vs API calculator, cheapest LLM APIs, agent frameworks directory.</div><a href="https://pricepertoken.com/" class="res-link" target="_blank">pricepertoken.com ↗</a></div>
+        <div class="res-card"><div class="res-name">Sub vs API Calculator</div><div class="res-desc">Find your break-even point between flat subscriptions and PAYG API billing.</div><a href="https://pricepertoken.com/subscription-calculator" class="res-link" target="_blank">pricepertoken.com/subscription-calculator ↗</a></div>
+        <div class="res-card"><div class="res-name">Cheapest LLM APIs</div><div class="res-desc">Live-updated rankings of cheapest models per million tokens by provider.</div><a href="https://pricepertoken.com/cheapest" class="res-link" target="_blank">pricepertoken.com/cheapest ↗</a></div>
+        <div class="res-card"><div class="res-name">AI Agent Frameworks 2026</div><div class="res-desc">Directory of the best open-source agent frameworks by use case and language.</div><a href="https://pricepertoken.com/directory/ai-agent-frameworks" class="res-link" target="_blank">pricepertoken.com/directory ↗</a></div>
+        <div class="res-card"><div class="res-name">Helicone Observability</div><div class="res-desc">LLM request logging and cost tracking. Free up to 10K requests/mo.</div><a href="https://www.helicone.ai/pricing" class="res-link" target="_blank">helicone.ai/pricing ↗</a></div>
+      </div>
+    </div>
+
+    <!-- FREE TOOLS -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-title">Free &amp; Open Source</span>
+        <span class="section-num">RE-DOWNLOAD LIST</span>
+      </div>
+      <div class="pills-row">
+        <a href="https://kiro.dev/" class="pill-link" target="_blank"><span class="pill-dot"></span>Kiro IDE</a>
+        <a href="https://openhands.dev/" class="pill-link" target="_blank"><span class="pill-dot"></span>OpenHands</a>
+        <a href="https://opencode.ai/" class="pill-link" target="_blank"><span class="pill-dot"></span>opencode TUI</a>
+        <a href="https://kilo.ai/open" class="pill-link" target="_blank"><span class="pill-dot"></span>Kilo AI</a>
+        <a href="https://zencoder.ai/zenflow" class="pill-link" target="_blank"><span class="pill-dot"></span>Zencoder / ZenFlow</a>
+        <a href="https://github.com/Fosowl/agenticSeek" class="pill-link" target="_blank"><span class="pill-dot"></span>agenticSeek (local Manus)</a>
+        <a href="https://www.eigent.ai/" class="pill-link" target="_blank"><span class="pill-dot"></span>Eigent</a>
+        <a href="https://github.com/bytebot-ai/bytebot" class="pill-link" target="_blank"><span class="pill-dot"></span>bytebot (desktop agent)</a>
+        <a href="https://github.com/iliane5/meridian" class="pill-link" target="_blank"><span class="pill-dot"></span>Meridian (AI news briefs)</a>
+        <a href="https://github.com/get-convex/chef" class="pill-link" target="_blank"><span class="pill-dot"></span>Chef (app builder)</a>
+        <a href="https://github.com/saifyxpro/HeadlessX" class="pill-link" target="_blank"><span class="pill-dot"></span>HeadlessX (browser automation)</a>
+        <a href="https://github.com/bytedance/deer-flow" class="pill-link" target="_blank"><span class="pill-dot"></span>DeerFlow (ByteDance)</a>
+        <a href="https://github.com/workany-ai/workany" class="pill-link" target="_blank"><span class="pill-dot"></span>WorkAny OSS</a>
+        <a href="https://factory.ai/oss" class="pill-link" target="_blank"><span class="pill-dot"></span>Factory OSS</a>
+      </div>
+    </div>
+
+    <!-- API CONFIG TABLE -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-title">BYOK API Configuration</span>
+        <span class="section-num">11 PROVIDERS</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Provider</th><th>Base URL</th><th>Docs</th></tr></thead>
+          <tbody>
+            <tr><td class="td-name">OpenAI</td><td class="td-mono">api.openai.com/v1</td><td><a href="https://platform.openai.com/docs/api-reference" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">Anthropic</td><td class="td-mono">api.anthropic.com/</td><td><a href="https://docs.anthropic.com/en/api/getting-started" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">Google Gemini</td><td class="td-mono">generativelanguage.googleapis.com/v1beta/openai/</td><td><a href="https://ai.google.dev/gemini-api/docs" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">OpenRouter</td><td class="td-mono">openrouter.ai/api/v1</td><td><a href="https://openrouter.ai/docs" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">DeepSeek</td><td class="td-mono">api.deepseek.com</td><td><a href="https://platform.deepseek.com/api-docs" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">Qwen (Alibaba)</td><td class="td-mono">dashscope.aliyuncs.com/compatible-mode/v1</td><td><a href="https://help.aliyun.com/zh/dashscope/developer-reference/api-details" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">Z.ai / GLM</td><td class="td-mono">api.z.ai/api/coding/paas/v4/</td><td><a href="https://z.ai/" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">MiniMax</td><td class="td-mono">api.minimax.io/v1</td><td><a href="https://platform.minimaxi.com/document/Announcement" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">xAI (Grok)</td><td class="td-mono">api.x.ai/v1</td><td><a href="https://docs.x.ai/developers/models" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">AWS Bedrock</td><td class="td-mono">(user-provided)</td><td><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html" class="td-link" target="_blank">docs ↗</a></td></tr>
+            <tr><td class="td-name">Azure OpenAI</td><td class="td-mono">(user-provided)</td><td><a href="https://learn.microsoft.com/en-us/azure/ai-services/openai/reference" class="td-link" target="_blank">docs ↗</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>AI CODING PLANS DIRECTORY — MARCH 2026 — PRICES SUBJECT TO CHANGE</span>
+  <span>MADE WITH CLAUDE &nbsp; ✦</span>
+</footer>
+
+<script>
+const tools = [
+  { name:"Claude Pro", cat:"claude", catLabel:"Anthropic", price:20, priceLabel:"$20/mo", priceSub:"billed monthly ($17 yr)", url:"https://claude.ai/upgrade", pick:true, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"All Claude 4.6 models incl. Opus, Claude Code CLI, Cowork, extended thinking, Research mode, Google Workspace + remote MCP. 5× free-tier usage with 5-hour resets.", note:"Best consolidation move — replaces Trae AI and unlocks Claude Code in one subscription.", noteType:"blue", tags:["pick","claude"] },
+  { name:"Claude Max 5×", cat:"claude", catLabel:"Anthropic", price:100, priceLabel:"$100/mo", priceSub:"5× Pro usage limits", url:"https://claude.ai/upgrade", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Everything in Pro with 5× higher per-session usage limits, priority access at peak demand, full Claude Code + Cowork, and Opus 4.6 with 1M context window (beta).", note:"Step up when you're consistently hitting Pro's 5-hour limits on heavy Claude Code sessions.", noteType:"", tags:["claude"] },
+  { name:"Claude Max 20×", cat:"claude", catLabel:"Anthropic", price:200, priceLabel:"$200/mo", priceSub:"20× Pro usage limits", url:"https://claude.ai/upgrade", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Maximum Claude Code throughput. 20× Pro limits. One developer reported ~$5,600 API-equivalent monthly usage — Max 20× saved thousands over direct API billing.", note:"Serious agentic workloads only. Run the API cost calculator first to see if this saves you money.", noteType:"amber", tags:["claude"] },
+  { name:"ChatGPT Plus + Codex", cat:"subscription", catLabel:"OpenAI", price:20, priceLabel:"$20/mo", priceSub:"includes Codex agent", url:"https://chatgpt.com/pricing", pick:true, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"GPT-5.2 + Codex agent (30–150 msgs/5hr). The only plan that permits general API use alongside Codex CLI. DALL-E, voice mode, canvas all included.", note:"Direct competitor to Claude Pro at identical price. Worth trialing if you want OpenAI's broader feature set.", noteType:"", tags:["pick","subscription"] },
+  { name:"ChatGPT Pro + Codex", cat:"subscription", catLabel:"OpenAI", price:200, priceLabel:"$200/mo", priceSub:"300–1,500 Codex msgs/5hr", url:"https://chatgpt.com/pricing", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Unlimited GPT-5.2, o3 pro mode, 300–1,500 Codex messages. GPT-5.3-Codex-Spark preview (1,000+ tok/sec on Cerebras). Max priority. Competes directly with Claude Max 20×.", note:"Same price as Claude Max 20×. Broader feature set vs Claude's deeper coding/agent focus.", noteType:"", tags:["subscription"] },
+  { name:"GitHub Copilot Free", cat:"ide", catLabel:"GitHub", price:0, priceLabel:"Free", priceSub:"2,000 completions · 50 chats/mo", url:"https://github.com/features/copilot/plans", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:true, desc:"2,000 code completions, 50 premium chats, Copilot agent access (limited). Multi-model: GPT-4o, Claude 3.5, Gemini 2.5 Pro. Native GitHub integration.", note:"50 chats/mo runs out fast. Keep as a secondary tool — free is free.", noteType:"", tags:["ide","free"] },
+  { name:"GitHub Copilot Pro", cat:"ide", catLabel:"GitHub", price:10, priceLabel:"$10/mo", priceSub:"unlimited completions · 300 premium req", url:"https://github.com/features/copilot/plans", pick:true, current:false, web:false, img:true, byok:false, restricted:false, free:true, desc:"Unlimited completions, 300 premium requests/mo. Multi-model: GPT-5.1-Codex, Claude Opus 4, Gemini 2.5 Pro. Agent mode, code review, Copilot CLI. VS Code, JetBrains, Xcode, Neovim.", note:"Best value IDE plan at $10/mo. Strong replacement for your maxed free Cursor/Windsurf.", noteType:"blue", tags:["pick","ide","free"] },
+  { name:"GitHub Copilot Pro+", cat:"ide", catLabel:"GitHub", price:39, priceLabel:"$39/mo", priceSub:"1,500 premium req · all models", url:"https://github.com/features/copilot/plans", pick:false, current:false, web:false, img:true, byok:false, restricted:false, free:false, desc:"1,500 premium requests/mo, every available model, GitHub Spark, enhanced context. Note: o3 prompts consume many request-equivalents. Extra requests at $0.04 each.", note:"Only worthwhile once you're burning through 300 premium requests on Pro consistently.", noteType:"", tags:["ide"] },
+  { name:"Gemini CLI", cat:"ide", catLabel:"Google", price:0, priceLabel:"Free", priceSub:"1,000 req/day · 60/min", url:"https://github.com/google-gemini/gemini-cli", pick:true, current:false, web:true, img:true, byok:false, restricted:false, free:true, desc:"Open-source CLI with Gemini 2.5 Pro, 1M token context window, built-in Google search, MCP support, multi-file codebase awareness. Personal Google account. May fall back to Flash at limits.", note:"Best free agentic terminal tool in 2026. Download immediately — 1M context for large codebases is a serious advantage.", noteType:"blue", tags:["pick","ide","free"] },
+  { name:"Google AI Pro", cat:"subscription", catLabel:"Google", price:20, priceLabel:"$20/mo", priceSub:"~$100/yr currently discounted", url:"https://one.google.com/about/plans", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Gemini 3 Pro, Deep Research, 1M context, 2TB storage, Veo 3.1 video gen, image gen. Integrates with Google Workspace. Currently 50% off annual.", note:"Strong if you're embedded in Google Workspace. Not primarily a coding tool but pairs well with Gemini CLI.", noteType:"", tags:["subscription"] },
+  { name:"GLM Coding Plan Basic", cat:"coding-plan", catLabel:"Z.ai", price:10, priceLabel:"$10/mo", priceSub:"lite tier", url:"https://z.ai/subscribe", pick:false, current:true, web:false, img:false, byok:false, restricted:true, free:false, desc:"Entry-level Z.ai coding plan. GLM-4 model access for coding tools. No web search, no image input at this tier. Lower inference speed vs Pro.", note:"YOUR CURRENT PLAN — missing the features you need. Upgrade to Pro or switch to OpenRouter for GLM access.", noteType:"red", tags:["coding-plan","current","restricted"] },
+  { name:"GLM Coding Plan Pro", cat:"coding-plan", catLabel:"Z.ai", price:30, priceLabel:"$30/mo", priceSub:"40–60% faster than Basic", url:"https://z.ai/subscribe", pick:true, current:false, web:true, img:true, byok:false, restricted:true, free:false, desc:"GLM-5 & GLM-4.7 access. Vision Analyze, Web Search, Web Reader, Zread MCP. Compatible with Claude Code, Kilo Code, Cline, OpenCode, OpenClaw and all major BYOK coding tools.", note:"Upgrade from your Basic — this is what you're actually paying for. GLM-5 is competitive with GPT-5.2 on coding.", noteType:"blue", tags:["pick","coding-plan","restricted"] },
+  { name:"Alibaba Multi-Model Lite", cat:"coding-plan", catLabel:"Alibaba Cloud", price:6, priceLabel:"~$6/mo", priceSub:"~$1 first month · 18K req", url:"https://modelstudio.console.alibabacloud.com/", pick:false, current:false, web:true, img:false, byok:false, restricted:true, free:false, desc:"NEW Feb 2026 — Four models in one plan: Qwen3.5-Coder-Plus, GLM-5, MiniMax M2.5, Kimi K2.5. ~$1 first month then ~$5.80 renewal. 18,000 req/mo. Works in Claude Code, Cline, OpenClaw.", note:"⚠ Coding tools API only — no custom scripts or backends. Best value multi-model plan available. Try the $1 first month.", noteType:"amber", tags:["coding-plan","restricted"] },
+  { name:"Alibaba Multi-Model Pro", cat:"coding-plan", catLabel:"Alibaba Cloud", price:29, priceLabel:"~$29/mo", priceSub:"~$5.50 first month · 90K req", url:"https://modelstudio.console.alibabacloud.com/", pick:false, current:false, web:true, img:false, byok:false, restricted:true, free:false, desc:"Same 4-model bundle (Qwen3.5, GLM-5, MiniMax M2.5, Kimi K2.5) with 90,000 req/mo. Prompts reset every 5 hours.", note:"⚠ Coding tools only. At this price, better value than individual Qwen or MiniMax plans.", noteType:"amber", tags:["coding-plan","restricted"] },
+  { name:"Qwen Coding Plan Lite", cat:"coding-plan", catLabel:"Alibaba Cloud", price:10, priceLabel:"$10/mo", priceSub:"often sold out", url:"https://modelstudio.console.alibabacloud.com/", pick:false, current:false, web:true, img:false, byok:false, restricted:true, free:false, desc:"Qwen3-Coder-Plus dedicated coding key. Restocked daily at 9:30 AM. Works in Cline, Claude Code, Qwen Code. Free quota for new users.", note:"⚠ Frequently sold out. Use OpenRouter for Qwen if you can't wait for restocks.", noteType:"amber", tags:["coding-plan","restricted"] },
+  { name:"Qwen Coding Plan Pro", cat:"coding-plan", catLabel:"Alibaba Cloud", price:50, priceLabel:"$50/mo", priceSub:"90K req/mo", url:"https://modelstudio.console.alibabacloud.com/", pick:false, current:false, web:true, img:false, byok:false, restricted:true, free:false, desc:"Higher quota Qwen3-Coder-Plus access. 90,000 req/mo. API-restricted to coding tools only.", note:"⚠ At $50, the Alibaba Multi-Model Pro ($29) gives 4 models for far less.", noteType:"red", tags:["coding-plan","restricted"] },
+  { name:"OpenCode Go", cat:"coding-plan", catLabel:"OpenCode", price:10, priceLabel:"$10/mo", priceSub:"$5 first month (beta)", url:"https://opencode.ai/docs/go/", pick:true, current:false, web:false, img:false, byok:false, restricted:true, free:false, desc:"OpenCode's hosted plan for the open TUI (95K+ GitHub stars). Access to GLM-5, Kimi K2.5, MiniMax M2.5. Limits in dollar value rather than request count. International-friendly.", note:"If you use opencode already, this cleanly powers it without juggling multiple API keys.", noteType:"blue", tags:["pick","coding-plan","restricted"] },
+  { name:"MiniMax Coding Plan", cat:"coding-plan", catLabel:"MiniMax", price:100, priceLabel:"$100/mo", priceSub:"entry-level tier", url:"https://platform.minimax.io/subscribe/coding-plan", pick:false, current:false, web:true, img:true, byok:false, restricted:true, free:false, desc:"MiniMax M2.5 coding API access. Fixed prompt quota per 5-hour window. Web search and image input included.", note:"⚠ Very poor value — MiniMax M2.5 is included in the Alibaba Multi-Model plan at $6/mo. Skip this.", noteType:"red", tags:["coding-plan","restricted"] },
+  { name:"Perplexity Pro", cat:"subscription", catLabel:"Perplexity", price:17, priceLabel:"$17/mo", priceSub:"or $200/yr", url:"https://www.perplexity.ai/api-platform", pick:true, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Best-in-class search-grounded LLM. Sonar API for web-aware completions, Agent + Embeddings APIs. Excellent for RAG pipelines, research tools, coding assistants that need live citations.", note:"Unique at this price — the only search-first LLM API. If you build tools that need live web data, nothing competes.", noteType:"blue", tags:["pick","subscription"] },
+  { name:"Grok SuperGrok", cat:"subscription", catLabel:"xAI", price:25, priceLabel:"$25/mo", priceSub:"or $300/yr", url:"https://grok.com/plans", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Grok 4.1 with real-time X/Twitter data and web search. Strong reasoning. API separately at $0.20/M input tokens — the cheapest frontier model available.", note:"Grok API via OpenRouter is cheaper than the $25 sub for pure API use. Get SuperGrok only for the full product.", noteType:"", tags:["subscription"] },
+  { name:"Manus", cat:"agent", catLabel:"Manus", price:20, priceLabel:"$20/mo", priceSub:"agent credits", url:"https://manus.im/pricing", pick:true, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Fully autonomous agent — browses web, writes and executes code, manages files, completes multi-step tasks without supervision. Most polished paid agent platform. API available separately.", note:"The mature choice for autonomous agents. Try agenticSeek (free, local) first to validate your workflow.", noteType:"blue", tags:["pick","agent"] },
+  { name:"WorkAny", cat:"agent", catLabel:"WorkAny", price:25, priceLabel:"$24.9/mo", priceSub:"cloud OpenClaw agent", url:"https://workany.ai/bot#Pricing", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"Cloud-based OpenClaw-compatible agent for desktop automation and multi-step tasks. Also available as desktop download. OSS version at github.com/workany-ai/workany.", note:"Less established than Manus. Test the free tier first.", noteType:"", tags:["agent"] },
+  { name:"GenSpark Plus", cat:"subscription", catLabel:"GenSpark", price:20, priceLabel:"$19.99/mo", priceSub:"includes Claw agent", url:"https://www.genspark.ai/me?open_pricing=pricing", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:false, desc:"GenSpark AI platform with agent capabilities and Claw access. Cloud Computer plan at $34.99/mo adds a hosted 2 vCPU / 8GB / 64GB VM for persistent agent workflows.", note:"Cloud Computer is interesting for persistent agent VMs. Otherwise not a priority.", noteType:"", tags:["subscription"] },
+  { name:"Kimi Moderato", cat:"subscription", catLabel:"Moonshot AI", price:15, priceLabel:"$15/mo", priceSub:"weekly rolling quota", url:"https://www.kimi.com/membership/pricing", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:false, desc:"Kimi K2.5 subscription. Long context window specialist. Weekly rolling coding quota (~2,000–3,500 req/week). Quota resets 7 days from activation.", note:"K2.5 is already in the Alibaba Multi-Model plan. Only needed if you specifically require standalone Kimi access.", noteType:"", tags:["subscription"] },
+  { name:"OpenRouter", cat:"api-router", catLabel:"OpenRouter", price:0, priceLabel:"Pay-as-you-go", priceSub:"no monthly fee", url:"https://openrouter.ai/", pick:true, current:true, web:false, img:true, byok:true, restricted:false, free:true, desc:"200+ models via one OpenAI-compatible API key. Qwen, DeepSeek, GLM, Kimi, Gemini, GPT-5, Claude all from a single endpoint. No subscription — pay only for tokens used. Powers Roocode, Cline, any BYOK tool.", note:"YOUR CURRENT SETUP — keep it. This is the correct strategy. Add credits as needed.", noteType:"blue", tags:["pick","api-router","current","byok","free"] },
+  { name:"BLACKBOX AI Pro Plus", cat:"ide", catLabel:"Blackbox AI", price:20, priceLabel:"$20/mo", priceSub:"\"AI engineering team\"", url:"https://www.blackbox.ai/pricing", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:false, desc:"In-IDE coding assistant with broad model access. Web, chat, code generation. Marketed as a full engineering team replacement.", note:"Redundant if you have Claude Code via Claude Pro. Skip unless you find it specifically useful.", noteType:"red", tags:["ide"] },
+  { name:"KIMI API Platform", cat:"api-router", catLabel:"Moonshot AI", price:0, priceLabel:"PAYG", priceSub:"platform.moonshot.ai", url:"https://platform.moonshot.ai/", pick:false, current:false, web:false, img:false, byok:true, restricted:false, free:false, desc:"Direct API access to Kimi K2.5 via Moonshot AI platform. Pay-as-you-go. Better for automation than the Kimi Moderato subscription.", note:"Route via OpenRouter instead unless you need Moonshot-specific features or pricing.", noteType:"", tags:["api-router","byok"] },
+  { name:"Factory.ai", cat:"agent", catLabel:"Factory", price:0, priceLabel:"Contact for pricing", priceSub:"factory.ai/pricing", url:"https://factory.ai/pricing", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:false, desc:"AI software engineering agent. Automates code review, PR creation, full dev workflows. Has an open-source component. Enterprise-oriented with custom pricing.", note:"Check factory.ai/oss first. Contact required for pricing — more enterprise than individual dev.", noteType:"", tags:["agent"] },
+  { name:"MuleRun Agent Builder", cat:"agent", catLabel:"MuleRun", price:0, priceLabel:"See pricing", priceSub:"mulerun.com/pricing/plan", url:"https://mulerun.com/pricing/plan", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:false, desc:"Agent builder platform with MuleRouter for LLM routing. Quickstart docs for building custom agents. LLM pricing via separate MuleRouter service.", note:"Less mature than Manus or WorkAny. Worth monitoring.", noteType:"", tags:["agent"] },
+  { name:"Eigent", cat:"agent", catLabel:"Eigent", price:0, priceLabel:"Free tier + paid", priceSub:"eigent.ai/pricing", url:"https://www.eigent.ai/pricing", pick:false, current:false, web:true, img:true, byok:false, restricted:false, free:true, desc:"Desktop AI agent for computer task automation via natural language. Download available at eigent.ai/download. Competes with Manus for autonomous desktop workflows.", note:"Free tier available. Download and test before committing.", noteType:"", tags:["agent","free"] },
+  { name:"Kilo AI", cat:"agent", catLabel:"Kilo AI", price:0, priceLabel:"Free / paid tiers", priceSub:"kilo.ai/open", url:"https://kilo.ai/open", pick:false, current:false, web:false, img:false, byok:false, restricted:false, free:true, desc:"AI app builder and Kilo Code IDE plugin (Cline alternative). Free open tier at kilo.ai/open. App builder at app.kilo.ai. BYOK-friendly.", note:"Worth re-downloading — Kilo Code is a strong Cline/RooCode alternative.", noteType:"", tags:["agent","free"] },
+];
+
+let activeFilter = 'all';
+let activeSort = 'default';
+
+const filterMap = {
+  all: () => true,
+  pick: t => t.pick,
+  current: t => t.current,
+  claude: t => t.cat === 'claude',
+  'coding-plan': t => t.cat === 'coding-plan',
+  'api-router': t => t.cat === 'api-router',
+  agent: t => t.cat === 'agent',
+  ide: t => t.cat === 'ide',
+  subscription: t => t.cat === 'subscription',
+  free: t => t.free || t.price === 0,
+  under20: t => t.price > 0 && t.price <= 20,
+  over50: t => t.price >= 50,
+  websearch: t => t.web,
+  imageInput: t => t.img,
+  byok: t => t.byok,
+  restricted: t => t.restricted,
+};
+
+function makeTag(cls, label) {
+  return `<span class="tag ${cls}">${label}</span>`;
+}
+
+function cardTags(t) {
+  const out = [];
+  if (t.pick)       out.push(makeTag('t-pick','★ top pick'));
+  if (t.current)    out.push(makeTag('t-cur','your stack'));
+  if (t.web)        out.push(makeTag('t-search','web search'));
+  if (t.img)        out.push(makeTag('t-img','image input'));
+  if (t.byok)       out.push(makeTag('t-byok','PAYG / BYOK'));
+  if (t.restricted) out.push(makeTag('t-warn','⚠ coding tools only'));
+  if (t.free || t.price === 0) out.push(makeTag('t-free','free tier'));
+  if (t.cat === 'coding-plan') out.push(makeTag('t-plan','coding plan'));
+  if (t.cat === 'agent')       out.push(makeTag('t-agent','agent'));
+  if (t.cat === 'api-router')  out.push(makeTag('t-byok','api router'));
+  return out.join('');
+}
+
+function renderCards() {
+  const grid = document.getElementById('grid');
+  const filtered = tools.filter(filterMap[activeFilter] || filterMap.all);
+  const sorted = [...filtered].sort((a, b) => {
+    if (activeSort === 'price-asc') return a.price - b.price;
+    if (activeSort === 'price-desc') return b.price - a.price;
+    if (activeSort === 'name') return a.name.localeCompare(b.name);
+    // default: current first, picks next
+    if (a.current !== b.current) return b.current - a.current;
+    if (a.pick !== b.pick) return b.pick - a.pick;
+    return 0;
+  });
+
+  document.getElementById('shown').textContent = sorted.length;
+  document.getElementById('total').textContent = tools.length;
+  document.getElementById('tool-total').textContent = tools.length;
+
+  // Update counts
+  Object.keys(filterMap).forEach(key => {
+    const el = document.getElementById('c-' + key);
+    if (el) el.textContent = tools.filter(filterMap[key]).length;
+  });
+
+  grid.innerHTML = sorted.map(t => `
+    <div class="card ${t.pick ? 'is-pick' : ''} ${t.current ? 'is-current' : ''}">
+      <div class="card-top">
+        <div>
+          <div class="card-name">${t.name}</div>
+          <div class="card-cat">${t.catLabel} &nbsp;/&nbsp; ${t.cat.replace('-',' ')}</div>
+        </div>
+        <div class="price-col">
+          <div class="price-main">${t.priceLabel}</div>
+          <div class="price-sub">${t.priceSub}</div>
+        </div>
+      </div>
+      <div class="tags">${cardTags(t)}</div>
+      <div class="card-desc">${t.desc}</div>
+      ${t.note ? `<div class="card-note ${t.noteType === 'red' ? 'is-red' : t.noteType === 'amber' ? 'is-amber' : t.noteType === 'blue' ? 'is-blue' : ''}">${t.note}</div>` : ''}
+      <div class="card-foot">
+        <div class="caps">
+          <span class="cap"><span class="cap-dot ${t.web ? 'y' : 'n'}"></span>Search</span>
+          <span class="cap"><span class="cap-dot ${t.img ? 'y' : 'n'}"></span>Images</span>
+          <span class="cap"><span class="cap-dot ${t.byok ? 'y' : 'n'}"></span>BYOK</span>
+        </div>
+        <a href="${t.url}" class="card-link" target="_blank">Pricing ↗</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+}
+
+function setSort(s, el) {
+  activeSort = s;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+}
+
+renderCards();
+</script>
+</body>
+</html>
